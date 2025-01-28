@@ -1,0 +1,69 @@
+@import "~bootstrap/scss/bootstrap";
+@import url('https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap');
+
+header {
+  font-family: 'Great Vibes', cursive;
+  display: flex;
+  align-items: center;
+  background-color: #FFEB3B;
+  padding: 5% 3%;
+
+  background: linear-gradient(45deg, #ffd200, #ffae00, #cd3700, #e7ff00);
+  background-size: 400% 400%;
+  -webkit-animation: bg-pan-left 8s ease infinite;
+  animation: bg-pan-left 8s ease infinite;
+
+  @-webkit-keyframes bg-pan-left {
+    0% {
+      background-position: 100% 50%;
+    }
+    50% {
+      background-position: 0% 50%;
+    }
+    100% {
+      background-position: 100% 50%;
+    }
+  }
+  @keyframes bg-pan-left {
+    0% {
+      background-position: 100% 50%;
+    }
+    50% {
+      background-position: 0% 50%;
+    }
+    100% {
+      background-position: 100% 50%;
+    }
+  }
+
+  nav {
+    display: flex;
+    align-items: center;
+    flex-grow: 1;
+
+    a {
+      padding: 30px;
+      text-decoration: none;
+      font-size: 18px;
+      border-radius: 4px;
+      --clr: #cd3700;
+      --outline: 4px solid white;
+      border: 4px solid var(--clr);
+      background: var(--clr);
+      color: white;
+      outline: var(--outline);
+      transition: outline-offset 200ms ease;
+      opacity: 0.6;
+
+      &:hover {
+        outline: var(--outline);
+        outline-offset: -15px;
+        color: #ffae00;
+      }
+    }
+
+    a:first-child {
+      margin-right: auto;
+    }
+  }
+}
