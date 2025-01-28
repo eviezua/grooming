@@ -80,6 +80,16 @@ RUN echo "xdebug.start_with_request=yes" >> /usr/local/etc/php/conf.d/docker-php
 
 COPY --link frankenphp/conf.d/app.dev.ini $PHP_INI_DIR/conf.d/
 
+RUN apk add --no-cache --virtual .build-deps \
+    curl \
+    gnupg \
+    && apk add --no-cache nodejs npm yarn \
+    && apk del .build-deps
+
+WORKDIR /app
+COPY package.json package-lock.json ./
+RUN npm install
+
 CMD [ "frankenphp", "run", "--config", "/etc/caddy/Caddyfile", "--watch" ]
 
 # Prod FrankenPHP image
