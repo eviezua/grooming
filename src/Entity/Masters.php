@@ -2,63 +2,94 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Patch;
+use ApiPlatform\Metadata\Post;
+use ApiPlatform\Metadata\Put;
 use App\Repository\MastersRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: MastersRepository::class)]
+#[ApiResource(
+    description: 'Our Masters.',
+    operations: [
+        new Get(),
+        new GetCollection(),
+        new Post(),
+        new Put(),
+        new Patch()
+    ],
+    normalizationContext: ['groups' => ['master:read']],
+    denormalizationContext: ['groups' => ['master:write']]
+)]
 class Masters
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(["master:read"])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(["master:read", "master:write"])]
     private ?string $name = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(["master:read", "master:write"])]
     private ?string $surname = null;
 
     /**
      * @var Collection<int, Services>
      */
     #[ORM\ManyToMany(targetEntity: Services::class, inversedBy: 'masters')]
+    #[Groups(["master:read", "master:write"])]
     private Collection $id_services;
 
     #[ORM\ManyToOne(inversedBy: 'masters')]
     #[ORM\JoinColumn(nullable: false)]
+    #[Groups(["master:read", "master:write"])]
     private ?Cities $id_city = null;
 
     /**
      * @var Collection<int, Pets>
      */
     #[ORM\ManyToMany(targetEntity: Pets::class, inversedBy: 'masters')]
+    #[Groups(["master:read", "master:write"])]
     private Collection $id_pets;
 
     #[ORM\Column(length: 255)]
+    #[Groups(["master:write"])]
     private ?string $password = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(["master:write"])]
     private ?string $email = null;
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(["master:write"])]
     private ?string $phone = null;
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(["master:read", "master:write"])]
     private ?string $photo = null;
 
     /**
      * @var Collection<int, Schedule>
      */
     #[ORM\OneToMany(targetEntity: Schedule::class, mappedBy: 'master')]
+    #[Groups(["master:read", "master:write"])]
     private Collection $schedules;
 
     /**
      * @var Collection<int, Bookings>
      */
     #[ORM\OneToMany(targetEntity: Bookings::class, mappedBy: 'id_master')]
+    #[Groups(["master:read", "master:write"])]
     private Collection $bookings;
 
     public function __construct()

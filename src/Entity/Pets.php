@@ -2,32 +2,53 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Post;
 use App\Repository\PetsRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: PetsRepository::class)]
+#[ApiResource(
+    description: 'Our little friends!.',
+    operations: [
+        new Get(),
+        new GetCollection(),
+        new Post()
+    ],
+    normalizationContext: ['groups' => ['pets:read']],
+    denormalizationContext: ['groups' => ['pets:write']]
+)]
 class Pets
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(["pets:read"])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(["pets:read", "pets:write"])]
     private ?string $spice = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(["pets:write"])]
     private ?string $hair = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(["pets:read", "pets:write"])]
     private ?string $breed = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(["pets:write"])]
     private ?string $size = null;
 
     #[ORM\Column]
+    #[Groups(["services:read"])]
     private ?float $cost_coficient = null;
 
     /**
