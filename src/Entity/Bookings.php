@@ -10,6 +10,10 @@ use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\Put;
 use App\Repository\BookingsRepository;
+use App\State\BookingStateProcessor;
+use App\State\BookingStateProvider;
+use App\Validator\Booking\BookingAvailability;
+use App\Validator\FutureDateTime;
 use DateTimeInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -28,15 +32,17 @@ use Symfony\Component\Serializer\Annotation\Groups;
         new Patch(),
         new Delete(),
     ],
-    normalizationContext: ['groups' => ['booking:read']],
+    normalizationContext: ['groups' => ['booking:read'], 'enable_max_depth' => true],
     denormalizationContext: ['groups' => ['booking:write']],
+    provider: BookingStateProvider::class,
+    processor: BookingStateProcessor::class,
 )]
 class Bookings
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(["booking:booking:read"])]
+    #[Groups(["booking:read"])]
     private ?int $id = null;
 
     #[ORM\ManyToOne(inversedBy: 'bookings')]
@@ -53,13 +59,17 @@ class Bookings
 
     #[ORM\Column(type: Types::DATE_MUTABLE)]
     #[Groups(["booking:read", "booking:write"])]
+    #[BookingAvailability]
     private ?DateTimeInterface $date = null;
 
     #[ORM\Column(type: Types::TIME_MUTABLE)]
     #[Groups(["booking:read", "booking:write"])]
+    #[BookingAvailability]
+    #[FutureDateTime]
     private ?DateTimeInterface $time_start = null;
 
     #[ORM\Column(type: Types::TIME_MUTABLE)]
+    #[BookingAvailability]
     #[Groups(["booking:read", "booking:write"])]
     private ?DateTimeInterface $time_stop = null;
 
@@ -70,7 +80,7 @@ class Bookings
 
     #[ORM\ManyToOne(inversedBy: 'bookings')]
     #[ORM\JoinColumn(nullable: false)]
-    #[Groups(["booking:read"])]
+    #[Groups(["booking:read", "booking:write"])]
     private ?Clients $id_client = null;
 
     public function __construct()
@@ -101,6 +111,18 @@ class Bookings
     public function getIdServices(): Collection
     {
         return $this->id_services;
+    }
+
+    #[Groups(["booking:write"])]
+    public function setIdServices(iterable $services): static
+    {
+        $this->id_services = new ArrayCollection();
+        foreach ($services as $service) {
+            if ($service instanceof Services) {
+                $this->id_services->add($service);
+            }
+        }
+        return $this;
     }
 
     public function addIdService(Services $idService): static
