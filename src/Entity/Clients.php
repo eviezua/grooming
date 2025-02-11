@@ -62,7 +62,7 @@ class Clients
      * @var Collection<int, Bookings>
      */
     #[ORM\OneToMany(targetEntity: Bookings::class, mappedBy: 'id_client')]
-    #[Groups(["client:read"])]
+    #[Groups(["client:read", "client:write"])]
     private Collection $bookings;
 
     public function __construct()

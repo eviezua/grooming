@@ -51,7 +51,7 @@ class Services
      * @var Collection<int, Masters>
      */
     #[ORM\ManyToMany(targetEntity: Masters::class, mappedBy: 'id_services')]
-    #[Groups(["services:read"])]
+    #[Groups(["services:read", "services:write"])]
     private Collection $masters;
 
     public function __construct()

@@ -48,7 +48,7 @@ class Pets
     private ?string $size = null;
 
     #[ORM\Column]
-    #[Groups(["services:read"])]
+    #[Groups(["pets:read"])]
     private ?float $cost_coficient = null;
 
     /**
