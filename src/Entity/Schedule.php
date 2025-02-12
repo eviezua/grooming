@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Enum\Weekdays;
 use App\Repository\ScheduleRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
@@ -14,8 +15,8 @@ class Schedule
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(length: 255)]
-    private ?string $dayOfweek = null;
+    #[ORM\Column(length: 255, enumType: Weekdays::class)]
+    private ?Weekdays $dayOfweek = null;
 
     #[ORM\Column(type: Types::TIME_MUTABLE)]
     private ?\DateTimeInterface $start_time = null;
@@ -32,12 +33,12 @@ class Schedule
         return $this->id;
     }
 
-    public function getDayOfweek(): ?string
+    public function getDayOfweek(): ?Weekdays
     {
         return $this->dayOfweek;
     }
 
-    public function setDayOfweek(string $dayOfweek): static
+    public function setDayOfweek(Weekdays $dayOfweek): static
     {
         $this->dayOfweek = $dayOfweek;
 

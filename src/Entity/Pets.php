@@ -2,6 +2,10 @@
 
 namespace App\Entity;
 
+use App\Enum\Hair;
+use App\Enum\Size;
+use App\Enum\Species;
+use App\Enum\Status;
 use App\Repository\PetsRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -15,17 +19,17 @@ class Pets
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(length: 255)]
-    private ?string $spice = null;
+    #[ORM\Column(length: 255, enumType: Species::class)]
+    private ?Species $spice = null;
 
-    #[ORM\Column(length: 255)]
-    private ?string $hair = null;
+    #[ORM\Column(length: 255, enumType: Hair::class)]
+    private ?Hair $hair = null;
 
     #[ORM\Column(length: 255)]
     private ?string $breed = null;
 
-    #[ORM\Column(length: 255)]
-    private ?string $size = null;
+    #[ORM\Column(length: 255, enumType: Size::class)]
+    private ?Size $size = null;
 
     #[ORM\Column]
     private ?float $cost_coficient = null;
@@ -35,6 +39,9 @@ class Pets
      */
     #[ORM\ManyToMany(targetEntity: Masters::class, mappedBy: 'id_pets')]
     private Collection $masters;
+
+    #[ORM\Column(length: 255, enumType: Status::class)]
+    private ?Status $status = null;
 
     public function __construct()
     {
@@ -53,24 +60,24 @@ class Pets
         return $this;
     }
 
-    public function getSpice(): ?string
+    public function getSpice(): ?Species
     {
         return $this->spice;
     }
 
-    public function setSpice(string $spice): static
+    public function setSpice(Species $spice): static
     {
         $this->spice = $spice;
 
         return $this;
     }
 
-    public function getHair(): ?string
+    public function getHair(): ?Hair
     {
         return $this->hair;
     }
 
-    public function setHair(string $hair): static
+    public function setHair(Hair $hair): static
     {
         $this->hair = $hair;
 
@@ -89,12 +96,12 @@ class Pets
         return $this;
     }
 
-    public function getSize(): ?string
+    public function getSize(): ?Size
     {
         return $this->size;
     }
 
-    public function setSize(string $size): static
+    public function setSize(Size $size): static
     {
         $this->size = $size;
 
@@ -136,6 +143,18 @@ class Pets
         if ($this->masters->removeElement($master)) {
             $master->removeIdPet($this);
         }
+
+        return $this;
+    }
+
+    public function getStatus(): ?Status
+    {
+        return $this->status;
+    }
+
+    public function setStatus(Status $status): static
+    {
+        $this->status = $status;
 
         return $this;
     }

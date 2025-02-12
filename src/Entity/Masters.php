@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Enum\Status;
 use App\Repository\MastersRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -60,6 +61,9 @@ class Masters
      */
     #[ORM\OneToMany(targetEntity: Bookings::class, mappedBy: 'id_master')]
     private Collection $bookings;
+
+    #[ORM\Column(length: 255, enumType: Status::class)]
+    private ?Status $status = null;
 
     public function __construct()
     {
@@ -262,6 +266,18 @@ class Masters
                 $booking->setIdMaster(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getStatus(): ?Status
+    {
+        return $this->status;
+    }
+
+    public function setStatus(Status $status): static
+    {
+        $this->status = $status;
 
         return $this;
     }

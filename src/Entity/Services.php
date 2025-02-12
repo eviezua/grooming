@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Enum\Status;
 use App\Repository\ServicesRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -30,6 +31,9 @@ class Services
      */
     #[ORM\ManyToMany(targetEntity: Masters::class, mappedBy: 'id_services')]
     private Collection $masters;
+
+    #[ORM\Column(length: 255, enumType: Status::class)]
+    private ?Status $status = null;
 
     public function __construct()
     {
@@ -107,6 +111,18 @@ class Services
         if ($this->masters->removeElement($master)) {
             $master->removeIdService($this);
         }
+
+        return $this;
+    }
+
+    public function getStatus(): ?Status
+    {
+        return $this->status;
+    }
+
+    public function setStatus(Status $status): static
+    {
+        $this->status = $status;
 
         return $this;
     }
