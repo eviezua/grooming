@@ -3,6 +3,7 @@
 namespace App\Factory;
 
 use App\Entity\Bookings;
+use App\Enum\Status;
 use Zenstruck\Foundry\Persistence\PersistentProxyObjectFactory;
 
 /**
@@ -13,7 +14,6 @@ final class BookingsFactory extends PersistentProxyObjectFactory
     /**
      * @see https://symfony.com/bundles/ZenstruckFoundryBundle/current/index.html#factories-as-services
      *
-     * @todo inject services if required
      */
     public function __construct()
     {
@@ -27,7 +27,6 @@ final class BookingsFactory extends PersistentProxyObjectFactory
     /**
      * @see https://symfony.com/bundles/ZenstruckFoundryBundle/current/index.html#model-factories
      *
-     * @todo add your default values here
      */
     protected function defaults(): array|callable
     {
@@ -43,7 +42,8 @@ final class BookingsFactory extends PersistentProxyObjectFactory
             'id_master' => MastersFactory::new(),
             'pet' => PetsFactory::new(),
             'time_start' => $startTime,
-            'time_stop' => $stopTime
+            'time_stop' => $stopTime,
+            'status' => self::faker()->randomElement(Status::cases())
         ];
     }
 

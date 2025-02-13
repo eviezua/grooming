@@ -18,13 +18,10 @@ class AppFixtures extends Fixture
 {
     public function load(ObjectManager $manager): void
     {
-        PetsFactory::createMany(20);
-        CitiesFactory::createMany(200);
-        ServicesFactory::createMany(200);
-        MastersFactory::createMany(200);
-        ScheduleFactory::createMany(200);
-        ClientsFactory::createMany(500);
-        BookingsFactory::createMany(500);
+        ServicesFactory::createMany(100);
+        MastersFactory::createMany(100);
+        ScheduleFactory::createMany(100);
+        BookingsFactory::createMany(200);
 
         $manager->flush();
     }

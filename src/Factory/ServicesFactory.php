@@ -3,6 +3,7 @@
 namespace App\Factory;
 
 use App\Entity\Services;
+use App\Enum\Status;
 use Zenstruck\Foundry\Persistence\PersistentProxyObjectFactory;
 
 /**
@@ -13,7 +14,6 @@ final class ServicesFactory extends PersistentProxyObjectFactory
     /**
      * @see https://symfony.com/bundles/ZenstruckFoundryBundle/current/index.html#factories-as-services
      *
-     * @todo inject services if required
      */
     public function __construct()
     {
@@ -27,14 +27,14 @@ final class ServicesFactory extends PersistentProxyObjectFactory
     /**
      * @see https://symfony.com/bundles/ZenstruckFoundryBundle/current/index.html#model-factories
      *
-     * @todo add your default values here
      */
     protected function defaults(): array|callable
     {
         return [
-            'cost' => self::faker()->randomNumber(),
+            'cost' => self::faker()->randomNumber(3, false),
             'default_time' => \DateTimeImmutable::createFromMutable(self::faker()->datetime()),
             'name' => self::faker()->text(255),
+            'status' => self::faker()->randomElement(Status::cases()),
         ];
     }
 

@@ -3,6 +3,7 @@
 namespace App\Factory;
 
 use App\Entity\Schedule;
+use App\Enum\Weekdays;
 use Zenstruck\Foundry\Persistence\PersistentProxyObjectFactory;
 
 /**
@@ -13,7 +14,6 @@ final class ScheduleFactory extends PersistentProxyObjectFactory
     /**
      * @see https://symfony.com/bundles/ZenstruckFoundryBundle/current/index.html#factories-as-services
      *
-     * @todo inject services if required
      */
     public function __construct()
     {
@@ -27,7 +27,6 @@ final class ScheduleFactory extends PersistentProxyObjectFactory
     /**
      * @see https://symfony.com/bundles/ZenstruckFoundryBundle/current/index.html#model-factories
      *
-     * @todo add your default values here
      */
     protected function defaults(): array|callable
     {
@@ -38,7 +37,7 @@ final class ScheduleFactory extends PersistentProxyObjectFactory
             $stopTime = (clone $startTime)->modify('+1 hour');
         }
         return [
-            'dayOfweek' => self::faker()->text(255),
+            'dayOfweek' => self::faker()->randomElement(Weekdays::cases()),
             'master' => MastersFactory::new(),
             'start_time' => $startTime,
             'stop_time' => $stopTime
