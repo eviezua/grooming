@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Enum\Status;
 use App\Repository\CitiesRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -23,6 +24,9 @@ class Cities
      */
     #[ORM\OneToMany(targetEntity: Masters::class, mappedBy: 'id_city')]
     private Collection $masters;
+
+    #[ORM\Column(length: 255, enumType: Status::class)]
+    private ?Status $status = null;
 
     public function __construct()
     {
@@ -79,6 +83,18 @@ class Cities
                 $master->setIdCity(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getStatus(): ?Status
+    {
+        return $this->status;
+    }
+
+    public function setStatus(Status $status): static
+    {
+        $this->status = $status;
 
         return $this;
     }

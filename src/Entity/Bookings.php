@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Enum\Status;
 use App\Repository\BookingsRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -42,6 +43,9 @@ class Bookings
     #[ORM\ManyToOne(inversedBy: 'bookings')]
     #[ORM\JoinColumn(nullable: false)]
     private ?Clients $id_client = null;
+
+    #[ORM\Column(length: 255, enumType: Status::class)]
+    private ?Status $status = null;
 
     public function __construct()
     {
@@ -145,6 +149,18 @@ class Bookings
     public function setIdClient(?Clients $id_client): static
     {
         $this->id_client = $id_client;
+
+        return $this;
+    }
+
+    public function getStatus(): ?Status
+    {
+        return $this->status;
+    }
+
+    public function setStatus(Status $status): static
+    {
+        $this->status = $status;
 
         return $this;
     }
