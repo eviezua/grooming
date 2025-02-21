@@ -13,7 +13,6 @@ final class ScheduleFactory extends PersistentProxyObjectFactory
     /**
      * @see https://symfony.com/bundles/ZenstruckFoundryBundle/current/index.html#factories-as-services
      *
-     * @todo inject services if required
      */
     public function __construct()
     {
@@ -27,7 +26,6 @@ final class ScheduleFactory extends PersistentProxyObjectFactory
     /**
      * @see https://symfony.com/bundles/ZenstruckFoundryBundle/current/index.html#model-factories
      *
-     * @todo add your default values here
      */
     protected function defaults(): array|callable
     {
@@ -39,7 +37,7 @@ final class ScheduleFactory extends PersistentProxyObjectFactory
         }
         return [
             'dayOfweek' => self::faker()->text(255),
-            'master' => MastersFactory::new(),
+            'master' => MastersFactory::createOne(),
             'start_time' => $startTime,
             'stop_time' => $stopTime
         ];

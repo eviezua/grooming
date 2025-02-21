@@ -13,7 +13,6 @@ final class BookingsFactory extends PersistentProxyObjectFactory
     /**
      * @see https://symfony.com/bundles/ZenstruckFoundryBundle/current/index.html#factories-as-services
      *
-     * @todo inject services if required
      */
     public function __construct()
     {
@@ -27,7 +26,6 @@ final class BookingsFactory extends PersistentProxyObjectFactory
     /**
      * @see https://symfony.com/bundles/ZenstruckFoundryBundle/current/index.html#model-factories
      *
-     * @todo add your default values here
      */
     protected function defaults(): array|callable
     {
@@ -39,11 +37,12 @@ final class BookingsFactory extends PersistentProxyObjectFactory
         }
         return [
             'date' => self::faker()->dateTime(),
-            'id_client' => ClientsFactory::new(),
-            'id_master' => MastersFactory::new(),
-            'pet' => PetsFactory::new(),
+            'id_client' => ClientsFactory::createOne(),
+            'id_master' => MastersFactory::createOne(),
+            'pet' => PetsFactory::createOne(),
             'time_start' => $startTime,
-            'time_stop' => $stopTime
+            'time_stop' => $stopTime,
+            'id_services' => ServicesFactory::CreateMany(rand(1, 3))
         ];
     }
 
