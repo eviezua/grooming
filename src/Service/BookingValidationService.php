@@ -7,7 +7,6 @@ use App\Entity\Masters;
 use App\Entity\Pets;
 use App\Entity\Clients;
 use App\Entity\Services;
-use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
@@ -15,31 +14,56 @@ class BookingValidationService
 {
     public function __construct(private EntityManagerInterface $entityManager) {}
 
-    public function validateBooking(Bookings $booking): void
+    public function validateBooking(Bookings $booking, array $updatedFields = []): void
     {
-        $master = $booking->getIdMaster();
-        if (!$master instanceof Masters || !$this->entityManager->contains($master)) {
-            throw new BadRequestHttpException('Master not found.');
+        if (empty($updatedFields)) {
+            return;
         }
 
-        $pet = $booking->getPet();
-        if (!$pet instanceof Pets || !$this->entityManager->contains($pet)) {
-            throw new BadRequestHttpException('Pet not found.');
-        }
+        $this->validateMaster($booking, $updatedFields);
+        $this->validatePet($booking, $updatedFields);
+        $this->validateClient($booking, $updatedFields);
+        $this->validateServices($booking, $updatedFields);
+    }
 
-        $client = $booking->getIdClient();
-        if (!$client instanceof Clients || !$this->entityManager->contains($client)) {
-            throw new BadRequestHttpException('Client not found.');
-        }
-
-        $services = new ArrayCollection();
-        foreach ($booking->getIdServices() as $service) {
-            if (!$service instanceof Services || !$this->entityManager->contains($service)) {
-                throw new BadRequestHttpException('Service not found.');
+    private function validateMaster(Bookings $booking, array $updatedFields): void
+    {
+        if (in_array('master', $updatedFields, true)) {
+            $master = $booking->getIdMaster();
+            if ($master !== null && (!$master instanceof Masters || !$this->entityManager->contains($master))) {
+                throw new BadRequestHttpException('Master not found or not valid.');
             }
-            $services->add($service);
         }
+    }
 
-        $booking->setIdServices($services);
+    private function validatePet(Bookings $booking, array $updatedFields): void
+    {
+        if (in_array('pet', $updatedFields, true)) {
+            $pet = $booking->getPet();
+            if ($pet !== null && (!$pet instanceof Pets || !$this->entityManager->contains($pet))) {
+                throw new BadRequestHttpException('Pet not found or not valid.');
+            }
+        }
+    }
+
+    private function validateClient(Bookings $booking, array $updatedFields): void
+    {
+        if (in_array('client', $updatedFields, true)) {
+            $client = $booking->getIdClient();
+            if ($client !== null && (!$client instanceof Clients || !$this->entityManager->contains($client))) {
+                throw new BadRequestHttpException('Client not found or not valid.');
+            }
+        }
+    }
+
+    private function validateServices(Bookings $booking, array $updatedFields): void
+    {
+        if (in_array('services', $updatedFields, true)) {
+            foreach ($booking->getIdServices() as $service) {
+                if (!$service instanceof Services || !$this->entityManager->contains($service)) {
+                    throw new BadRequestHttpException('Service not found or not valid.');
+                }
+            }
+        }
     }
 }

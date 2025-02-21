@@ -2,6 +2,7 @@
 
 namespace App\Validator\Booking;
 
+use App\ApiResource\BookingsApi;
 use App\Entity\Bookings;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Validator\Constraint;
@@ -9,7 +10,9 @@ use Symfony\Component\Validator\ConstraintValidator;
 
 final class BookingAvailabilityValidator extends ConstraintValidator
 {
-    public function __construct(private EntityManagerInterface $entityManager) {}
+    public function __construct(
+        private EntityManagerInterface $entityManager,
+    ) {}
 
     public function validate(mixed $value, Constraint $constraint): void
     {
@@ -17,24 +20,17 @@ final class BookingAvailabilityValidator extends ConstraintValidator
             throw new \LogicException('Invalid constraint type.');
         }
 
-        if (!$value instanceof \DateTimeInterface) {
+        if (!$value instanceof \DateTimeImmutable) {
             return;
         }
 
         $object = $this->context->getObject();
-        if (!method_exists($object, 'getIdMaster') ||
-            !method_exists($object, 'getTimeStart') ||
-            !method_exists($object, 'getTimeStop') ||
-            !method_exists($object, 'getDate')) {
+
+        if (!$object instanceof BookingsApi) {
             return;
         }
 
-        $master = $object->getIdMaster();
-        $startTime = $object->getTimeStart();
-        $stopTime = $object->getTimeStop();
-        $date = $object->getDate();
-
-        if (!$master || !$startTime || !$stopTime || !$date) {
+        if (!$object->masterId || !$object->timeStart || !$object->timeStop || !$object->date) {
             return;
         }
 
@@ -43,14 +39,14 @@ final class BookingAvailabilityValidator extends ConstraintValidator
             ->where('b.id_master = :master')
             ->andWhere('b.date = :date')
             ->andWhere('b.time_start < :stopTime AND b.time_stop > :startTime')
-            ->setParameter('master', $master)
-            ->setParameter('date', $date)
-            ->setParameter('startTime', $startTime)
-            ->setParameter('stopTime', $stopTime);
+            ->setParameter('master', $object->masterId)
+            ->setParameter('date', $object->date)
+            ->setParameter('startTime', $object->timeStart)
+            ->setParameter('stopTime', $object->timeStop);
 
-        if ($object->getId() !== null) {
+        if ($object->id !== null) {
             $existingBooking->andWhere('b.id != :currentBookingId')
-                ->setParameter('currentBookingId', $object->getId());
+                ->setParameter('currentBookingId', $object->id);
         }
 
         if ($existingBooking->getQuery()->getOneOrNullResult()) {

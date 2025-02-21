@@ -2,16 +2,7 @@
 
 namespace App\Entity;
 
-use ApiPlatform\Metadata\ApiResource;
-use ApiPlatform\Metadata\Delete;
-use ApiPlatform\Metadata\Get;
-use ApiPlatform\Metadata\GetCollection;
-use ApiPlatform\Metadata\Patch;
-use ApiPlatform\Metadata\Post;
-use ApiPlatform\Metadata\Put;
 use App\Repository\BookingsRepository;
-use App\State\BookingStateProcessor;
-use App\State\BookingStateProvider;
 use App\Validator\Booking\BookingAvailability;
 use App\Validator\FutureDateTime;
 use DateTimeInterface;
@@ -22,65 +13,42 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: BookingsRepository::class)]
-#[ApiResource(
-    description: 'Your bookings are here!.',
-    operations: [
-        new Get(),
-        new GetCollection(),
-        new Post(),
-        new Put(),
-        new Patch(),
-        new Delete(),
-    ],
-    normalizationContext: ['groups' => ['booking:read'], 'enable_max_depth' => true],
-    denormalizationContext: ['groups' => ['booking:write']],
-    provider: BookingStateProvider::class,
-    processor: BookingStateProcessor::class,
-)]
 class Bookings
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(["booking:read"])]
     private ?int $id = null;
 
     #[ORM\ManyToOne(inversedBy: 'bookings')]
     #[ORM\JoinColumn(nullable: false)]
-    #[Groups(["booking:read", "booking:write"])]
     private ?Masters $id_master = null;
 
     /**
      * @var Collection<int, Services>
      */
     #[ORM\ManyToMany(targetEntity: Services::class)]
-    #[Groups(["booking:read", "booking:write"])]
     private Collection $id_services;
 
     #[ORM\Column(type: Types::DATE_MUTABLE)]
-    #[Groups(["booking:read", "booking:write"])]
     #[BookingAvailability]
     private ?DateTimeInterface $date = null;
 
     #[ORM\Column(type: Types::TIME_MUTABLE)]
-    #[Groups(["booking:read", "booking:write"])]
     #[BookingAvailability]
     #[FutureDateTime]
     private ?DateTimeInterface $time_start = null;
 
     #[ORM\Column(type: Types::TIME_MUTABLE)]
     #[BookingAvailability]
-    #[Groups(["booking:read", "booking:write"])]
     private ?DateTimeInterface $time_stop = null;
 
     #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: false)]
-    #[Groups(["booking:read", "booking:write"])]
     private ?Pets $pet = null;
 
     #[ORM\ManyToOne(inversedBy: 'bookings')]
     #[ORM\JoinColumn(nullable: false)]
-    #[Groups(["booking:read", "booking:write"])]
     private ?Clients $id_client = null;
 
     public function __construct()
