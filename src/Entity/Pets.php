@@ -2,53 +2,32 @@
 
 namespace App\Entity;
 
-use ApiPlatform\Metadata\ApiResource;
-use ApiPlatform\Metadata\Get;
-use ApiPlatform\Metadata\GetCollection;
-use ApiPlatform\Metadata\Post;
 use App\Repository\PetsRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: PetsRepository::class)]
-#[ApiResource(
-    description: 'Our little friends!.',
-    operations: [
-        new Get(),
-        new GetCollection(),
-        new Post()
-    ],
-    normalizationContext: ['groups' => ['pets:read']],
-    denormalizationContext: ['groups' => ['pets:write']]
-)]
 class Pets
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(["pets:read"])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(["pets:read", "pets:write"])]
     private ?string $spice = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(["pets:write"])]
     private ?string $hair = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(["pets:read", "pets:write"])]
     private ?string $breed = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(["pets:write"])]
     private ?string $size = null;
 
     #[ORM\Column]
-    #[Groups(["pets:read"])]
     private ?float $cost_coficient = null;
 
     /**
@@ -82,7 +61,7 @@ class Pets
     public function setSpice(string $spice): static
     {
         $this->spice = $spice;
-
+        $this->updateCostCoefficient();
         return $this;
     }
 
@@ -94,7 +73,7 @@ class Pets
     public function setHair(string $hair): static
     {
         $this->hair = $hair;
-
+        $this->updateCostCoefficient();
         return $this;
     }
 
@@ -118,20 +97,62 @@ class Pets
     public function setSize(string $size): static
     {
         $this->size = $size;
-
+        $this->updateCostCoefficient();
         return $this;
+    }
+    public function getHairCoefficient(): float
+    {
+        return match ($this->hair) {
+            'short' => 1.1,
+            'medium' => 1.2,
+            'long' => 1.3,
+            default => 1.0
+        };
+    }
+
+    public function getSizeCoefficient(): float
+    {
+        return match ($this->size) {
+            'small' => 1.0,
+            'medium' => 1.2,
+            'large' => 1.5,
+            default => 1.0
+        };
+    }
+
+    public function getTypeCoefficient(): float
+    {
+        return match ($this->spice) {
+            'dog' => 1.5,
+            'cat' => 1.2,
+            'rabbit' => 1.1,
+            default => 1.0
+        };
     }
 
     public function getCostCoficient(): ?float
     {
         return $this->cost_coficient;
     }
+    #[ORM\PrePersist]
+    #[ORM\PreUpdate]
+    public function updateCostCoefficient(): void
+    {
+        $this->cost_coficient = $this->calculateCoefficient();
+    }
+
+    private function calculateCoefficient(): float
+    {
+        $hairCoefficient = $this->getHairCoefficient();
+        $sizeCoefficient = $this->getSizeCoefficient();
+        $typeCoefficient = $this->getTypeCoefficient();
+
+        return round(($hairCoefficient + $sizeCoefficient + $typeCoefficient), 2);
+    }
 
     public function setCostCoficient(float $cost_coficient): static
     {
-        $this->cost_coficient = $cost_coficient;
-
-        return $this;
+        throw new \LogicException('Cost coefficient is calculated automatically and cannot be set manually.');
     }
 
     /**

@@ -31,7 +31,6 @@ final class PetsFactory extends PersistentProxyObjectFactory
     {
         return [
             'breed' => self::faker()->text(255),
-            'cost_coficient' => self::faker()->randomFloat(),
             'hair' => self::faker()->text(255),
             'size' => self::faker()->text(255),
             'spice' => self::faker()->text(255),
