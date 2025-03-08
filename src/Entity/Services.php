@@ -1,12 +1,6 @@
 <?php
 
 namespace App\Entity;
-
-use ApiPlatform\Metadata\ApiResource;
-use ApiPlatform\Metadata\Get;
-use ApiPlatform\Metadata\GetCollection;
-use ApiPlatform\Metadata\Patch;
-use ApiPlatform\Metadata\Post;
 use App\Repository\ServicesRepository;
 use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -16,42 +10,26 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: ServicesRepository::class)]
-#[ApiResource(
-    description: 'Set up your services!',
-    operations: [
-        new Get(),
-        new GetCollection(),
-        new Post(),
-        new Patch()
-    ],
-    normalizationContext: ['groups' => ['services:read']],
-    denormalizationContext: ['groups' => ['services:write']]
-)]
 class Services
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(["services:read"])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(["services:read", "services:write"])]
     private ?string $name = null;
 
     #[ORM\Column]
-    #[Groups(["services:read", "services:write"])]
     private ?int $cost = null;
 
     #[ORM\Column(type: Types::TIME_IMMUTABLE)]
-    #[Groups(["services:read", "services:write"])]
     private ?DateTimeImmutable $default_time = null;
 
     /**
      * @var Collection<int, Masters>
      */
     #[ORM\ManyToMany(targetEntity: Masters::class, mappedBy: 'id_services')]
-    #[Groups(["services:read", "services:write"])]
     private Collection $masters;
 
     public function __construct()
@@ -113,6 +91,12 @@ class Services
     public function getMasters(): Collection
     {
         return $this->masters;
+    }
+
+    #[Groups(["services:read"])]
+    public function getMastersId(): array
+    {
+        return array_map(fn(Masters $master) => $master->getId(), $this->masters->toArray());
     }
 
     public function addMaster(Masters $master): static
