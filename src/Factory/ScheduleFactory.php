@@ -35,8 +35,10 @@ final class ScheduleFactory extends PersistentProxyObjectFactory
         if ($stopTime <= $startTime) {
             $stopTime = (clone $startTime)->modify('+1 hour');
         }
+        $startTime = new \DateTime($startTime->format('Y-m-d H:i:s'));
+        $stopTime = new \DateTime($stopTime->format('Y-m-d H:i:s'));
         return [
-            'dayOfweek' => self::faker()->text(255),
+            'dayOfweek' => self::faker()->randomElement(['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']),
             'master' => MastersFactory::createOne(),
             'start_time' => $startTime,
             'stop_time' => $stopTime
