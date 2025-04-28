@@ -7,7 +7,6 @@ use ApiPlatform\Doctrine\Common\State\RemoveProcessor;
 use ApiPlatform\Metadata\DeleteOperationInterface;
 use ApiPlatform\Metadata\Operation;
 use ApiPlatform\State\ProcessorInterface;
-use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
@@ -41,52 +40,30 @@ class EntityClassDtoStateProcessor implements ProcessorInterface
             if (!isset($uriVariables['id'])) {
                 throw new \InvalidArgumentException('ID is required for PUT/PATCH requests');
             }
+            $previousData = $context['previous_data'] ?? null;
 
-            return $this->updateEntity($data, $uriVariables, $entityClass);
+            return $this->updateEntity($data, $uriVariables, $entityClass, $previousData);
         }
 
         throw new \InvalidArgumentException("Unsupported method: " . $operation->getMethod());
     }
     private function updateEntity(object $dto, array $uriVariables, string $entityClass): object
     {
-        $entity = $this->loadEntity($uriVariables['id'], $entityClass);
+        $entity = $this->entityManager->find($entityClass, $uriVariables['id']);
 
-        foreach (get_object_vars($dto) as $property => $value) {
-            if ($value !== null && property_exists($entity, $property)) {
-                $setter = 'set' . ucfirst($property);
-                $getter = 'get' . ucfirst($property);
+        if (!$entity) {
+            throw new NotFoundHttpException("Entity not found");
+        }
 
-                if (is_array($value) && method_exists($entity, $getter)) {
-                    $collection = new ArrayCollection($this->loadRelatedEntities($entityClass, $property, $value));
-                    $clearMethod = method_exists($entity, 'clear' . ucfirst($property)) ? 'clear' . ucfirst($property) : null;
-
-                    if ($clearMethod) {
-                        $entity->$clearMethod();
-                    }
-                    if (method_exists($entity, $setter)) {
-                        $entity->$setter($collection);
-                    }
-                } elseif (method_exists($entity, $setter)) {
-                    $entity->$setter($value);
-                }
-            }
+        if (method_exists($this->microMapper, 'populate')) {
+            $this->microMapper->populate($dto, $entity);
+        } else {
+            $this->microMapper->map($dto, $entityClass, ['target_object' => $entity]);
         }
 
         $this->entityManager->flush();
 
         return $entity;
-    }
-    private function loadRelatedEntities(string $entityClass, string $property, array $ids): array
-    {
-        $associationMapping = $this->entityManager->getClassMetadata($entityClass)->getAssociationMappings();
-
-        if (!isset($associationMapping[$property])) {
-            throw new \RuntimeException("Property '$property' is not a valid association in '$entityClass'.");
-        }
-
-        $targetEntity = $associationMapping[$property]['targetEntity'];
-
-        return $this->entityManager->getRepository($targetEntity)->findBy(['id' => $ids]);
     }
 
     private function createEntity(object $data, string $entityClass): object
