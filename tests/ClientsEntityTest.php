@@ -8,12 +8,13 @@ use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Zenstruck\Foundry\Test\Factories;
 use Zenstruck\Foundry\Test\ResetDatabase;
 
+/**
+ * @group client
+ * @group entity
+ */
 class ClientsEntityTest extends KernelTestCase
 {
     use ResetDatabase, Factories;
-    /**
-    * @group entity
-     */
     public function testClientsEntity(): void
     {
         $client = new Clients();
@@ -30,6 +31,5 @@ class ClientsEntityTest extends KernelTestCase
         $this->assertEquals('test@test.com', $client->getEmail());
         $this->assertEquals('123456789', $client->getPhone());
         $this->assertEquals('Norway forest cat', $client->getPets()->first()->getBreed());
-
     }
 }

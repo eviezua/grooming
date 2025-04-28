@@ -128,7 +128,6 @@ class Clients
     }
     public function clearPets(): static
     {
-        // Очистка коллекции питомцев
         $this->pets->clear();
 
         return $this;
@@ -155,7 +154,6 @@ class Clients
     public function removeBooking(Bookings $booking): static
     {
         if ($this->bookings->removeElement($booking)) {
-            // set the owning side to null (unless already changed)
             if ($booking->getIdClient() === $this) {
                 $booking->setIdClient(null);
             }

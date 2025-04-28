@@ -30,9 +30,10 @@ final class ClientsFactory extends PersistentProxyObjectFactory
     protected function defaults(): array|callable
     {
         return [
-            'email' => self::faker()->text(255),
-            'name' => self::faker()->text(255),
-            'surname' => self::faker()->text(255),
+            'email' => self::faker()->email(),
+            'name' => self::faker()->firstName(),
+            'surname' => self::faker()->lastName(),
+            'phone' => self::faker()->e164PhoneNumber(),
         ];
     }
 

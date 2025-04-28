@@ -5,18 +5,18 @@ namespace App\Mapper;
 use App\ApiResource\ClientsApi;
 use App\Entity\Clients;
 use App\Entity\Pets;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\ORM\EntityManagerInterface;
+use App\Service\EntityLoaderHelper;
 use Psr\Log\LoggerInterface;
 use Symfonycasts\MicroMapper\AsMapper;
 use Symfonycasts\MicroMapper\MapperInterface;
+use Throwable;
 
 #[AsMapper(from: ClientsApi::class, to: Clients::class)]
 class ClientsApiToEntityMapper implements MapperInterface
 {
     public function __construct(
-        private EntityManagerInterface $entityManager,
-        private LoggerInterface $logger
+        private LoggerInterface $logger,
+        private EntityLoaderHelper $loader,
     ) {
     }
 
@@ -24,12 +24,8 @@ class ClientsApiToEntityMapper implements MapperInterface
     {
         assert($from instanceof ClientsApi);
 
-        $client = new Clients();
-        if ($from->id) {
-            $client = $this->entityManager->find(Clients::class, $from->id) ?? new Clients();
-        }
-
-        return $client;
+        return $context['target_object'] ??
+            ($from->id ? $this->loader->load(Clients::class, $from->id, 'Clients') : new Clients());
     }
 
     public function populate(object $from, object $to, array $context): object
@@ -42,32 +38,17 @@ class ClientsApiToEntityMapper implements MapperInterface
         $to->setEmail($from->email);
         $to->setPhone($from->phone);
 
-        foreach ($to->getPets() as $existingPet) {
-            $to->removePet($existingPet);
-        }
-
-        $this->logger->info('Processing pets for client ' . ($from->id ?? 'new'));
+        $to->clearPets();
 
         if (!empty($from->pets)) {
-            $petsCollection = new ArrayCollection();
-            foreach ($from->pets as $petId) {
-                if (!$petId) {
-                    continue;
+            $validIds = array_filter($from->pets);
+            try {
+                $pets = $this->loader->loadMultiple(Pets::class, $validIds, 'Pets');
+                foreach ($pets as $pet) {
+                    $to->addPet($pet);
                 }
-
-                $this->logger->info('Loading pet with ID: ' . $petId);
-
-                $pet = $this->entityManager->find(Pets::class, $petId);
-
-                if ($pet) {
-                    $petsCollection->add($pet);
-                    $this->logger->info('Pet found and added: ' . $pet->getId());
-                } else {
-                    $this->logger->info('Pet not found for ID: ' . $petId);
-                }
-            }
-            foreach ($petsCollection as $pet) {
-                $to->addPet($pet);
+            } catch (Throwable $e) {
+                $this->logger->warning('Some pets could not be loaded: ' . $e->getMessage());
             }
         }
 

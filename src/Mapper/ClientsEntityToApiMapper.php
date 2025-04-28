@@ -3,6 +3,7 @@
 namespace App\Mapper;
 
 use App\ApiResource\ClientsApi;
+use App\Entity\Bookings;
 use App\Entity\Clients;
 use App\Entity\Pets;
 use Symfonycasts\MicroMapper\AsMapper;
@@ -15,20 +16,20 @@ class ClientsEntityToApiMapper implements MapperInterface
     {
         assert($from instanceof Clients);
 
-        $dto = new ClientsApi();
-        $dto->id = $from->getId();
-        $dto->name = $from->getName();
-        $dto->surname = $from->getSurname();
-        $dto->email = $from->getEmail();
-        $dto->phone = $from->getPhone();
+        $to = new ClientsApi();
+        $to->id = $from->getId();
+        $to->name = $from->getName();
+        $to->surname = $from->getSurname();
+        $to->email = $from->getEmail();
+        $to->phone = $from->getPhone();
         $pets = $from->getPets();
         if (!$pets->isEmpty()) {
-            $dto->pets = array_map(fn(Pets $pet) => $pet->getId(), $pets->toArray());
+            $to->pets = array_map(fn(Pets $pet) => $pet->getId(), $pets->toArray());
         } else {
-            $dto->pets = [];
+            $to->pets = [];
         }
 
-        return $dto;
+        return $to;
     }
 
     public function populate(object $from, object $to, array $context): object
@@ -47,6 +48,13 @@ class ClientsEntityToApiMapper implements MapperInterface
             $to->pets = array_map(fn(Pets $pet) => $pet->getId(), $pets->toArray());
         } else {
             $to->pets = [];
+        }
+
+        $bookings = $from->getBookings();
+        if (!$bookings->isEmpty()) {
+            $to->bookings = array_map(fn(Bookings $booking) => $booking->getId(), $bookings->toArray());
+        } else {
+            $to->bookings = [];
         }
 
         return $to;
