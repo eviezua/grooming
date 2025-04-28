@@ -30,7 +30,7 @@ final class CitiesFactory extends PersistentProxyObjectFactory
     protected function defaults(): array|callable
     {
         return [
-            'city' => self::faker()->text(255),
+            'city' => self::faker()->unique()->city(),
         ];
     }
 

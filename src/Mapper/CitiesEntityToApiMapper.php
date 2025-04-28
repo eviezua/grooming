@@ -3,52 +3,38 @@
 namespace App\Mapper;
 
 use App\ApiResource\CitiesApi;
-use App\ApiResource\MastersApi;
 use App\Entity\Cities;
+use App\Entity\Masters;
 use Symfonycasts\MicroMapper\AsMapper;
 use Symfonycasts\MicroMapper\MapperInterface;
-use Symfonycasts\MicroMapper\MicroMapperInterface;
 
 #[AsMapper(from: Cities::class, to: CitiesApi::class)]
 class CitiesEntityToApiMapper implements MapperInterface
 {
-    public function __construct(private MicroMapperInterface $microMapper)
+    public function __construct()
     {
     }
+
     public function load(object $from, string $toClass, array $context): object
     {
-        $entity = $from;
+        assert($from instanceof Cities);
 
-        assert($entity instanceof Cities);
+        $to = new CitiesApi();
+        $to->id = $from->getId();
+        $to->city = $from->getCity();
+        $to->masters = array_map(fn(Masters $m) => $m->getId(), $from->getMasters()->toArray());
 
-        $dto = new CitiesApi();
-        $dto->id = $entity->getId();
-        $dto->city = $entity->getCity();
-
-        return $dto;
+        return $to;
     }
 
     public function populate(object $from, object $to, array $context): object
     {
-        $entity = $from;
-        $dto = $to;
+        assert($from instanceof Cities);
+        assert($to instanceof CitiesApi);
 
-        assert($entity instanceof Cities);
-        assert($dto instanceof CitiesApi);
+        $to->city = $from->getCity();
+        $to->masters = array_map(fn(Masters $m) => $m->getId(), $from->getMasters()->toArray());
 
-        $dto->city = $entity->getCity();
-
-        $masters = $entity->getMasters();
-
-        if ($masters !== null) {
-            $dto->masters = [];
-            foreach ($masters as $master) {
-                $dto->masters[] = $this->microMapper->map($master, MastersApi::class, [
-                    MicroMapperInterface::MAX_DEPTH => 0,
-                ]);
-            }
-        }
-
-        return $dto;
+        return $to;
     }
 }

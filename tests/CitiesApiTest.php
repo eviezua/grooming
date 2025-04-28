@@ -8,6 +8,10 @@ use App\Factory\CitiesFactory;
 use Zenstruck\Foundry\Test\Factories;
 use Zenstruck\Foundry\Test\ResetDatabase;
 
+/**
+ * @group city
+ * @group api
+ */
 class CitiesApiTest extends ApiTestCase
 {
     use ResetDatabase, Factories;
@@ -48,7 +52,9 @@ class CitiesApiTest extends ApiTestCase
 
     public function testPostCity(): void
     {
-        static::createClient()->request('POST', 'api/v1/cities',
+        static::createClient()->request(
+            'POST',
+            'api/v1/cities',
             [
                 'json' => [
                     'city' => 'Kyiv',
@@ -56,7 +62,8 @@ class CitiesApiTest extends ApiTestCase
                 'headers' => [
                     'Content-Type' => 'application/ld+json',
                 ]
-            ]);
+            ]
+        );
 
         $this->assertResponseStatusCodeSame(201);
         $this->assertResponseHeaderSame('content-type', 'application/ld+json; charset=utf-8');
@@ -71,7 +78,9 @@ class CitiesApiTest extends ApiTestCase
     {
         CitiesFactory::createOne(['city' => 'Kyiv']);
 
-        static::createClient()->request('POST', 'api/v1/cities',
+        static::createClient()->request(
+            'POST',
+            'api/v1/cities',
             [
                 'json' => [
                     'city' => ' kyiv* ',
@@ -79,7 +88,13 @@ class CitiesApiTest extends ApiTestCase
                 'headers' => [
                     'Content-Type' => 'application/ld+json',
                 ]
-            ]);
+            ]
+        );
         $this->assertResponseStatusCodeSame(422);
+        $this->assertJsonContains([
+            'violations' => [
+                ['propertyPath' => 'city', 'message' => "City \" kyiv* \" already exists."],
+            ],
+        ]);
     }
 }

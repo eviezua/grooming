@@ -37,5 +37,5 @@ class CitiesApi
     public ?string $city = null;
 
     #[Groups(["city:read"])]
-    public array $masters;
+    public array $masters = [];
 }
