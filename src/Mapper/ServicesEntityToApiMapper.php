@@ -3,7 +3,6 @@
 namespace App\Mapper;
 
 use App\ApiResource\ServicesApi;
-use App\Entity\Masters;
 use App\Entity\Services;
 use Symfonycasts\MicroMapper\AsMapper;
 use Symfonycasts\MicroMapper\MapperInterface;
@@ -15,20 +14,14 @@ class ServicesEntityToApiMapper implements MapperInterface
     {
         assert($from instanceof Services);
 
-        $dto = new ServicesApi();
-        $dto->id = $from->getId();
-        $dto->name = $from->getName();
-        $dto->cost = $from->getCost();
-        $dto->default_time = $from->getDefaultTime()?->format('H:i:s');
+        $to = new ServicesApi();
+        $to->id = $from->getId();
+        $to->name = $from->getName();
+        $to->cost = $from->getCost();
+        $to->default_time = $from->getDefaultTime()?->format('H:i:s');
+        $to->mastersId = $from->getMastersId();
 
-        $masters = $from->getMasters();
-        if (!$masters->isEmpty()) {
-            $dto->mastersId = array_map(fn(Masters $master) => $master->getId(), $masters->toArray());
-        } else {
-            $dto->mastersId = [];
-        }
-
-        return $dto;
+        return $to;
     }
 
     public function populate(object $from, object $to, array $context): object
@@ -40,13 +33,7 @@ class ServicesEntityToApiMapper implements MapperInterface
         $to->name = $from->getName();
         $to->cost = $from->getCost();
         $to->default_time = $from->getDefaultTime()?->format('H:i:s');
-
-        $masters = $from->getMasters();
-        if (!$masters->isEmpty()) {
-            $to->mastersId = array_map(fn(Masters $master) => $master->getId(), $masters->toArray());
-        } else {
-            $to->mastersId = [];
-        }
+        $to->mastersId = $from->getMastersId();
 
         return $to;
     }

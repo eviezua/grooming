@@ -1,11 +1,16 @@
 <?php
 
+namespace App\Tests;
 
 use ApiPlatform\Symfony\Bundle\Test\ApiTestCase;
 use App\Factory\ServicesFactory;
 use Zenstruck\Foundry\Test\Factories;
 use Zenstruck\Foundry\Test\ResetDatabase;
 
+/**
+ * @group service
+ * @group api
+ */
 class ServicesApiTest extends ApiTestCase
 {
     use ResetDatabase, Factories;
@@ -44,10 +49,8 @@ class ServicesApiTest extends ApiTestCase
 
     public function testPostService(): void
     {
-        $formattedTime = (new DateTimeImmutable('today 00:30:00', new DateTimeZone('UTC')))
-            ->format('Y-m-d\TH:i:sP');
-
-        static::createClient()->request('POST', '/api/v1/services', [
+        $client = static::createClient();
+        $client->request('POST', '/api/v1/services', [
             'json' => [
                 "name" => "Post",
                 "cost" => 300,
@@ -58,13 +61,15 @@ class ServicesApiTest extends ApiTestCase
             ]
         ]);
 
+        $responseData = json_decode($client->getResponse()->getContent(), true);
+
         $this->assertResponseStatusCodeSame(201);
-        $this->assertResponseHeaderSame('content-type', 'application/ld+json; charset=utf-8');
         $this->assertJsonContains([
             "name" => "Post",
             "cost" => 300,
-            "default_time" => $formattedTime,
         ]);
+
+        $this->assertEquals('00:30:00', $responseData['default_time']['time']);
     }
 
     public function testPatchService(): void

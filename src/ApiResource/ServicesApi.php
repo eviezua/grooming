@@ -47,6 +47,6 @@ class ServicesApi
     #[Assert\Regex(pattern: "/^\d{2}:\d{2}:\d{2}$/", message: "The default time must be in the format HH:MM:SS.")]
     public ?string $default_time = null;
 
-    #[Groups(["services:read", "services:write"])]
+    #[Groups(["services:read"])]
     public array $mastersId = [];
 }
