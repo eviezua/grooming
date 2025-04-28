@@ -10,12 +10,19 @@ use App\Factory\ClientsFactory;
 use App\Factory\MastersFactory;
 use App\Factory\PetsFactory;
 use App\Factory\ServicesFactory;
+use DateTime;
+use DateTimeZone;
 use Zenstruck\Foundry\Test\Factories;
 use Zenstruck\Foundry\Test\ResetDatabase;
 
+/**
+ * @group booking
+ * @group api
+ */
 class BookingApiTest extends ApiTestCase
 {
     use ResetDatabase, Factories;
+
     public function testGetCollection(): void
     {
         BookingsFactory::createMany(100);
@@ -32,6 +39,7 @@ class BookingApiTest extends ApiTestCase
             'totalItems' => 100
         ]);
     }
+
     public function testGetBooking(): void
     {
         $booking = BookingsFactory::createOne();
@@ -46,9 +54,10 @@ class BookingApiTest extends ApiTestCase
             '@type' => 'Booking',
         ]);
     }
+
     public function testPostBooking(): void
     {
-        $tomorrow = new \DateTime('+1 day', new \DateTimeZone('UTC'));
+        $tomorrow = new DateTime('+2 day', new DateTimeZone('UTC'));
 
         $data = $this->prepareData();
 
@@ -57,11 +66,12 @@ class BookingApiTest extends ApiTestCase
         $petId = $data['petId'];
         $clientId = $data['clientId'];
 
-        static::createClient()->request('POST', '/api/v1/bookings', [
+        $client = static::createClient();
+        $client->request('POST', '/api/v1/bookings', [
             'json' => [
                 "masterId" => $masterId,
                 "services" => $servicesIds,
-                "date" => $tomorrow->format('Y-m-d\TH:i:s+00:00'),
+                "date" => $tomorrow->format('Y-m-d'),
                 "timeStart" => "10:00:00",
                 "timeStop" => "13:00:00",
                 "petId" => $petId,
@@ -71,22 +81,27 @@ class BookingApiTest extends ApiTestCase
                 'Content-Type' => 'application/ld+json',
             ]
         ]);
+
+        $responseData = json_decode($client->getResponse()->getContent(), true);
 
         $this->assertResponseStatusCodeSame(201);
         $this->assertResponseHeaderSame('content-type', 'application/ld+json; charset=utf-8');
         $this->assertJsonContains([
             "masterId" => $masterId,
             "services" => $servicesIds,
-            'date' => $tomorrow->format('Y-m-d\TH:i:s+00:00'),
-            'timeStart' => $tomorrow->setTime(10, 0)->format('Y-m-d\TH:i:sP'),
-            'timeStop' => $tomorrow->setTime(13, 0)->format('Y-m-d\TH:i:sP'),
             "petId" => $petId,
             "clientId" => $clientId
         ]);
+
+        $this->assertEquals($tomorrow->format('Y-m-d'), $responseData['date']['date']);
+        $this->assertEquals('10:00:00', $responseData['timeStart']['time']);
+        $this->assertEquals('13:00:00', $responseData['timeStop']['time']);
     }
+
     public function testPostPastDateBooking(): void
     {
-        $yesterday = new \DateTime('-1 day', new \DateTimeZone('UTC'));
+        $yesterday = new DateTime('-1 day', new DateTimeZone('UTC'));
+        $yesterday = $yesterday->format('Y-m-d');
 
         $data = $this->prepareData();
 
@@ -99,7 +114,7 @@ class BookingApiTest extends ApiTestCase
             'json' => [
                 "masterId" => $masterId,
                 "services" => $servicesIds,
-                "date" => $yesterday->format('Y-m-d\TH:i:s+00:00'),
+                "date" => $yesterday,
                 "timeStart" => "10:00:00",
                 "timeStop" => "13:00:00",
                 "petId" => $petId,
@@ -110,10 +125,20 @@ class BookingApiTest extends ApiTestCase
             ]
         ]);
 
-        $this->assertResponseStatusCodeSame(400);
+        $this->assertResponseStatusCodeSame(422);
+        $this->assertJsonContains([
+            'violations' => [
+                ['propertyPath' => 'date', 'message' => "Your \"$yesterday\" must be in future"],
+                ['propertyPath' => 'timeStart', 'message' => "Your \"$yesterday 10:00:00\" must be in future"],
+                ['propertyPath' => 'timeStop', 'message' => "Your \"$yesterday 13:00:00\" must be in future"],
+            ],
+        ]);
     }
+
     public function testPostUnaviliableBooking(): void
     {
+        $tomorrow = new DateTime('+2 day', new DateTimeZone('UTC'));
+
         $data = $this->prepareData();
 
         $masterId = $data["masterId"];
@@ -125,15 +150,22 @@ class BookingApiTest extends ApiTestCase
             ['id' => $masterId]
         );
 
-        BookingsFactory::createOne(['id_master' => $master, 'date' => new \DateTime(), 'timeStart' => new \DateTime('10:00:00'), 'timeStop' => new \DateTime('13:00:00')]);
+        BookingsFactory::createOne(
+            [
+                'id_master' => $master,
+                'date' => $tomorrow,
+                'timeStart' => new DateTime('10:00:00'),
+                'timeStop' => new DateTime('13:00:00')
+            ]
+        );
 
         static::createClient()->request('POST', '/api/v1/bookings', [
             'json' => [
                 "masterId" => $masterId,
                 "services" => $servicesIds,
-                "date" => "2025-01-01",
-                "timeStart" => "11:00:00",
-                "timeStop" => "13:00:00",
+                "date" => $tomorrow->format('Y-m-d'),
+                "timeStart" => "12:00:00",
+                "timeStop" => "13:30:00",
                 "petId" => $petId,
                 "clientId" => $clientId
             ],
@@ -142,11 +174,19 @@ class BookingApiTest extends ApiTestCase
             ]
         ]);
 
-        $this->assertResponseStatusCodeSame(400);
+        $this->assertResponseStatusCodeSame(422);
+        $this->assertJsonContains([
+            'violations' => [
+                ['propertyPath' => 'date', 'message' => "This time slot is already booked for the field: date."],
+                ['propertyPath' => 'timeStart', 'message' => "This time slot is already booked for the field: timeStart."],
+                ['propertyPath' => 'timeStop', 'message' => "This time slot is already booked for the field: timeStop."]
+            ],
+        ]);
     }
+
     public function testPutBooking(): void
     {
-        $tomorrow = new \DateTime('+1 day', new \DateTimeZone('UTC'));
+        $tomorrow = new DateTime('+2 day', new DateTimeZone('UTC'));
 
         $booking = BookingsFactory::createOne();
         $bookingId = $booking->getId();
@@ -158,11 +198,12 @@ class BookingApiTest extends ApiTestCase
         $petId = $data['petId'];
         $clientId = $data['clientId'];
 
-        static::createClient()->request('PUT', '/api/v1/bookings/' . $bookingId, [
+        $client = static::createClient();
+        $client->request('PUT', '/api/v1/bookings/' . $bookingId, [
             'json' => [
                 "masterId" => $masterId,
                 "services" => $servicesIds,
-                "date" => $tomorrow->format('Y-m-d\TH:i:s+00:00'),
+                "date" => $tomorrow->format('Y-m-d'),
                 "timeStart" => "10:00:00",
                 "timeStop" => "13:00:00",
                 "petId" => $petId,
@@ -173,29 +214,34 @@ class BookingApiTest extends ApiTestCase
             ]
         ]);
 
+        $responseData = json_decode($client->getResponse()->getContent(), true);
+
         $this->assertResponseIsSuccessful();
         $this->assertResponseHeaderSame('content-type', 'application/ld+json; charset=utf-8');
 
         $this->assertJsonContains([
             "masterId" => $masterId,
             "services" => $servicesIds,
-            'date' => $tomorrow->format('Y-m-d\TH:i:s+00:00'),
-            'timeStart' => $tomorrow->setTime(10, 0)->format('Y-m-d\TH:i:sP'),
-            'timeStop' => $tomorrow->setTime(13, 0)->format('Y-m-d\TH:i:sP'),
             "petId" => $petId,
             "clientId" => $clientId
         ]);
+
+        $this->assertEquals($tomorrow->format('Y-m-d'), $responseData['date']['date']);
+        $this->assertEquals('10:00:00', $responseData['timeStart']['time']);
+        $this->assertEquals('13:00:00', $responseData['timeStop']['time']);
     }
+
     public function testPatchBooking(): void
     {
-        $tomorrow = new \DateTime('+1 day', new \DateTimeZone('UTC'));
+        $tomorrow = new DateTime('+2 day', new DateTimeZone('UTC'));
 
         $booking = BookingsFactory::createOne();
         $bookingId = $booking->getId();
 
-        static::createClient()->request('PATCH', '/api/v1/bookings/' . $bookingId, [
+        $client = static::createClient();
+        $client->request('PATCH', '/api/v1/bookings/' . $bookingId, [
             'json' => [
-                "date" => $tomorrow->format('Y-m-d\TH:i:s+00:00'),
+                "date" => $tomorrow->format('Y-m-d'),
                 "timeStart" => "10:00:00",
                 "timeStop" => "13:00:00",
             ],
@@ -204,15 +250,30 @@ class BookingApiTest extends ApiTestCase
             ]
         ]);
 
-        $this->assertResponseIsSuccessful();
-        $this->assertResponseHeaderSame('content-type', 'application/ld+json; charset=utf-8');
+        $responseData = json_decode($client->getResponse()->getContent(), true);
 
-        $this->assertJsonContains([
-            'date' => $tomorrow->format('Y-m-d\TH:i:s+00:00'),
-            'timeStart' => $tomorrow->setTime(10, 0)->format('Y-m-d\TH:i:sP'),
-            'timeStop' => $tomorrow->setTime(13, 0)->format('Y-m-d\TH:i:sP')
-        ]);
+        $this->assertResponseIsSuccessful();
+
+        $this->assertEquals($tomorrow->format('Y-m-d'), $responseData['date']['date']);
+        $this->assertEquals('10:00:00', $responseData['timeStart']['time']);
+        $this->assertEquals('13:00:00', $responseData['timeStop']['time']);
     }
+
+    public function testDeleteBooking(): void
+    {
+        $booking = BookingsFactory::createOne();
+        $bookingId = $booking->getId();
+
+        static::createClient()->request('DELETE', '/api/v1/bookings/' . $bookingId);
+
+        $this->assertResponseStatusCodeSame(204);
+        $this->assertNull(
+            static::getContainer()->get('doctrine')->getRepository(Bookings::class)->findOneBy(
+                ['id' => $bookingId]
+            )
+        );
+    }
+
     private function prepareData(): array
     {
         $master = MastersFactory::createOne();
@@ -233,19 +294,5 @@ class BookingApiTest extends ApiTestCase
             'petId' => $petId,
             'clientId' => $clientId,
         ];
-    }
-    public function testDeleteBooking(): void
-    {
-        $booking = BookingsFactory::createOne();
-        $bookingId = $booking->getId();
-
-        static::createClient()->request('DELETE', '/api/v1/bookings/' . $bookingId);
-
-        $this->assertResponseStatusCodeSame(204);
-        $this->assertNull(
-            static::getContainer()->get('doctrine')->getRepository(Bookings::class)->findOneBy(
-                ['id' => $bookingId]
-            )
-        );
     }
 }

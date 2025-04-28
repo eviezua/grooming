@@ -65,6 +65,11 @@ class Bookings
     {
         return $this->id_master;
     }
+   #[Groups(['booking:read'])]
+    public function getMasterId(): ?int
+    {
+        return $this->id_master?->getId();
+    }
 
     public function setIdMaster(?Masters $id_master): static
     {
@@ -81,17 +86,12 @@ class Bookings
         return $this->id_services;
     }
 
-    #[Groups(["booking:write"])]
-    public function setIdServices(iterable $services): static
+    #[Groups(["booking:read"])]
+    public function getServices(): array
     {
-        $this->id_services = new ArrayCollection();
-        foreach ($services as $service) {
-            if ($service instanceof Services) {
-                $this->id_services->add($service);
-            }
-        }
-        return $this;
+        return array_map(fn(Services $service) => $service->getId(), $this->id_services->toArray());
     }
+
 
     public function addIdService(Services $idService): static
     {
@@ -113,11 +113,9 @@ class Bookings
     {
         return $this->date;
     }
-
-    public function setDate(DateTimeInterface $date): static
+    public function setDate(?\DateTimeInterface $date): static
     {
         $this->date = $date;
-
         return $this;
     }
 
@@ -126,10 +124,9 @@ class Bookings
         return $this->time_start;
     }
 
-    public function setTimeStart(DateTimeInterface $time_start): static
+    public function setTimeStart(?\DateTimeInterface $time_start): static
     {
         $this->time_start = $time_start;
-
         return $this;
     }
 
@@ -138,16 +135,21 @@ class Bookings
         return $this->time_stop;
     }
 
-    public function setTimeStop(DateTimeInterface $time_stop): static
+    public function setTimeStop(?\DateTimeInterface $time_stop): static
     {
         $this->time_stop = $time_stop;
-
         return $this;
     }
 
     public function getPet(): ?Pets
     {
         return $this->pet;
+    }
+
+    #[Groups(["booking:read"])]
+    public function getPetId(): ?int
+    {
+        return $this->pet ? $this->pet->getId() : null;
     }
 
     public function setPet(?Pets $pet): static
@@ -160,6 +162,11 @@ class Bookings
     public function getIdClient(): ?Clients
     {
         return $this->id_client;
+    }
+   #[Groups(["booking:read"])]
+    public function getClientId(): ?int
+    {
+        return $this->id_client ? $this->id_client->getId() : null;
     }
 
     public function setIdClient(?Clients $id_client): static
