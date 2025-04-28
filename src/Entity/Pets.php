@@ -6,6 +6,8 @@ use App\Repository\PetsRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Serializer\Attribute\SerializedName;
 
 #[ORM\Entity(repositoryClass: PetsRepository::class)]
 class Pets
@@ -163,6 +165,12 @@ class Pets
         return $this->masters;
     }
 
+    #[Groups(["pets:read"])]
+    public function getMastersId(): array
+    {
+        return $this->masters->map(fn($m) => $m->getId())->toArray();
+    }
+
     public function addMaster(Masters $master): static
     {
         if (!$this->masters->contains($master)) {
@@ -180,5 +188,12 @@ class Pets
         }
 
         return $this;
+    }
+
+    public function clearMasters(): void
+    {
+        foreach ($this->masters as $master) {
+            $this->removeMaster($master);
+        }
     }
 }

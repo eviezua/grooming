@@ -51,5 +51,6 @@ class PetsApi
     #[Groups(["pets:read"])]
     public ?float $cost_coficient = null;
 
-    public array $mastersId;
+    #[Groups(["pets:read"])]
+    public array $mastersId = [];
 }

@@ -5,18 +5,18 @@ namespace App\Mapper;
 use App\ApiResource\PetsApi;
 use App\Entity\Masters;
 use App\Entity\Pets;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\ORM\EntityManagerInterface;
+use App\Service\EntityLoaderHelper;
 use Psr\Log\LoggerInterface;
 use Symfonycasts\MicroMapper\AsMapper;
 use Symfonycasts\MicroMapper\MapperInterface;
+use Throwable;
 
 #[AsMapper(from: PetsApi::class, to: Pets::class)]
 class PetsApiToEntityMapper implements MapperInterface
 {
     public function __construct(
-        private EntityManagerInterface $entityManager,
-        private LoggerInterface $logger
+        private LoggerInterface $logger,
+        private EntityLoaderHelper $loader,
     ) {
     }
 
@@ -24,12 +24,8 @@ class PetsApiToEntityMapper implements MapperInterface
     {
         assert($from instanceof PetsApi);
 
-        $pet = new Pets();
-        if ($from->id) {
-            $pet = $this->entityManager->find(Pets::class, $from->id) ?? new Pets();
-        }
-
-        return $pet;
+        return $context['target_object'] ??
+            ($from->id ? $this->loader->load(Pets::class, $from->id, 'Pets') : new Pets());
     }
 
     public function populate(object $from, object $to, array $context): object
@@ -42,32 +38,20 @@ class PetsApiToEntityMapper implements MapperInterface
         $to->setBreed($from->breed);
         $to->setSize($from->size);
 
-        foreach ($to->getMasters() as $existingMaster) {
-            $to->removeMaster($existingMaster);
-        }
+        $to->clearMasters();
 
         $this->logger->info('Processing masters for pet ' . ($from->id ?? 'new'));
 
         if (!empty($from->mastersId)) {
-            $mastersCollection = new ArrayCollection();
-            foreach ($from->mastersId as $masterId) {
-                if (!$masterId) {
-                    continue;
+            $validIds = array_filter($from->mastersId);
+            try {
+                $masters = $this->loader->loadMultiple(Masters::class, $validIds, 'Masters');
+                foreach ($masters as $master) {
+                    $to->addMaster($master);
+                    $this->logger->info('Master added: ' . $master->getId());
                 }
-
-                $this->logger->info('Loading master with ID: ' . $masterId);
-
-                $master = $this->entityManager->find(Masters::class, $masterId);
-
-                if ($master) {
-                    $mastersCollection->add($master);
-                    $this->logger->info('Master found and added: ' . $master->getId());
-                } else {
-                    $this->logger->info('Master not found for ID: ' . $masterId);
-                }
-            }
-            foreach ($mastersCollection as $master) {
-                $to->addMaster($master);
+            } catch (Throwable $e) {
+                $this->logger->warning('Some masters could not be loaded: ' . $e->getMessage());
             }
         }
 

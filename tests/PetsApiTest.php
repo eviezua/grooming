@@ -8,6 +8,10 @@ use App\Factory\PetsFactory;
 use Zenstruck\Foundry\Test\Factories;
 use Zenstruck\Foundry\Test\ResetDatabase;
 
+/**
+ * @group pet
+ * @group api
+ */
 class PetsApiTest extends ApiTestCase
 {
     use ResetDatabase, Factories;
@@ -48,7 +52,9 @@ class PetsApiTest extends ApiTestCase
 
     public function testPostPet(): void
     {
-        static::createClient()->request('POST', 'api/v1/pets',
+        static::createClient()->request(
+            'POST',
+            'api/v1/pets',
             [
                 'json' => [
                     'spice' => 'cat',
@@ -59,7 +65,8 @@ class PetsApiTest extends ApiTestCase
                 'headers' => [
                     'Content-Type' => 'application/ld+json',
                 ]
-            ]);
+            ]
+        );
 
         $this->assertResponseStatusCodeSame(201);
         $this->assertResponseHeaderSame('content-type', 'application/ld+json; charset=utf-8');
@@ -69,9 +76,12 @@ class PetsApiTest extends ApiTestCase
         );
         $this->assertNotNull($pet);
     }
+
     public function testPostInvalidPet(): void
     {
-        static::createClient()->request('POST', 'api/v1/pets',
+        static::createClient()->request(
+            'POST',
+            'api/v1/pets',
             [
                 'json' => [
                     'spice' => '',
@@ -82,7 +92,8 @@ class PetsApiTest extends ApiTestCase
                 'headers' => [
                     'Content-Type' => 'application/ld+json',
                 ]
-            ]);
+            ]
+        );
 
         $this->assertResponseStatusCodeSame(422);
         $this->assertJsonContains([

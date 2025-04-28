@@ -15,20 +15,15 @@ class PetsEntityToApiMapper implements MapperInterface
     {
         assert($from instanceof Pets);
 
-        $dto = new PetsApi();
-        $dto->id = $from->getId();
-        $dto->spice = $from->getSpice();
-        $dto->hair = $from->getHair();
-        $dto->breed = $from->getBreed();
-        $dto->size = $from->getSize();
-        $masters = $from->getMasters();
-        if (!$masters->isEmpty()) {
-            $dto->mastersId = array_map(fn(Masters $master) => $master->getId(), $masters->toArray());
-        } else {
-            $dto->mastersId = [];
-        }
+        $to = new PetsApi();
+        $to->id = $from->getId();
+        $to->spice = $from->getSpice();
+        $to->hair = $from->getHair();
+        $to->breed = $from->getBreed();
+        $to->size = $from->getSize();
+        $to->mastersId = array_map(fn(Masters $m) => $m->getId(), $from->getMasters()->toArray());
 
-        return $dto;
+        return $to;
     }
 
     public function populate(object $from, object $to, array $context): object
@@ -41,12 +36,8 @@ class PetsEntityToApiMapper implements MapperInterface
         $to->hair = $from->getHair();
         $to->breed = $from->getBreed();
         $to->size = $from->getSize();
-        $masters = $from->getMasters();
-        if (!$masters->isEmpty()) {
-            $to->mastersId = array_map(fn(Masters $master) => $master->getId(), $masters->toArray());
-        } else {
-            $to->mastersId = [];
-        }
+        $to->cost_coficient = $from->getCostCoficient();
+        $to->mastersId = $from->getMastersId();
 
         return $to;
     }
