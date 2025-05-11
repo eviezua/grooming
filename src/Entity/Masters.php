@@ -2,94 +2,63 @@
 
 namespace App\Entity;
 
-use ApiPlatform\Metadata\ApiResource;
-use ApiPlatform\Metadata\Get;
-use ApiPlatform\Metadata\GetCollection;
-use ApiPlatform\Metadata\Patch;
-use ApiPlatform\Metadata\Post;
-use ApiPlatform\Metadata\Put;
 use App\Repository\MastersRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: MastersRepository::class)]
-#[ApiResource(
-    description: 'Our Masters.',
-    operations: [
-        new Get(),
-        new GetCollection(),
-        new Post(),
-        new Put(),
-        new Patch()
-    ],
-    normalizationContext: ['groups' => ['master:read']],
-    denormalizationContext: ['groups' => ['master:write']]
-)]
 class Masters
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(["master:read"])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(["master:read", "master:write"])]
     private ?string $name = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(["master:read", "master:write"])]
     private ?string $surname = null;
 
     /**
      * @var Collection<int, Services>
      */
     #[ORM\ManyToMany(targetEntity: Services::class, inversedBy: 'masters')]
-    #[Groups(["master:read", "master:write"])]
     private Collection $id_services;
 
     #[ORM\ManyToOne(inversedBy: 'masters')]
     #[ORM\JoinColumn(nullable: false)]
-    #[Groups(["master:read", "master:write"])]
     private ?Cities $id_city = null;
 
     /**
      * @var Collection<int, Pets>
      */
     #[ORM\ManyToMany(targetEntity: Pets::class, inversedBy: 'masters')]
-    #[Groups(["master:read", "master:write"])]
     private Collection $id_pets;
 
     #[ORM\Column(length: 255)]
-    #[Groups(["master:write"])]
     private ?string $password = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(["master:write"])]
     private ?string $email = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    #[Groups(["master:write"])]
     private ?string $phone = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    #[Groups(["master:read", "master:write"])]
     private ?string $photo = null;
 
     /**
      * @var Collection<int, Schedule>
      */
     #[ORM\OneToMany(targetEntity: Schedule::class, mappedBy: 'master')]
-    #[Groups(["master:read", "master:write"])]
     private Collection $schedules;
 
     /**
      * @var Collection<int, Bookings>
      */
     #[ORM\OneToMany(targetEntity: Bookings::class, mappedBy: 'id_master')]
-    #[Groups(["master:read", "master:write"])]
     private Collection $bookings;
 
     public function __construct()
@@ -132,9 +101,15 @@ class Masters
     /**
      * @return Collection<int, Services>
      */
+
     public function getIdServices(): Collection
     {
         return $this->id_services;
+    }
+
+    public function getServicesId(): array
+    {
+        return array_map(fn(Services $service) => $service->getId(), $this->id_services->toArray());
     }
 
     public function addIdService(Services $idService): static
@@ -153,9 +128,21 @@ class Masters
         return $this;
     }
 
+    public function clearServices(): static
+    {
+        $this->id_services->clear();
+
+        return $this;
+    }
+
     public function getIdCity(): ?Cities
     {
         return $this->id_city;
+    }
+
+    public function getCityId(): ?int
+    {
+        return $this->id_city ? $this->id_city->getId() : null;
     }
 
     public function setIdCity(?Cities $id_city): static
@@ -171,6 +158,11 @@ class Masters
     public function getIdPets(): Collection
     {
         return $this->id_pets;
+    }
+
+    public function getPetsId(): array
+    {
+        return array_map(fn(Pets $pet) => $pet->getId(), $this->id_pets->toArray());
     }
 
     public function addIdPet(Pets $idPet): static
@@ -245,6 +237,11 @@ class Masters
         return $this->schedules;
     }
 
+    public function getSchedulesId(): array
+    {
+        return array_map(fn(Schedule $schedule) => $schedule->getId(), $this->schedules->toArray());
+    }
+
     public function addSchedule(Schedule $schedule): static
     {
         if (!$this->schedules->contains($schedule)) {
@@ -273,6 +270,11 @@ class Masters
     public function getBookings(): Collection
     {
         return $this->bookings;
+    }
+
+    public function getBookingsId(): array
+    {
+        return array_map(fn(Bookings $booking) => $booking->getId(), $this->bookings->toArray());
     }
 
     public function addBooking(Bookings $booking): static
