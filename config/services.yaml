@@ -6,6 +6,18 @@
 parameters:
 
 services:
+    Elastic\Elasticsearch\ClientInterface: '@Elastic\Elasticsearch\Client'
+
+    Elastic\Elasticsearch\Client:
+        factory: [ 'Elastic\Elasticsearch\ClientBuilder', 'fromConfig' ]
+        arguments:
+            -   hosts: [ 'http://elasticsearch:9200' ]
+
+    App\Filter\CitySearchFilter:
+        arguments:
+            $client: '@Elastic\Elasticsearch\Client'
+        tags: [ 'api_platform.filter' ]
+
     # default configuration for services in *this* file
     _defaults:
         autowire: true      # Automatically injects dependencies in your services.
