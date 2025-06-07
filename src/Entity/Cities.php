@@ -48,7 +48,7 @@ class Cities
 
     public function setCity(string $city): static
     {
-        $this->city = $city;
+        $this->city = mb_convert_case($city, MB_CASE_TITLE, "UTF-8");
 
         return $this;
     }
