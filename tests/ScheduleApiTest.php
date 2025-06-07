@@ -36,6 +36,47 @@ class ScheduleApiTest extends ApiTestCase
         ]);
     }
 
+    public function testGetCollectionWithMasterIdFilter(): void
+    {
+        $master = MastersFactory::createOne();
+        $masterId = $master->getId();
+
+        ScheduleFactory::CreateMany(10, ['master' => $master]);
+        ScheduleFactory::CreateMany(10);
+
+        static::createClient()->request('GET', 'api/v1/schedules?master.id[]=' . $masterId);
+
+        $this->assertResponseIsSuccessful();
+        $this->assertResponseHeaderSame('content-type', 'application/ld+json; charset=utf-8');
+
+        $this->assertJsonContains([
+            '@context' => '/api/v1/contexts/Schedule',
+            '@id' => '/api/v1/schedules',
+            '@type' => 'Collection',
+            'totalItems' => 10
+        ]);
+    }
+
+    public function testGetBySearchDayOfWeekFilter(): void
+    {
+        $client = static::createClient();
+
+        ScheduleFactory::createMany(10, ['dayOfweek' => 'Monday']);
+        ScheduleFactory::createMany(10, ['dayOfWeek' => 'Friday']);
+
+        $client->request('GET', 'api/v1/schedules?dayOfweek[]=Monday');
+
+        $this->assertResponseIsSuccessful();
+        $this->assertResponseHeaderSame('content-type', 'application/ld+json; charset=utf-8');
+
+        $this->assertJsonContains([
+            '@context' => '/api/v1/contexts/Schedule',
+            '@id' => '/api/v1/schedules',
+            '@type' => 'Collection',
+            'totalItems' => 10,
+        ]);
+    }
+
     public function testGetSchedule(): void
     {
         $schedule = ScheduleFactory::createOne();
