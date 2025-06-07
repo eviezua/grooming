@@ -53,6 +53,7 @@ class MastersApiToEntityMapper implements MapperInterface
         }
 
         $to->setIdCity($this->loader->load(Cities::class, $from->cityId, 'Cities'));
+        $to->clearPets();
 
         if (!empty($from->petsId)) {
             $validIds = array_filter($from->petsId);

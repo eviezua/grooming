@@ -165,6 +165,13 @@ class Masters
         return array_map(fn(Pets $pet) => $pet->getId(), $this->id_pets->toArray());
     }
 
+    public function clearPets(): static
+    {
+        $this->id_pets->clear();
+
+        return $this;
+    }
+
     public function addIdPet(Pets $idPet): static
     {
         if (!$this->id_pets->contains($idPet)) {
