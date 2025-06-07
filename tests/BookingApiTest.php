@@ -10,6 +10,7 @@ use App\Factory\ClientsFactory;
 use App\Factory\MastersFactory;
 use App\Factory\PetsFactory;
 use App\Factory\ServicesFactory;
+use DateInterval;
 use DateTime;
 use DateTimeZone;
 use Zenstruck\Foundry\Test\Factories;
@@ -37,6 +38,115 @@ class BookingApiTest extends ApiTestCase
             '@id' => '/api/v1/bookings',
             '@type' => 'Collection',
             'totalItems' => 100
+        ]);
+    }
+
+    public function testGetCollectionWithDateFilter(): void
+    {
+        BookingsFactory::CreateMany(5, ['date' => new  DateTime('+1 day')]);
+        BookingsFactory::CreateMany(5, ['date' => new  DateTime('+7 days')]);
+        BookingsFactory::CreateMany(5, ['date' => new  DateTime('+14 days')]);
+
+        static::createClient()->request(
+            'GET',
+            'api/v1/bookings?date[after]=' . (new DateTime('+2 days'))->format(
+                'Y-m-d'
+            ) . '&date[before]=' . (new DateTime('+10 days'))->format('Y-m-d')
+        );
+
+        $this->assertResponseIsSuccessful();
+        $this->assertResponseHeaderSame('content-type', 'application/ld+json; charset=utf-8');
+        $this->assertJsonContains([
+            '@context' => '/api/v1/contexts/Booking',
+            '@id' => '/api/v1/bookings',
+            '@type' => 'Collection',
+            'totalItems' => 5
+        ]);
+    }
+
+    public function testGetCollectionWithTimeBetweenFilter(): void
+    {
+        BookingsFactory::CreateMany(10, function () {
+            $hour = random_int(9, 13);
+            $minute = random_int(0, 59);
+            $second = random_int(0, 59);
+
+            $timeStart = (new DateTime())->setTime($hour, $minute, $second);
+            $interval = new DateInterval('PT' . random_int(30, 240) . 'M');
+            $timeStop = (clone $timeStart)->add($interval);
+
+            return [
+                'time_start' => $timeStart,
+                'time_stop' => $timeStop,
+            ];
+        });
+        BookingsFactory::CreateMany(10, function () {
+            $hour = random_int(18, 20);
+            $minute = random_int(0, 59);
+            $second = random_int(0, 59);
+
+            $timeStart = (new DateTime())->setTime($hour, $minute, $second);
+            $interval = new DateInterval('PT' . random_int(30, 180) . 'M');
+            $timeStop = (clone $timeStart)->add($interval);
+
+            return [
+                'time_start' => $timeStart,
+                'time_stop' => $timeStop,
+            ];
+        });
+
+        static::createClient()->request('GET', 'api/v1/bookings?time_from=' . '09:00:00' . '&time_to=' . '18:00:00');
+
+        $this->assertResponseIsSuccessful();
+        $this->assertResponseHeaderSame('content-type', 'application/ld+json; charset=utf-8');
+
+        $this->assertJsonContains([
+            '@context' => '/api/v1/contexts/Booking',
+            '@id' => '/api/v1/bookings',
+            '@type' => 'Collection',
+            'totalItems' => 10
+        ]);
+    }
+
+    public function testGetCollectionWithClientIdFilter(): void
+    {
+        $client = ClientsFactory::createOne();
+        $clientId = $client->getId();
+
+        BookingsFactory::CreateMany(10, ['id_client' => $client]);
+        BookingsFactory::createMany(10);
+
+        static::createClient()->request('GET', 'api/v1/bookings?id_client.id[]=' . $clientId);
+
+        $this->assertResponseIsSuccessful();
+        $this->assertResponseHeaderSame('content-type', 'application/ld+json; charset=utf-8');
+
+        $this->assertJsonContains([
+            '@context' => '/api/v1/contexts/Booking',
+            '@id' => '/api/v1/bookings',
+            '@type' => 'Collection',
+            'totalItems' => 10
+        ]);
+    }
+
+    public function testGetCollectionWithMasterIdFilter(): void
+    {
+        $master = MastersFactory::createOne();
+        $masterId = $master->getId();
+
+        BookingsFactory::CreateMany(10, ['id_master' => $master]);
+        BookingsFactory::createMany(10);
+
+        static::createClient()->request('GET', 'api/v1/bookings?id_master.id[]=' . $masterId);
+
+        $this->assertResponseIsSuccessful();
+        $this->assertResponseHeaderSame('content-type', 'application/ld+json; charset=utf-8');
+
+        $this->assertJsonContains([
+            '@context' => '/api/v1/contexts/Booking',
+            '@id' => '/api/v1/bookings',
+            '@type' => 'Collection',
+            'totalItems' => 10
         ]);
     }
 
@@ -178,7 +288,10 @@ class BookingApiTest extends ApiTestCase
         $this->assertJsonContains([
             'violations' => [
                 ['propertyPath' => 'date', 'message' => "This time slot is already booked for the field: date."],
-                ['propertyPath' => 'timeStart', 'message' => "This time slot is already booked for the field: timeStart."],
+                [
+                    'propertyPath' => 'timeStart',
+                    'message' => "This time slot is already booked for the field: timeStart."
+                ],
                 ['propertyPath' => 'timeStop', 'message' => "This time slot is already booked for the field: timeStop."]
             ],
         ]);

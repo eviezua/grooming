@@ -2,7 +2,10 @@
 
 namespace App\ApiResource;
 
+use ApiPlatform\Doctrine\Orm\Filter\DateFilter;
+use ApiPlatform\Doctrine\Orm\Filter\NumericFilter;
 use ApiPlatform\Doctrine\Orm\State\Options;
+use ApiPlatform\Metadata\ApiFilter;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Delete;
 use ApiPlatform\Metadata\Get;
@@ -11,6 +14,7 @@ use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\Put;
 use App\Entity\Bookings;
+use App\Filter\TimeBetweenFilter;
 use App\State\EntityClassDtoStateProcessor;
 use App\State\EntityToDtoStateProvider;
 use App\Validator\Booking\BookingAvailability;
@@ -32,8 +36,11 @@ use Symfony\Component\Serializer\Annotation\Groups;
     denormalizationContext: ['groups' => ['booking:write']],
     provider: EntityToDtoStateProvider::class,
     processor: EntityClassDtoStateProcessor::class,
-    stateOptions: new Options(entityClass: Bookings::class)
+    stateOptions: new Options(entityClass: Bookings::class),
 )]
+#[ApiFilter(DateFilter::class, properties: ['date'])]
+#[ApiFilter(TimeBetweenFilter::class)]
+#[ApiFilter(NumericFilter::class, properties: ['id_client.id', 'id_master.id'])]
 class BookingsApi
 {
     #[Groups(["booking:read"])]
