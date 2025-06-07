@@ -15,6 +15,7 @@ use Zenstruck\Foundry\Test\ResetDatabase;
 class ClientsEntityTest extends KernelTestCase
 {
     use ResetDatabase, Factories;
+
     public function testClientsEntity(): void
     {
         $client = new Clients();

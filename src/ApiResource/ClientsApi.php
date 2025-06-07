@@ -3,6 +3,7 @@
 namespace App\ApiResource;
 
 use ApiPlatform\Doctrine\Orm\State\Options;
+use ApiPlatform\Metadata\ApiFilter;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
@@ -10,6 +11,7 @@ use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\Put;
 use App\Entity\Clients;
+use App\Filter\ClientSearchFilter;
 use App\State\EntityClassDtoStateProcessor;
 use App\State\EntityToDtoStateProvider;
 use Symfony\Component\Serializer\Annotation\Groups;
@@ -31,6 +33,7 @@ use Symfony\Component\Validator\Constraints as Assert;
     processor: EntityClassDtoStateProcessor::class,
     stateOptions: new Options(entityClass: Clients::class)
 )]
+#[ApiFilter(ClientSearchFilter::class)]
 class ClientsApi
 {
     #[Groups(["client:read"])]

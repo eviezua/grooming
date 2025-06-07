@@ -3,9 +3,11 @@
 namespace App\Tests;
 
 use ApiPlatform\Symfony\Bundle\Test\ApiTestCase;
+use App\Entity\Clients;
 use App\Factory\BookingsFactory;
 use App\Factory\ClientsFactory;
 use App\Factory\PetsFactory;
+use Elastic\Elasticsearch\Client;
 use Zenstruck\Foundry\Test\Factories;
 use Zenstruck\Foundry\Test\ResetDatabase;
 
@@ -31,6 +33,63 @@ class ClientsApiTest extends ApiTestCase
             '@id' => '/api/v1/clients',
             '@type' => 'Collection',
             'totalItems' => 100
+        ]);
+    }
+
+    public function testGetBySearchFilterFullName(): void
+    {
+        $client = static::createClient();
+
+        $this->indexClient('Rayden', 'Crawford');
+
+        $client->request('GET', 'api/v1/clients?search=rayden crawford');
+
+        $this->assertResponseIsSuccessful();
+        $this->assertResponseHeaderSame('content-type', 'application/ld+json; charset=utf-8');
+
+        $this->assertJsonContains([
+            '@context' => '/api/v1/contexts/Client',
+            '@id' => '/api/v1/clients',
+            '@type' => 'Collection',
+            'totalItems' => 1,
+        ]);
+    }
+
+    public function testGetBySearchFilterByName(): void
+    {
+        $client = static::createClient();
+
+        $this->indexClient('Rayden', 'Crawford');
+
+        $client->request('GET', 'api/v1/clients?search=den');
+
+        $this->assertResponseIsSuccessful();
+        $this->assertResponseHeaderSame('content-type', 'application/ld+json; charset=utf-8');
+
+        $this->assertJsonContains([
+            '@context' => '/api/v1/contexts/Client',
+            '@id' => '/api/v1/clients',
+            '@type' => 'Collection',
+            'totalItems' => 1,
+        ]);
+    }
+
+    public function testGetBySearchFilterBySurname(): void
+    {
+        $client = static::createClient();
+
+        $this->indexClient('Rayden', 'Crawford');
+
+        $client->request('GET', 'api/v1/clients?search=craw');
+
+        $this->assertResponseIsSuccessful();
+        $this->assertResponseHeaderSame('content-type', 'application/ld+json; charset=utf-8');
+
+        $this->assertJsonContains([
+            '@context' => '/api/v1/contexts/Client',
+            '@id' => '/api/v1/clients',
+            '@type' => 'Collection',
+            'totalItems' => 1,
         ]);
     }
 
@@ -153,5 +212,21 @@ class ClientsApiTest extends ApiTestCase
             "email" => "test@test.com",
             "phone" => "+12523957776"
         ]);
+    }
+
+    private function indexClient(string $name, string $surname): void
+    {
+        ClientsFactory::createOne(['name' => $name, 'surname' => $surname]);
+        $client = static::getContainer()->get('doctrine')->getRepository(Clients::class)->findOneBy(
+            ['name' => $name, 'surname' => $surname]
+        );
+
+        $elasticsearchClient = static::getContainer()->get(Client::class);
+        $elasticsearchClient->index([
+            'index' => 'clients',
+            'id' => $client->getId(),
+            'body' => ['name' => $client->getName(), 'surname' => $client->getSurname()],
+        ]);
+        $elasticsearchClient->indices()->refresh(['index' => 'clients']);
     }
 }
