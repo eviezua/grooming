@@ -35,7 +35,8 @@ final class MastersFactory extends PersistentProxyObjectFactory
             'name' => self::faker()->firstName(),
             'password' => self::faker()->password(),
             'surname' => self::faker()->lastName(),
-            'id_services' => ServicesFactory::CreateMany(rand(1, 3))
+            'id_services' => ServicesFactory::CreateMany(rand(1, 3)),
+            'id_pets' => PetsFactory::CreateMany(rand(1, 3)),
         ];
     }
 
