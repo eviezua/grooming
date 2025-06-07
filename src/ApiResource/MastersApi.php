@@ -2,7 +2,9 @@
 
 namespace App\ApiResource;
 
+use ApiPlatform\Doctrine\Orm\Filter\NumericFilter;
 use ApiPlatform\Doctrine\Orm\State\Options;
+use ApiPlatform\Metadata\ApiFilter;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
@@ -10,6 +12,8 @@ use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\Put;
 use App\Entity\Masters;
+use App\Filter\MasterAvailableTimeFilter;
+use App\Filter\MasterSearchFilter;
 use App\State\EntityClassDtoStateProcessor;
 use App\State\EntityToDtoStateProvider;
 use Symfony\Component\Serializer\Annotation\Groups;
@@ -31,6 +35,9 @@ use Symfony\Component\Validator\Constraints as Assert;
     processor: EntityClassDtoStateProcessor::class,
     stateOptions: new Options(entityClass: Masters::class)
 )]
+#[ApiFilter(MasterSearchFilter::class)]
+#[ApiFilter(MasterAvailableTimeFilter::class)]
+#[ApiFilter(NumericFilter::class, properties: ['id_city.id', 'id_services.id', 'id_pets.id',])]
 class MastersApi
 {
     #[Groups(["master:read"])]

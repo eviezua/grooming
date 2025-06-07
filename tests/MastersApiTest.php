@@ -3,10 +3,14 @@
 namespace App\Tests;
 
 use ApiPlatform\Symfony\Bundle\Test\ApiTestCase;
+use App\Entity\Masters;
 use App\Factory\CitiesFactory;
 use App\Factory\MastersFactory;
 use App\Factory\PetsFactory;
+use App\Factory\ScheduleFactory;
 use App\Factory\ServicesFactory;
+use DateTime;
+use Elastic\Elasticsearch\Client;
 use Zenstruck\Foundry\Test\Factories;
 use Zenstruck\Foundry\Test\ResetDatabase;
 
@@ -32,6 +36,157 @@ class MastersApiTest extends ApiTestCase
             '@id' => '/api/v1/masters',
             '@type' => 'Collection',
             'totalItems' => 100
+        ]);
+    }
+
+    public function testGetCollectionWithCityIdFilter(): void
+    {
+        $city = CitiesFactory::createOne();
+        $cityId = $city->getId();
+
+        MastersFactory::CreateMany(10, ['id_city' => $city]);
+        MastersFactory::createMany(10);
+
+        static::createClient()->request('GET', 'api/v1/masters?id_city.id[]=' . $cityId);
+
+        $this->assertResponseIsSuccessful();
+        $this->assertResponseHeaderSame('content-type', 'application/ld+json; charset=utf-8');
+
+        $this->assertJsonContains([
+            '@context' => '/api/v1/contexts/Master',
+            '@id' => '/api/v1/masters',
+            '@type' => 'Collection',
+            'totalItems' => 10
+        ]);
+    }
+
+    public function testGetCollectionWithServiceIdFilter(): void
+    {
+        $service = ServicesFactory::createOne();
+        $serviceId = $service->getId();
+
+        MastersFactory::CreateMany(10, ['id_services' => [$service]]);
+        MastersFactory::createMany(10);
+
+        static::createClient()->request('GET', 'api/v1/masters?id_services.id[]=' . $serviceId);
+
+        $this->assertResponseIsSuccessful();
+        $this->assertResponseHeaderSame('content-type', 'application/ld+json; charset=utf-8');
+
+        $this->assertJsonContains([
+            '@context' => '/api/v1/contexts/Master',
+            '@id' => '/api/v1/masters',
+            '@type' => 'Collection',
+            'totalItems' => 10
+        ]);
+    }
+
+    public function testGetCollectionWithPetsIdFilter(): void
+    {
+        $pet = PetsFactory::createOne();
+        $petId = $pet->getId();
+
+        MastersFactory::CreateMany(10, ['id_pets' => [$pet]]);
+        MastersFactory::createMany(10);
+
+        static::createClient()->request('GET', 'api/v1/masters?id_pets.id[]=' . $petId);
+
+        $this->assertResponseIsSuccessful();
+        $this->assertResponseHeaderSame('content-type', 'application/ld+json; charset=utf-8');
+
+        $this->assertJsonContains([
+            '@context' => '/api/v1/contexts/Master',
+            '@id' => '/api/v1/masters',
+            '@type' => 'Collection',
+            'totalItems' => 10
+        ]);
+    }
+
+    public function testGetBySearchFilterFullName(): void
+    {
+        $client = static::createClient();
+
+        $this->indexMaster('Chris', 'Phelps');
+
+        $client->request('GET', 'api/v1/masters?search=Chris phelps');
+
+        $this->assertResponseIsSuccessful();
+        $this->assertResponseHeaderSame('content-type', 'application/ld+json; charset=utf-8');
+
+        $this->assertJsonContains([
+            '@context' => '/api/v1/contexts/Master',
+            '@id' => '/api/v1/masters',
+            '@type' => 'Collection',
+            'totalItems' => 1,
+        ]);
+    }
+
+    public function testGetBySearchFilterByName(): void
+    {
+        $client = static::createClient();
+
+        $this->indexMaster('Chris', 'Phelps');
+
+        $client->request('GET', 'api/v1/masters?search=Ris');
+
+        $this->assertResponseIsSuccessful();
+        $this->assertResponseHeaderSame('content-type', 'application/ld+json; charset=utf-8');
+
+        $this->assertJsonContains([
+            '@context' => '/api/v1/contexts/Master',
+            '@id' => '/api/v1/masters',
+            '@type' => 'Collection',
+            'totalItems' => 1,
+        ]);
+    }
+
+    public function testGetBySearchFilterBySurname(): void
+    {
+        $client = static::createClient();
+
+        $this->indexMaster('Chris', 'Phelps');
+
+        $client->request('GET', 'api/v1/masters?search=PHE');
+
+        $this->assertResponseIsSuccessful();
+        $this->assertResponseHeaderSame('content-type', 'application/ld+json; charset=utf-8');
+
+        $this->assertJsonContains([
+            '@context' => '/api/v1/contexts/Master',
+            '@id' => '/api/v1/masters',
+            '@type' => 'Collection',
+            'totalItems' => 1,
+        ]);
+    }
+
+    public function testGetCollectionWithTimeAvailableFilter(): void
+    {
+        ScheduleFactory::createOne([
+            'start_time' => new DateTime('08:00:00'),
+            'stop_time' => new DateTime('10:00:00'),
+        ]);
+        ScheduleFactory::createOne([
+            'start_time' => new DateTime('12:00:00'),
+            'stop_time' => new DateTime('14:00:00'),
+        ]);
+
+        ScheduleFactory::createOne([
+            'start_time' => new DateTime('06:00:00'),
+            'stop_time' => new DateTime('08:00:00'),
+        ]);
+        ScheduleFactory::createOne([
+            'start_time' => new DateTime('20:00:00'),
+            'stop_time' => new DateTime('23:30:00'),
+        ]);
+
+        static::createClient()->request('GET', '/api/v1/masters?start_time=07:00:00&stop_time=23:00:00');
+
+        $this->assertResponseIsSuccessful();
+        $this->assertJsonContains([
+            '@context' => '/api/v1/contexts/Master',
+            '@id' => '/api/v1/masters',
+            '@type' => 'Collection',
+            'totalItems' => 2
         ]);
     }
 
@@ -206,5 +361,21 @@ class MastersApiTest extends ApiTestCase
             "email" => "test@test.com",
             "phone" => "+12523957776"
         ]);
+    }
+
+    private function indexMaster(string $name, string $surname): void
+    {
+        MastersFactory::createOne(['name' => $name, 'surname' => $surname]);
+        $client = static::getContainer()->get('doctrine')->getRepository(Masters::class)->findOneBy(
+            ['name' => $name, 'surname' => $surname]
+        );
+
+        $elasticsearchClient = static::getContainer()->get(Client::class);
+        $elasticsearchClient->index([
+            'index' => 'masters',
+            'id' => $client->getId(),
+            'body' => ['name' => $client->getName(), 'surname' => $client->getSurname()],
+        ]);
+        $elasticsearchClient->indices()->refresh(['index' => 'masters']);
     }
 }
