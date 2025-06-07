@@ -16,7 +16,7 @@ class Cities
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 255, unique: true)]
     private ?string $city = null;
 
     /**
@@ -52,7 +52,7 @@ class Cities
 
     public function setCity(string $city): static
     {
-        $this->city = $city;
+        $this->city = mb_convert_case($city, MB_CASE_TITLE, "UTF-8");
 
         return $this;
     }

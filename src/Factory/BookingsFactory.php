@@ -30,19 +30,19 @@ final class BookingsFactory extends PersistentProxyObjectFactory
      */
     protected function defaults(): array|callable
     {
-        $startTime = self::faker()->dateTimeBetween('+1 day', '+1 day');
-        $stopTime = self::faker()->dateTimeBetween('+1 day', '+2 days');
+        $startHour = self::faker()->numberBetween(0, 23);
+        $startTime = (new \DateTime())->setTime($startHour, self::faker()->numberBetween(0, 59));
+        $stopHour = self::faker()->numberBetween($startHour + 1, 24);
+        $stopTime = (clone $startTime)->setTime($stopHour % 24, self::faker()->numberBetween(0, 59));
 
-        if ($stopTime <= $startTime) {
-            $stopTime = (clone $startTime)->modify('+1 hour');
-        }
         return [
             'date' => self::faker()->dateTime(),
-            'id_client' => ClientsFactory::new(),
-            'id_master' => MastersFactory::new(),
-            'pet' => PetsFactory::new(),
+            'id_client' => ClientsFactory::createOne(),
+            'id_master' => MastersFactory::createOne(),
+            'pet' => PetsFactory::createOne(),
             'time_start' => $startTime,
             'time_stop' => $stopTime,
+            'id_services' => ServicesFactory::CreateMany(rand(1, 3)),
             'status' => self::faker()->randomElement(Status::cases())
         ];
     }

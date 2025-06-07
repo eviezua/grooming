@@ -31,12 +31,14 @@ final class MastersFactory extends PersistentProxyObjectFactory
     protected function defaults(): array|callable
     {
         return [
-            'email' => self::faker()->text(255),
-            'id_city' => CitiesFactory::new(),
-            'name' => self::faker()->text(255),
-            'password' => self::faker()->text(255),
-            'surname' => self::faker()->text(255),
+            'email' => self::faker()->email(),
+            'id_city' => CitiesFactory::createOne(),
+            'name' => self::faker()->firstName(),
+            'password' => self::faker()->password(),
+            'surname' => self::faker()->lastName(),
             'status' => self::faker()->randomElement(Status::cases()),
+            'id_services' => ServicesFactory::CreateMany(rand(1, 3)),
+            'id_pets' => PetsFactory::CreateMany(rand(1, 3)),
         ];
     }
 

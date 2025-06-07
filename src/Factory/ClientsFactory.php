@@ -13,7 +13,6 @@ final class ClientsFactory extends PersistentProxyObjectFactory
     /**
      * @see https://symfony.com/bundles/ZenstruckFoundryBundle/current/index.html#factories-as-services
      *
-     * @todo inject services if required
      */
     public function __construct()
     {
@@ -27,14 +26,14 @@ final class ClientsFactory extends PersistentProxyObjectFactory
     /**
      * @see https://symfony.com/bundles/ZenstruckFoundryBundle/current/index.html#model-factories
      *
-     * @todo add your default values here
      */
     protected function defaults(): array|callable
     {
         return [
-            'email' => self::faker()->text(255),
-            'name' => self::faker()->text(255),
-            'surname' => self::faker()->text(255),
+            'email' => self::faker()->unique()->email(),
+            'name' => self::faker()->firstName(),
+            'surname' => self::faker()->lastName(),
+            'phone' => self::faker()->e164PhoneNumber(),
         ];
     }
 

@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use App\Enum\Weekdays;
 use App\Repository\ScheduleRepository;
+use DateTimeInterface;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -19,10 +20,10 @@ class Schedule
     private ?Weekdays $dayOfweek = null;
 
     #[ORM\Column(type: Types::TIME_MUTABLE)]
-    private ?\DateTimeInterface $start_time = null;
+    private ?DateTimeInterface $start_time = null;
 
     #[ORM\Column(type: Types::TIME_MUTABLE)]
-    private ?\DateTimeInterface $stop_time = null;
+    private ?DateTimeInterface $stop_time = null;
 
     #[ORM\ManyToOne(inversedBy: 'schedules')]
     #[ORM\JoinColumn(nullable: false)]
@@ -45,24 +46,24 @@ class Schedule
         return $this;
     }
 
-    public function getStartTime(): ?\DateTimeInterface
+    public function getStartTime(): ?DateTimeInterface
     {
         return $this->start_time;
     }
 
-    public function setStartTime(\DateTimeInterface $start_time): static
+    public function setStartTime(DateTimeInterface $start_time): static
     {
         $this->start_time = $start_time;
 
         return $this;
     }
 
-    public function getStopTime(): ?\DateTimeInterface
+    public function getStopTime(): ?DateTimeInterface
     {
         return $this->stop_time;
     }
 
-    public function setStopTime(\DateTimeInterface $stop_time): static
+    public function setStopTime(DateTimeInterface $stop_time): static
     {
         $this->stop_time = $stop_time;
 
@@ -72,6 +73,12 @@ class Schedule
     public function getMaster(): ?Masters
     {
         return $this->master;
+    }
+
+  //  #[Groups(["schedule:read"])]
+    public function getMasterId(): ?int
+    {
+        return $this->master ? $this->master->getId() : null;
     }
 
     public function setMaster(?Masters $master): static

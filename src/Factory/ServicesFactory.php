@@ -31,7 +31,7 @@ final class ServicesFactory extends PersistentProxyObjectFactory
     protected function defaults(): array|callable
     {
         return [
-            'cost' => self::faker()->randomNumber(3, false),
+            'cost' => self::faker()->randomNumber(),
             'default_time' => \DateTimeImmutable::createFromMutable(self::faker()->datetime()),
             'name' => self::faker()->text(255),
             'status' => self::faker()->randomElement(Status::cases()),

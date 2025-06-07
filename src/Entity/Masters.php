@@ -105,9 +105,15 @@ class Masters
     /**
      * @return Collection<int, Services>
      */
+
     public function getIdServices(): Collection
     {
         return $this->id_services;
+    }
+
+    public function getServicesId(): array
+    {
+        return array_map(fn(Services $service) => $service->getId(), $this->id_services->toArray());
     }
 
     public function addIdService(Services $idService): static
@@ -126,9 +132,21 @@ class Masters
         return $this;
     }
 
+    public function clearServices(): static
+    {
+        $this->id_services->clear();
+
+        return $this;
+    }
+
     public function getIdCity(): ?Cities
     {
         return $this->id_city;
+    }
+
+    public function getCityId(): ?int
+    {
+        return $this->id_city ? $this->id_city->getId() : null;
     }
 
     public function setIdCity(?Cities $id_city): static
@@ -144,6 +162,18 @@ class Masters
     public function getIdPets(): Collection
     {
         return $this->id_pets;
+    }
+
+    public function getPetsId(): array
+    {
+        return array_map(fn(Pets $pet) => $pet->getId(), $this->id_pets->toArray());
+    }
+
+    public function clearPets(): static
+    {
+        $this->id_pets->clear();
+
+        return $this;
     }
 
     public function addIdPet(Pets $idPet): static
@@ -218,6 +248,11 @@ class Masters
         return $this->schedules;
     }
 
+    public function getSchedulesId(): array
+    {
+        return array_map(fn(Schedule $schedule) => $schedule->getId(), $this->schedules->toArray());
+    }
+
     public function addSchedule(Schedule $schedule): static
     {
         if (!$this->schedules->contains($schedule)) {
@@ -246,6 +281,11 @@ class Masters
     public function getBookings(): Collection
     {
         return $this->bookings;
+    }
+
+    public function getBookingsId(): array
+    {
+        return array_map(fn(Bookings $booking) => $booking->getId(), $this->bookings->toArray());
     }
 
     public function addBooking(Bookings $booking): static

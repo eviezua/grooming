@@ -4,10 +4,14 @@ namespace App\Entity;
 
 use App\Enum\Status;
 use App\Repository\BookingsRepository;
+use App\Validator\Booking\BookingAvailability;
+use App\Validator\FutureDateTime;
+use DateTimeInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: BookingsRepository::class)]
 class Bookings
@@ -28,13 +32,17 @@ class Bookings
     private Collection $id_services;
 
     #[ORM\Column(type: Types::DATE_MUTABLE)]
-    private ?\DateTimeInterface $date = null;
+    #[BookingAvailability]
+    private ?DateTimeInterface $date = null;
 
     #[ORM\Column(type: Types::TIME_MUTABLE)]
-    private ?\DateTimeInterface $time_start = null;
+    #[BookingAvailability]
+    #[FutureDateTime]
+    private ?DateTimeInterface $time_start = null;
 
     #[ORM\Column(type: Types::TIME_MUTABLE)]
-    private ?\DateTimeInterface $time_stop = null;
+    #[BookingAvailability]
+    private ?DateTimeInterface $time_stop = null;
 
     #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: false)]
@@ -61,6 +69,11 @@ class Bookings
     {
         return $this->id_master;
     }
+   #[Groups(['booking:read'])]
+    public function getMasterId(): ?int
+    {
+        return $this->id_master?->getId();
+    }
 
     public function setIdMaster(?Masters $id_master): static
     {
@@ -76,6 +89,13 @@ class Bookings
     {
         return $this->id_services;
     }
+
+    #[Groups(["booking:read"])]
+    public function getServices(): array
+    {
+        return array_map(fn(Services $service) => $service->getId(), $this->id_services->toArray());
+    }
+
 
     public function addIdService(Services $idService): static
     {
@@ -93,45 +113,47 @@ class Bookings
         return $this;
     }
 
-    public function getDate(): ?\DateTimeInterface
+    public function getDate(): ?DateTimeInterface
     {
         return $this->date;
     }
-
-    public function setDate(\DateTimeInterface $date): static
+    public function setDate(?\DateTimeInterface $date): static
     {
         $this->date = $date;
-
         return $this;
     }
 
-    public function getTimeStart(): ?\DateTimeInterface
+    public function getTimeStart(): ?DateTimeInterface
     {
         return $this->time_start;
     }
 
-    public function setTimeStart(\DateTimeInterface $time_start): static
+    public function setTimeStart(?\DateTimeInterface $time_start): static
     {
         $this->time_start = $time_start;
-
         return $this;
     }
 
-    public function getTimeStop(): ?\DateTimeInterface
+    public function getTimeStop(): ?DateTimeInterface
     {
         return $this->time_stop;
     }
 
-    public function setTimeStop(\DateTimeInterface $time_stop): static
+    public function setTimeStop(?\DateTimeInterface $time_stop): static
     {
         $this->time_stop = $time_stop;
-
         return $this;
     }
 
     public function getPet(): ?Pets
     {
         return $this->pet;
+    }
+
+    #[Groups(["booking:read"])]
+    public function getPetId(): ?int
+    {
+        return $this->pet ? $this->pet->getId() : null;
     }
 
     public function setPet(?Pets $pet): static
@@ -144,6 +166,11 @@ class Bookings
     public function getIdClient(): ?Clients
     {
         return $this->id_client;
+    }
+   #[Groups(["booking:read"])]
+    public function getClientId(): ?int
+    {
+        return $this->id_client ? $this->id_client->getId() : null;
     }
 
     public function setIdClient(?Clients $id_client): static

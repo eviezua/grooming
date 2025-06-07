@@ -21,7 +21,7 @@ class Clients
     #[ORM\Column(length: 255)]
     private ?string $surname = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 255, unique: true)]
     private ?string $email = null;
 
     #[ORM\Column(length: 255, nullable: true)]
@@ -31,13 +31,13 @@ class Clients
      * @var Collection<int, Pets>
      */
     #[ORM\ManyToMany(targetEntity: Pets::class)]
-    private Collection $pets;
+    public Collection $pets;
 
     /**
      * @var Collection<int, Bookings>
      */
     #[ORM\OneToMany(targetEntity: Bookings::class, mappedBy: 'id_client')]
-    private Collection $bookings;
+    public Collection $bookings;
 
     public function __construct()
     {
@@ -121,6 +121,17 @@ class Clients
 
         return $this;
     }
+    public function setPets(Collection $pets): static
+    {
+        $this->pets = $pets;
+        return $this;
+    }
+    public function clearPets(): static
+    {
+        $this->pets->clear();
+
+        return $this;
+    }
 
     /**
      * @return Collection<int, Bookings>
@@ -143,7 +154,6 @@ class Clients
     public function removeBooking(Bookings $booking): static
     {
         if ($this->bookings->removeElement($booking)) {
-            // set the owning side to null (unless already changed)
             if ($booking->getIdClient() === $this) {
                 $booking->setIdClient(null);
             }

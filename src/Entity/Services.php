@@ -4,10 +4,12 @@ namespace App\Entity;
 
 use App\Enum\Status;
 use App\Repository\ServicesRepository;
+use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: ServicesRepository::class)]
 class Services
@@ -24,7 +26,7 @@ class Services
     private ?int $cost = null;
 
     #[ORM\Column(type: Types::TIME_IMMUTABLE)]
-    private ?\DateTimeImmutable $default_time = null;
+    private ?DateTimeImmutable $default_time = null;
 
     /**
      * @var Collection<int, Masters>
@@ -76,12 +78,12 @@ class Services
         return $this;
     }
 
-    public function getDefaultTime(): ?\DateTimeImmutable
+    public function getDefaultTime(): ?DateTimeImmutable
     {
         return $this->default_time;
     }
 
-    public function setDefaultTime(\DateTimeImmutable $default_time): static
+    public function setDefaultTime(DateTimeImmutable $default_time): static
     {
         $this->default_time = $default_time;
 
@@ -94,6 +96,12 @@ class Services
     public function getMasters(): Collection
     {
         return $this->masters;
+    }
+
+    #[Groups(["services:read"])]
+    public function getMastersId(): array
+    {
+        return array_map(fn(Masters $master) => $master->getId(), $this->masters->toArray());
     }
 
     public function addMaster(Masters $master): static

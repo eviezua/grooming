@@ -30,15 +30,19 @@ final class ScheduleFactory extends PersistentProxyObjectFactory
      */
     protected function defaults(): array|callable
     {
-        $startTime = self::faker()->dateTimeBetween('+1 day', '+1 day');
-        $stopTime = self::faker()->dateTimeBetween('+1 day', '+2 days');
+        $startHour = self::faker()->numberBetween(0, 23);
+        $startTime = (new \DateTime())->setTime($startHour, self::faker()->numberBetween(0, 59));
+        $stopHour = self::faker()->numberBetween($startHour + 1, 24);
+        $stopTime = (clone $startTime)->setTime($stopHour % 24, self::faker()->numberBetween(0, 59));
 
         if ($stopTime <= $startTime) {
             $stopTime = (clone $startTime)->modify('+1 hour');
         }
+        $startTime = new \DateTime($startTime->format('Y-m-d H:i:s'));
+        $stopTime = new \DateTime($stopTime->format('Y-m-d H:i:s'));
         return [
             'dayOfweek' => self::faker()->randomElement(Weekdays::cases()),
-            'master' => MastersFactory::new(),
+            'master' => MastersFactory::createOne(),
             'start_time' => $startTime,
             'stop_time' => $stopTime
         ];
