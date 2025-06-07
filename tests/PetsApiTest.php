@@ -5,6 +5,7 @@ namespace App\Tests;
 use ApiPlatform\Symfony\Bundle\Test\ApiTestCase;
 use App\Entity\Pets;
 use App\Factory\PetsFactory;
+use Elastic\Elasticsearch\Client;
 use Zenstruck\Foundry\Test\Factories;
 use Zenstruck\Foundry\Test\ResetDatabase;
 
@@ -30,6 +31,105 @@ class PetsApiTest extends ApiTestCase
             '@id' => '/api/v1/pets',
             '@type' => 'Collection',
             'totalItems' => 100
+        ]);
+    }
+
+    public function testGetBySearchBreedFilterFull(): void
+    {
+        $client = static::createClient();
+
+        $this->indexPet('Savannah');
+
+        $client->request('GET', 'api/v1/pets?search=SAVANNAH');
+
+        $this->assertResponseIsSuccessful();
+        $this->assertResponseHeaderSame('content-type', 'application/ld+json; charset=utf-8');
+
+        $this->assertJsonContains([
+            '@context' => '/api/v1/contexts/Pet',
+            '@id' => '/api/v1/pets',
+            '@type' => 'Collection',
+            'totalItems' => 1,
+        ]);
+    }
+
+    public function testGetBySearchFilterStart(): void
+    {
+        $client = static::createClient();
+
+        $this->indexPet('Savannah');
+        $this->indexPet('Domestic Shorthair');
+
+        $client->request('GET', 'api/v1/pets?search=sava');
+
+        $this->assertResponseIsSuccessful();
+        $this->assertResponseHeaderSame('content-type', 'application/ld+json; charset=utf-8');
+
+        $this->assertJsonContains([
+            '@context' => '/api/v1/contexts/Pet',
+            '@id' => '/api/v1/pets',
+            '@type' => 'Collection',
+            'totalItems' => 1,
+        ]);
+    }
+
+    public function testGetBySearchBreedFilterMiddle(): void
+    {
+        $client = static::createClient();
+
+        $this->indexPet('Savannah');
+        $this->indexPet('Domestic Shorthair');
+
+        $client->request('GET', 'api/v1/pets?search=VANNA');
+
+        $this->assertResponseIsSuccessful();
+        $this->assertResponseHeaderSame('content-type', 'application/ld+json; charset=utf-8');
+
+        $this->assertJsonContains([
+            '@context' => '/api/v1/contexts/Pet',
+            '@id' => '/api/v1/pets',
+            '@type' => 'Collection',
+            'totalItems' => 1,
+        ]);
+    }
+
+    public function testGetBySearchBreedFilterEnd(): void
+    {
+        $client = static::createClient();
+
+        $this->indexPet('Savannah');
+        $this->indexPet('Domestic Shorthair');
+
+        $client->request('GET', 'api/v1/pets?search=NAH');
+
+        $this->assertResponseIsSuccessful();
+        $this->assertResponseHeaderSame('content-type', 'application/ld+json; charset=utf-8');
+
+        $this->assertJsonContains([
+            '@context' => '/api/v1/contexts/Pet',
+            '@id' => '/api/v1/pets',
+            '@type' => 'Collection',
+            'totalItems' => 1,
+        ]);
+    }
+
+    public function testGetBySearchSpiceFilter(): void
+    {
+        $client = static::createClient();
+
+        PetsFactory::createOne(['spice' => 'cats']);
+        PetsFactory::createMany(10);
+
+        $client->request('GET', 'api/v1/pets?spice[]=cats');
+
+        $this->assertResponseIsSuccessful();
+        $this->assertResponseHeaderSame('content-type', 'application/ld+json; charset=utf-8');
+
+        $this->assertJsonContains([
+            '@context' => '/api/v1/contexts/Pet',
+            '@id' => '/api/v1/pets',
+            '@type' => 'Collection',
+            'totalItems' => 1,
         ]);
     }
 
@@ -104,5 +204,19 @@ class PetsApiTest extends ApiTestCase
                 ['propertyPath' => 'size', 'message' => 'Size of pets must not be empty.'],
             ],
         ]);
+    }
+
+    private function indexPet(string $name): void
+    {
+        PetsFactory::createOne(['breed' => $name]);
+        $pet = static::getContainer()->get('doctrine')->getRepository(Pets::class)->findOneBy(['breed' => $name]);
+
+        $elasticsearchClient = static::getContainer()->get(Client::class);
+        $elasticsearchClient->index([
+            'index' => 'pets',
+            'id' => $pet->getId(),
+            'body' => ['breed' => $pet->getBreed()],
+        ]);
+        $elasticsearchClient->indices()->refresh(['index' => 'pets']);
     }
 }
