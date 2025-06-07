@@ -3,11 +3,13 @@
 namespace App\ApiResource;
 
 use ApiPlatform\Doctrine\Orm\State\Options;
+use ApiPlatform\Metadata\ApiFilter;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Post;
 use App\Entity\Cities;
+use App\Filter\CitySearchFilter;
 use App\State\EntityClassDtoStateProcessor;
 use App\State\EntityToDtoStateProvider;
 use App\Validator\City\UniqueCity;
@@ -27,6 +29,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
     processor: EntityClassDtoStateProcessor::class,
     stateOptions: new Options(entityClass: Cities::class)
 )]
+#[ApiFilter(CitySearchFilter::class)]
 class CitiesApi
 {
     #[Groups(["city:read"])]
