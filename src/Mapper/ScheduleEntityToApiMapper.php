@@ -22,7 +22,7 @@ class ScheduleEntityToApiMapper implements MapperInterface
 
         $to = new ScheduleApi();
         $to->id = $from->getId();
-        $to->dayOfweek = $from->getDayOfweek();
+        $to->dayOfweek = $from->getDayOfweek()->value;
         $to->start_time = $this->timeFormatter->formatTime($from->getStartTime());
         $to->stop_time = $this->timeFormatter->formatTime($from->getStopTime());
         $to->masterId = $from->getMaster()->getId();
@@ -36,7 +36,7 @@ class ScheduleEntityToApiMapper implements MapperInterface
         assert($to instanceof ScheduleApi);
 
         $to->id = $from->getId();
-        $to->dayOfweek = $from->getDayOfweek();
+        $to->dayOfweek = $from->getDayOfweek()->value;
         $to->start_time = $this->timeFormatter->formatTime($from->getStartTime());
         $to->stop_time = $this->timeFormatter->formatTime($from->getStopTime());
         $to->masterId = $from->getMasterId();

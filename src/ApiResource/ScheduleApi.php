@@ -14,6 +14,7 @@ use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\Put;
 use App\Entity\Schedule;
+use App\Enum\Weekdays;
 use App\State\EntityClassDtoStateProcessor;
 use App\State\EntityToDtoStateProvider;
 use Symfony\Component\Serializer\Annotation\Groups;
@@ -44,8 +45,7 @@ class ScheduleApi
     public ?int $id = null;
 
     #[Groups(["schedule:read", "schedule:write"])]
-    #[Assert\NotBlank(message: "The day of the week cannot be empty.")]
-    #[Assert\Choice(choices: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'], message: "Invalid day of the week.")]
+    #[Assert\Choice(callback: [Weekdays::class, 'values'])]
     public ?string $dayOfweek = null;
 
     #[Groups(["schedule:read", "schedule:write"])]

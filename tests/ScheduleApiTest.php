@@ -4,6 +4,7 @@ namespace App\Tests;
 
 use ApiPlatform\Symfony\Bundle\Test\ApiTestCase;
 use App\Entity\Schedule;
+use App\Enum\Weekdays;
 use App\Factory\MastersFactory;
 use App\Factory\ScheduleFactory;
 use DateTime;
@@ -61,8 +62,14 @@ class ScheduleApiTest extends ApiTestCase
     {
         $client = static::createClient();
 
-        ScheduleFactory::createMany(10, ['dayOfweek' => 'Monday']);
-        ScheduleFactory::createMany(10, ['dayOfWeek' => 'Friday']);
+        $allowedDays = array_filter(Weekdays::cases(), fn(Weekdays $s) => $s !== Weekdays::Monday);
+
+        ScheduleFactory::createMany(10, ['dayOfweek' => Weekdays::Monday]);
+        ScheduleFactory::createMany(10, function() use ($allowedDays) {
+            return [
+                'dayOfweek' => $allowedDays[array_rand($allowedDays)],
+            ];
+        });
 
         $client->request('GET', 'api/v1/schedules?dayOfweek[]=Monday');
 
@@ -95,7 +102,7 @@ class ScheduleApiTest extends ApiTestCase
     public function testPostSchedule(): void
     {
         $today = new DateTime('now', new DateTimeZone('UTC'));
-        $dayOfWeek = $today->format('l');
+        $dayOfWeek = Weekdays::from($today->format('l'));
         $master = MastersFactory::createOne();
         $masterId = $master->getId();
 
@@ -118,7 +125,7 @@ class ScheduleApiTest extends ApiTestCase
         $this->assertResponseStatusCodeSame(201);
         $this->assertResponseHeaderSame('content-type', 'application/ld+json; charset=utf-8');
         $this->assertJsonContains([
-            'dayOfweek' => $dayOfWeek,
+            'dayOfweek' => $dayOfWeek->value,
             'masterId' => $masterId
         ]);
         $this->assertEquals('15:00:00', $responseData['start_time']['time']);
@@ -141,7 +148,7 @@ class ScheduleApiTest extends ApiTestCase
         $this->assertResponseStatusCodeSame(422);
         $this->assertJsonContains([
             'violations' => [
-                ['propertyPath' => 'dayOfweek', 'message' => 'Invalid day of the week.'],
+                ['propertyPath' => 'dayOfweek', 'message' => 'The value you selected is not a valid choice.'],
                 ['propertyPath' => 'start_time', 'message' => 'The start time must be in the format HH:MM:SS.'],
                 ['propertyPath' => 'stop_time', 'message' => 'The stop time must be in the format HH:MM:SS.'],
                 ['propertyPath' => 'masterId', 'message' => 'Master ID cannot be empty.']

@@ -5,6 +5,7 @@ namespace App\Mapper;
 use App\ApiResource\ScheduleApi;
 use App\Entity\Masters;
 use App\Entity\Schedule;
+use App\Enum\Weekdays;
 use App\Service\EntityLoaderHelper;
 use App\Service\TimeFormatter;
 use Symfonycasts\MicroMapper\AsMapper;
@@ -32,7 +33,7 @@ class ScheduleApiToEntityMapper implements MapperInterface
         assert($from instanceof ScheduleApi);
         assert($to instanceof Schedule);
 
-        $to->setDayOfweek($from->dayOfweek);
+        $to->setDayOfweek(Weekdays::from($from->dayOfweek));
         $to->setStartTime($this->timeFormatter->parseTime($from->start_time));
         $to->setStopTime($this->timeFormatter->parseTime($from->stop_time));
         $to->setMaster($this->loader->load(Masters::class, $from->masterId, 'Masters'));
