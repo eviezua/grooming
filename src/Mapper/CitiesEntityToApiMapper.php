@@ -23,6 +23,7 @@ class CitiesEntityToApiMapper implements MapperInterface
         $to->id = $from->getId();
         $to->city = $from->getCity();
         $to->masters = array_map(fn(Masters $m) => $m->getId(), $from->getMasters()->toArray());
+        $to->status = $from->getStatus()->value;
 
         return $to;
     }
@@ -34,6 +35,7 @@ class CitiesEntityToApiMapper implements MapperInterface
 
         $to->city = $from->getCity();
         $to->masters = array_map(fn(Masters $m) => $m->getId(), $from->getMasters()->toArray());
+        $to->status = $from->getStatus()->value;
 
         return $to;
     }

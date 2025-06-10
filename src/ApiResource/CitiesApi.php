@@ -41,4 +41,7 @@ class CitiesApi
 
     #[Groups(["city:read"])]
     public array $masters = [];
+
+    #[Groups(["city:read"])]
+    public ?string $status = null;
 }
