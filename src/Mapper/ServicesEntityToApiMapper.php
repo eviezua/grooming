@@ -20,6 +20,7 @@ class ServicesEntityToApiMapper implements MapperInterface
         $to->cost = $from->getCost();
         $to->default_time = $from->getDefaultTime()?->format('H:i:s');
         $to->mastersId = $from->getMastersId();
+        $to->status = $from->getStatus()->value;
 
         return $to;
     }
@@ -34,6 +35,7 @@ class ServicesEntityToApiMapper implements MapperInterface
         $to->cost = $from->getCost();
         $to->default_time = $from->getDefaultTime()?->format('H:i:s');
         $to->mastersId = $from->getMastersId();
+        $to->status = $from->getStatus()->value;
 
         return $to;
     }

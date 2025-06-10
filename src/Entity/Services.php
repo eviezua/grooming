@@ -40,6 +40,7 @@ class Services
     public function __construct()
     {
         $this->masters = new ArrayCollection();
+        $this->status = Status::Awaiting;
     }
 
     public function getId(): ?int
@@ -131,7 +132,6 @@ class Services
     public function setStatus(Status $status): static
     {
         $this->status = $status;
-
         return $this;
     }
 }

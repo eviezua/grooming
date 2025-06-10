@@ -56,4 +56,7 @@ class ServicesApi
 
     #[Groups(["services:read"])]
     public array $mastersId = [];
+
+    #[Groups(["services:read"])]
+    public ?string $status = null;
 }
