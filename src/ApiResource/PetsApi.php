@@ -10,6 +10,9 @@ use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Post;
 use App\Entity\Pets;
+use App\Enum\Hair;
+use App\Enum\Size;
+use App\Enum\Species;
 use App\Filter\PetSearchFilter;
 use App\State\EntityClassDtoStateProcessor;
 use App\State\EntityToDtoStateProvider;
@@ -38,11 +41,11 @@ class PetsApi
     public ?int $id = null;
 
     #[Groups(["pets:read", "pets:write"])]
-    #[Assert\NotBlank(message: "Spice of pets must not be empty.")]
+    #[Assert\Choice(callback: [Species::class, 'values'])]
     public ?string $spice = null;
 
     #[Groups(["pets:write"])]
-    #[Assert\NotBlank(message: "Hair of pets must not be empty.")]
+    #[Assert\Choice(callback: [Hair::class, 'values'])]
     public ?string $hair = null;
 
     #[Groups(["pets:read", "pets:write"])]
@@ -50,7 +53,7 @@ class PetsApi
     public ?string $breed = null;
 
     #[Groups(["pets:write"])]
-    #[Assert\NotBlank(message: "Size of pets must not be empty.")]
+    #[Assert\Choice(callback: [Size::class, 'values'])]
     public ?string $size = null;
 
     #[Groups(["pets:read"])]
@@ -58,4 +61,7 @@ class PetsApi
 
     #[Groups(["pets:read"])]
     public array $mastersId = [];
+
+    #[Groups(["pets:read"])]
+    public ?string $status = null;
 }

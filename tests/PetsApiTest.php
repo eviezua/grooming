@@ -4,6 +4,7 @@ namespace App\Tests;
 
 use ApiPlatform\Symfony\Bundle\Test\ApiTestCase;
 use App\Entity\Pets;
+use App\Enum\Species;
 use App\Factory\PetsFactory;
 use Elastic\Elasticsearch\Client;
 use Zenstruck\Foundry\Test\Factories;
@@ -117,10 +118,16 @@ class PetsApiTest extends ApiTestCase
     {
         $client = static::createClient();
 
-        PetsFactory::createOne(['spice' => 'cats']);
-        PetsFactory::createMany(10);
+        $allowedSpices = array_filter(Species::cases(), fn(Species $s) => $s !== Species::Cat);
 
-        $client->request('GET', 'api/v1/pets?spice[]=cats');
+        PetsFactory::createOne(['spice' => Species::Cat]);
+        PetsFactory::createMany(10, function() use ($allowedSpices) {
+            return [
+                'spice' => $allowedSpices[array_rand($allowedSpices)],
+            ];
+        });
+
+        $client->request('GET', 'api/v1/pets?spice[]=Cat');
 
         $this->assertResponseIsSuccessful();
         $this->assertResponseHeaderSame('content-type', 'application/ld+json; charset=utf-8');
@@ -157,10 +164,10 @@ class PetsApiTest extends ApiTestCase
             'api/v1/pets',
             [
                 'json' => [
-                    'spice' => 'cat',
-                    'hair' => 'long',
+                    'spice' => 'Cat',
+                    'hair' => 'Long',
                     'breed' => 'Norwegian forest cat',
-                    'size' => 'big'
+                    'size' => 'Big'
                 ],
                 'headers' => [
                     'Content-Type' => 'application/ld+json',
@@ -198,10 +205,10 @@ class PetsApiTest extends ApiTestCase
         $this->assertResponseStatusCodeSame(422);
         $this->assertJsonContains([
             'violations' => [
-                ['propertyPath' => 'spice', 'message' => 'Spice of pets must not be empty.'],
-                ['propertyPath' => 'hair', 'message' => 'Hair of pets must not be empty.'],
+                ['propertyPath' => 'spice', 'message' => 'The value you selected is not a valid choice.'],
+                ['propertyPath' => 'hair', 'message' => 'The value you selected is not a valid choice.'],
                 ['propertyPath' => 'breed', 'message' => 'Breed of pets must not be empty.'],
-                ['propertyPath' => 'size', 'message' => 'Size of pets must not be empty.'],
+                ['propertyPath' => 'size', 'message' => 'The value you selected is not a valid choice.'],
             ],
         ]);
     }

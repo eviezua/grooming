@@ -5,6 +5,9 @@ namespace App\Mapper;
 use App\ApiResource\PetsApi;
 use App\Entity\Masters;
 use App\Entity\Pets;
+use App\Enum\Hair;
+use App\Enum\Size;
+use App\Enum\Species;
 use App\Service\EntityLoaderHelper;
 use Psr\Log\LoggerInterface;
 use Symfonycasts\MicroMapper\AsMapper;
@@ -33,10 +36,10 @@ class PetsApiToEntityMapper implements MapperInterface
         assert($from instanceof PetsApi);
         assert($to instanceof Pets);
 
-        $to->setSpice($from->spice);
-        $to->setHair($from->hair);
+        $to->setSpice(Species::from($from->spice));
+        $to->setHair(Hair::from($from->hair));
         $to->setBreed($from->breed);
-        $to->setSize($from->size);
+        $to->setSize(Size::from($from->size));
 
         $to->clearMasters();
 

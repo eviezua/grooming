@@ -17,11 +17,12 @@ class PetsEntityToApiMapper implements MapperInterface
 
         $to = new PetsApi();
         $to->id = $from->getId();
-        $to->spice = $from->getSpice();
-        $to->hair = $from->getHair();
+        $to->spice = $from->getSpice()->value;
+        $to->hair = $from->getHair()->value;
         $to->breed = $from->getBreed();
-        $to->size = $from->getSize();
+        $to->size = $from->getSize()->value;
         $to->mastersId = array_map(fn(Masters $m) => $m->getId(), $from->getMasters()->toArray());
+        $to->status = $from->getStatus()->value;
 
         return $to;
     }
@@ -32,12 +33,13 @@ class PetsEntityToApiMapper implements MapperInterface
         assert($to instanceof PetsApi);
 
         $to->id = $from->getId();
-        $to->spice = $from->getSpice();
-        $to->hair = $from->getHair();
+        $to->spice = $from->getSpice()->value;
+        $to->hair = $from->getHair()->value;
         $to->breed = $from->getBreed();
-        $to->size = $from->getSize();
+        $to->size = $from->getSize()->value;
         $to->cost_coficient = $from->getCostCoficient();
         $to->mastersId = $from->getMastersId();
+        $to->status = $from->getStatus()->value;
 
         return $to;
     }

@@ -48,6 +48,7 @@ class Pets
     public function __construct()
     {
         $this->masters = new ArrayCollection();
+        $this->status = Status::Awaiting;
     }
 
     public function getId(): ?int
