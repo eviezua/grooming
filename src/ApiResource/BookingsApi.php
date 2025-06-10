@@ -73,4 +73,6 @@ class BookingsApi
     #[Groups(["booking:read", "booking:write"])]
     public ?int $clientId = null;
 
+    #[Groups(["booking:read"])]
+    public ?string $status = null;
 }

@@ -58,6 +58,7 @@ class Bookings
     public function __construct()
     {
         $this->id_services = new ArrayCollection();
+        $this->status = Status::Awaiting;
     }
 
     public function getId(): ?int

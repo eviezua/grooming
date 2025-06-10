@@ -31,6 +31,8 @@ class BookingsEntityToApiMapper implements MapperInterface
         $to->timeStart = $this->timeFormatter->formatTime($from->getTimeStart());
         $to->timeStop = $this->timeFormatter->formatTime($from->getTimeStop());
 
+        $to->status = $from->getStatus()->value;
+
         return $to;
     }
 
@@ -48,6 +50,8 @@ class BookingsEntityToApiMapper implements MapperInterface
         $to->date = $from->getDate()?->format('Y-m-d');
         $to->timeStart = $this->timeFormatter->formatTime($from->getTimeStart());
         $to->timeStop = $this->timeFormatter->formatTime($from->getTimeStop());
+
+        $to->status = $from->getStatus()->value;
 
         return $to;
     }
