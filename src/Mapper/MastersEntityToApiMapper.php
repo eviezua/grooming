@@ -26,6 +26,7 @@ class MastersEntityToApiMapper implements MapperInterface
         $to->photo = $from->getPhoto();
         $to->schedulesId = $from->getSchedulesId();
         $to->bookingsId = $from->getBookingsId();
+        $to->status = $from->getStatus()->value;
 
         return $to;
     }
@@ -46,6 +47,7 @@ class MastersEntityToApiMapper implements MapperInterface
         $to->photo = $from->getPhoto();
         $to->schedulesId = $from->getSchedulesId();
         $to->bookingsId = $from->getBookingsId();
+        $to->status = $from->getStatus()->value;
 
         return $to;
     }

@@ -71,6 +71,7 @@ class Masters
         $this->id_pets = new ArrayCollection();
         $this->schedules = new ArrayCollection();
         $this->bookings = new ArrayCollection();
+        $this->status = Status::Awaiting;
     }
 
     public function getId(): ?int

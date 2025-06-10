@@ -82,4 +82,6 @@ class MastersApi
     #[Groups(["master:read"])]
     public array $bookingsId = [];
 
+    #[Groups(["master:read"])]
+    public ?string $status = null;
 }
