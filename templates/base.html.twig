@@ -7,23 +7,98 @@
     {{ encore_entry_link_tags('app') }}
 </head>
 <body>
-<header>
-    <nav class="bg-pan-left">
-        <a href="/">Logo</a>
-        <a href="#about">Groomers</a>
-        <a href="#services">Prices</a>
-        <a href="#about">Questions</a>
-        <a href="#about">Contacts</a>
-        <a href="#contact">Log in</a>
+<header class="groomify-header position-relative overflow-visible">
+    <div class="paw-background z-0"></div>
+    <nav class="bg-pan-left container-fluid d-flex align-items-center justify-content-between gap-4">
+        <div class="nav-left">
+            <a href="/">Groomify</a>
+        </div>
+        <div class="nav-center d-flex flex-grow-1 justify-content-between mside-5">
+            <a href="#home" class="fw-500">Home</a>
+            <a href="#about" class="fw-500">About us</a>
+            <a href="#groomers" class="fw-500">Groomers</a>
+            <a href="#faq" class="fw-500">FAQ</a>
+            <a href="#about" class="fw-500">Join us</a>
+        </div>
+        <div class="nav-right d-flex align-items-center gap-6_5">
+            <div class="languages d-flex gap-5">
+                <span>УКР</span>
+                <span>ENG</span>
+            </div>
+            <div class="icons d-flex gap-4">
+                <img src="/uploads/icons/contacts.png" alt="Contact" class="icon-img">
+                <img src="/uploads/icons/profile.png" alt="Profile" class="icon-img">
+            </div>
+        </div>
     </nav>
+
+    <div class="hero-title text-center position-relative z-2">
+        <h1>groomify</h1>
+    </div>
+
+    <div class="hero-cta-wrapper d-flex justify-content-between align-items-center position-relative flex-wrap">
+        <div class="hero-cta">
+            <h3 class="mb-4">Choose a master by rating and reviews. Get high-quality care without too much trouble!</h3>
+            <div class="d-flex justify-content-between">
+                <a href="#groomer_search" class="m-auto text-center text-decoration-none fw-bold">Search for a groomer</a>
+                <img src="/uploads/icons/button_orange.png">
+            </div>
+        </div>
+
+        <div class="hero-img position-absolute z-2">
+            <img src="/uploads/dog.png">
+        </div>
+
+        <div class="hero-cta">
+            <h3 class="mb-4">Attract new customers, grow in the ranking and develop your career together with Groomify!</h3>
+            <div class="d-flex justify-content-between">
+                <a href="#groomer_search" class="m-auto text-center text-decoration-none fw-bold">Join as master</a>
+                <img src="/uploads/icons/button_orange.png">
+            </div>
+        </div>
+    </div>
+    <div class="hero-mask position-relative z-0"></div>
+
 </header>
 
 <main>
     {% block body %}{% endblock %}
+    <div class="hero-sub m-auto container-wide">
+        <h2 class="mb-4">
+            <span>Groomify</span> — a space where groomers and animal owners find each other
+            <img src="/uploads/icons/paw_orange.png">
+        </h2>
+        <div class="hero-info-wrapper row gap-4">
+            <div class="col-md-4 hero-info bg-orange text-white">
+                <img src="/uploads/icons/paw_white.png">
+                <h3>About us</h3>
+                <h4 class="my-3">We have created a platform that helps customers
+                    easily find reliable professionals and groomers - to develop
+                    their business and get more orders. Groomify is quality,
+                    convenience and mutual trust.</h4>
+            </div>
+            <div class="col-md-4 hero-info bg-black text-white">
+                <img src="/uploads/icons/paw_orange.png">
+                <h3>For clients</h3>
+                <h4 class="my-3">Your pet is in safe hands!
+                    On Groomify you quickly find
+                    experienced groomer, view real reviews,
+                    ratings and choose a professional to whom you can trust your friend.</h4>
+                <a href="#groomer_search">Search for a groomer<img src="/uploads/icons/arrow_white.png"></a>
+            </div>
+            <div class="col-md-4 hero-info bg-orange text-white">
+                <img src="/uploads/icons/paw_white.png">
+                <h3>For groomers</h3>
+                <h4 class="my-3">Join Groomify as a master, build your own rating,
+                    receive orders without unnecessary time and effort.
+                    We help you focus on the main thing - love to animals and developing your skills.</h4>
+                <a href="#master">Join a team<img src="/uploads/icons/arrow_white.png"></a>
+            </div>
+        </div>
+    </div>
 </main>
 
-<footer>
-</footer>
+<footer></footer>
 {{ encore_entry_script_tags('app') }}
 </body>
 </html>
