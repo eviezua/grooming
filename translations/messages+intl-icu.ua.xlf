@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xliff xmlns="urn:oasis:names:tc:xliff:document:1.2" version="1.2">
+  <file source-language="en" target-language="ua" datatype="plaintext" original="file.ext">
+    <header>
+      <tool tool-id="symfony" tool-name="Symfony"/>
+    </header>
+    <body>
+      <trans-unit id="OnhpU4i" resname="Home">
+        <source>Home</source>
+        <target>Головна</target>
+      </trans-unit>
+      <trans-unit id="tLWAqa2" resname="About us">
+        <source>About us</source>
+        <target>Про нас</target>
+      </trans-unit>
+      <trans-unit id="PwniCRr" resname="Groomers">
+        <source>Groomers</source>
+        <target>Пошук грумерів</target>
+      </trans-unit>
+      <trans-unit id="28RooUt" resname="FAQ">
+        <source>FAQ</source>
+        <target>FAQ</target>
+      </trans-unit>
+      <trans-unit id="Lh5OGK2" resname="Join us">
+        <source>Join us</source>
+        <target>Приєднатися до нас</target>
+      </trans-unit>
+      <trans-unit id="8FhmKZL" resname="Choose a master by rating and reviews. Get high-quality care without too much trouble!">
+        <source>Choose a master by rating and reviews. Get high-quality care without too much trouble!</source>
+        <target>Обирайте майстра за рейтингом та відгуками
+                й отримуйте якісний догляд без зайвого клопоту!</target>
+      </trans-unit>
+      <trans-unit id="pGxosSn" resname="Search for a groomer">
+        <source>Search for a groomer</source>
+        <target>Знайти грумера</target>
+      </trans-unit>
+      <trans-unit id="vCdBdKi" resname="Attract new customers, grow in the ranking and develop your career together with Groomify!">
+        <source>Attract new customers, grow in the ranking and develop your career together with Groomify!</source>
+        <target>Залучайте нових клієнтів, зростайте в рейтингу
+                та розвивайте свою кар’єру  разом із Groomify!</target>
+      </trans-unit>
+      <trans-unit id="VUJqkiv" resname="Join as master">
+        <source>Join as master</source>
+        <target>Доєднатись до нас</target>
+      </trans-unit>
+      <trans-unit id="DPFIbR." resname="a space where groomers and animal owners find each other">
+        <source>a space where groomers and animal owners find each other</source>
+        <target>Простір, де грумери і власники тварин знаходять одне одного</target>
+      </trans-unit>
+      <trans-unit id="WtfW0h." resname="We have created a platform that helps customers&#10;                    easily find reliable professionals and groomers - to develop&#10;                    their business and get more orders. Groomify is quality,&#10;                    convenience and mutual trust.">
+        <source>We have created a platform that helps customers
+                    easily find reliable professionals and groomers - to develop
+                    their business and get more orders. Groomify is quality,
+                    convenience and mutual trust.</source>
+        <target>Ми створили платформу, яка допомагає клієнтам легко знаходити надійних фахівців,
+                а грумерам — розвивати свою справу
+                та отримувати більше замовлень.
+                Groomify — це якість, зручність і взаємна довіра.</target>
+      </trans-unit>
+      <trans-unit id="A8mQgES" resname="For clients">
+        <source>For clients</source>
+        <target>Для клієнтів</target>
+      </trans-unit>
+      <trans-unit id="KRIAm7G" resname="Your pet is in safe hands!&#10;                    On Groomify you quickly find&#10;                    experienced groomer, view real reviews,&#10;                    ratings and choose a professional to whom you can trust your friend.">
+        <source>Your pet is in safe hands!
+                    On Groomify you quickly find
+                    experienced groomer, view real reviews,
+                    ratings and choose a professional to whom you can trust your friend.</source>
+        <target>Ваш улюбленець у надійних руках!
+                На Groomify ви швидко знаходите
+                досвідченого грумера, переглядаєте реальні відгуки, рейтинги і обираєте професіонала, якому можна довірити свого друга.</target>
+      </trans-unit>
+      <trans-unit id="HeHEwfK" resname="For groomers">
+        <source></source>
+        <target>Для грумерів</target>
+      </trans-unit>
+      <trans-unit id="mRhRa.a" resname="Join Groomify as a master, build your own rating,&#10;                    receive orders without unnecessary time and effort.&#10;                    We help you focus on the main thing - love to animals and developing your skills.">
+        <source>Join Groomify as a master, build your own rating,
+                    receive orders without unnecessary time and effort.
+                    We help you focus on the main thing - love to animals and developing your skills.</source>
+        <target>Приєднуйтесь до Groomify, будуйте власний рейтинг, отримуйте замовлення без зайвих витрат часу і зусиль. Ми допомагаємо вам зосередитись на головному — любові до тварин та своїй майстерності.</target>
+      </trans-unit>
+      <trans-unit id="aidTNtj" resname="Join a team">
+        <source>Join a team</source>
+        <target>Доєднатись до команди</target>
+      </trans-unit>
+    </body>
+  </file>
+</xliff>
