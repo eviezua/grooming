@@ -1,0 +1,12 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+<div class="bg-gray py-5">
+    <div class="section-title m-auto container-wide">
+        <h1 class="mb-4 text-center">
+            <span>{{ 'Questions'|trans }}</span> {{ '& answers'|trans }}
+        </h1>
+    </div>
+    <faq-list></faq-list>
+</div>
+{% endblock %}

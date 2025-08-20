@@ -1,0 +1,37 @@
+<div class="hero-title text-center position-relative">
+    <h1>groomify</h1>
+</div>
+
+<div class="hero-cta-wrapper container-wide align-items-center">
+    <div class="hero-cta">
+        <h3 class="mb-4">{{ 'Choose a master by rating and reviews. Get high-quality care without too much trouble!'|trans }}</h3>
+        <div class="d-flex justify-content-between align-items-center hover-glow">
+            <a href="{{ path('app_groomers', {'_locale': app.request.locale}) }}" class="m-auto text-center text-decoration-none fw-bold">{{ 'Search for a groomer'|trans }}</a>
+            <a href="{{ path('app_groomers', {'_locale': app.request.locale}) }}" class="hover-img button">
+                <img src="/uploads/icons/button_orange.png" class="icon default">
+                <img src="/uploads/icons/button_black.png" class="icon hover">
+            </a>
+        </div>
+    </div>
+    <div class="hero-img-wrapper">
+        <div class="hero-img z-2">
+            <img src="/uploads/dog.png">
+        </div>
+    </div>
+    <div class="hero-cta">
+        <h3 class="mb-4 text-end">{{ 'Attract new customers, grow in the ranking and develop your career together with Groomify!'|trans }}</h3>
+        <div class="d-flex justify-content-between align-items-center hover-glow">
+            <a href="{{ path('app_join', {'_locale': app.request.locale}) }}" class="m-auto text-center text-decoration-none fw-bold">{{ 'Join as master'|trans }}</a>
+            <a class="hover-img button" href="{{ path('app_join', {'_locale': app.request.locale}) }}">
+                <img src="/uploads/icons/button_orange.png" class="icon default">
+                <img src="/uploads/icons/button_black.png" class="icon hover">
+            </a>
+        </div>
+    </div>
+</div>
+
+<div class="wave-mask">
+    <div class="mask-left"></div>
+    <div class="mask-wave"></div>
+    <div class="mask-right"></div>
+</div>

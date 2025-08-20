@@ -1,0 +1,49 @@
+.animated-bg{
+  background: linear-gradient(45deg, #ffd200, #ffae00, #cd3700, #e7ff00);
+  background-size: 400% 400%;
+  animation: bg-pan-left 8s ease infinite;
+}
+
+@-webkit-keyframes bg-pan-left {
+  0% {
+    background-position: 100% 50%;
+  }
+  50% {
+    background-position: 0% 50%;
+  }
+  100% {
+    background-position: 100% 50%;
+  }
+}
+@keyframes bg-pan-left {
+  0% {
+    background-position: 100% 50%;
+  }
+  50% {
+    background-position: 0% 50%;
+  }
+  100% {
+    background-position: 100% 50%;
+  }
+}
+
+.paw-bg {
+  position: absolute;
+  inset: 0;
+  background: url('/public/uploads/paws_bg.png') center/cover no-repeat;
+  opacity: 0.3;
+  pointer-events: none;
+  z-index: -1;
+}
+
+.bg-orange {
+  background-color: #FF9229;
+}
+
+.bg-black {
+  background-color: black;
+}
+
+.bg-gray {
+  background-color: #F5F1F0;
+}

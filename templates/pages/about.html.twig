@@ -1,0 +1,21 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <div class="bg-white py-5">
+        {% include 'partials/_info.html.twig' %}
+        <div class="section-title align-items-center mx-auto container-wide">
+            <h1 class="my-4">
+                {{ 'how was created our'|trans }} <span>{{ 'platform'|trans }}</span>
+            </h1>
+            <div class="img-text gap-4">
+                <div class="m-auto inter-22">
+                    <p>{{ 'Once four friends gathered, each with their own. experience and views, and decided that it was time for something. change. That\'s how the platform was born, which became. a real bridge between groomers and their customers.'|trans }}</p>
+                    <p>{{ 'Now you can easily find a professional who is right. just for you, and you no longer need to run around all the salons of the city. spending time searching and comparing. You just choose. comfortable, decent and experienced groomer — and that\'s it!'|trans }}</p>
+                </div>
+                <div class="m-auto">
+                    <img src="/uploads/us.png">
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
