@@ -1,0 +1,40 @@
+.form-input-wrapper{
+  gap: 30px;
+  max-width: 900px;
+  transform: translateY(calc(-4em - 1.5vw));
+}
+
+.form-input{
+  border: none;
+  outline: none;
+  @extend .inter-18;
+  min-width: 361px;
+  width: 95%;
+  max-width: 570px;
+  height: 81px;
+  @include pill-button(white, 48px, 4%);
+}
+
+.form-btn{
+  border: none;
+  outline: none;
+  width: 330px;
+  height: 81px;
+  @include pill-button(#FF9229, 48px, 0.5%);
+  color: white;
+  @include inter-font(1.25rem, 500);
+  flex-grow: 1;
+  @extend .text-shadow-0_25;
+  img{
+    height: 100%;
+    width: auto;
+  }
+}
+
+.form-text{
+  @include soyuz-font();
+  margin: 0;
+  user-select: none;
+  line-height: 1;
+  font-size: clamp(10px, 3vw, 60px);
+}

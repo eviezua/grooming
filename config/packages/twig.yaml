@@ -1,4 +1,8 @@
 twig:
+    globals:
+        phone: '%env(APP_PHONE)%'
+        phone_formatted: '%env(APP_PHONE_FORMATTED)%'
+        email: '%env(APP_EMAIL)%'
     file_name_pattern: '*.twig'
     default_path: '%kernel.project_dir%/templates'
 when@test:

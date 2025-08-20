@@ -90,6 +90,11 @@ WORKDIR /app
 COPY package.json package-lock.json ./
 RUN npm install
 
+COPY assets/js/convert-xlf.mjs ./assets/js/convert-xlf.mjs
+COPY translations/ translations/
+RUN node assets/js/convert-xlf.mjs
+
+
 CMD [ "frankenphp", "run", "--config", "/etc/caddy/Caddyfile", "--watch" ]
 
 # Prod FrankenPHP image

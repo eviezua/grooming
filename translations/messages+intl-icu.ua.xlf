@@ -5,6 +5,18 @@
       <tool tool-id="symfony" tool-name="Symfony"/>
     </header>
     <body>
+      <trans-unit id="crIue4z" resname="&amp; answers">
+        <source>&amp; answers</source>
+        <target>та відповіді</target>
+      </trans-unit>
+      <trans-unit id="x.k3g29" resname="Choose">
+        <source>Choose</source>
+        <target>знайди</target>
+      </trans-unit>
+      <trans-unit id="krCOxWr" resname="your groomer">
+        <source>your groomer</source>
+        <target>свого грумера</target>
+      </trans-unit>
       <trans-unit id="OnhpU4i" resname="Home">
         <source>Home</source>
         <target>Головна</target>
@@ -27,8 +39,7 @@
       </trans-unit>
       <trans-unit id="8FhmKZL" resname="Choose a master by rating and reviews. Get high-quality care without too much trouble!">
         <source>Choose a master by rating and reviews. Get high-quality care without too much trouble!</source>
-        <target>Обирайте майстра за рейтингом та відгуками
-                й отримуйте якісний догляд без зайвого клопоту!</target>
+        <target>Обирайте майстра за рейтингом та відгуками й отримуйте якісний догляд без зайвого клопоту!</target>
       </trans-unit>
       <trans-unit id="pGxosSn" resname="Search for a groomer">
         <source>Search for a groomer</source>
@@ -36,8 +47,7 @@
       </trans-unit>
       <trans-unit id="vCdBdKi" resname="Attract new customers, grow in the ranking and develop your career together with Groomify!">
         <source>Attract new customers, grow in the ranking and develop your career together with Groomify!</source>
-        <target>Залучайте нових клієнтів, зростайте в рейтингу
-                та розвивайте свою кар’єру  разом із Groomify!</target>
+        <target>Залучайте нових клієнтів, зростайте в рейтингу та розвивайте свою кар’єру разом із Groomify!</target>
       </trans-unit>
       <trans-unit id="VUJqkiv" resname="Join as master">
         <source>Join as master</source>
@@ -47,42 +57,86 @@
         <source>a space where groomers and animal owners find each other</source>
         <target>Простір, де грумери і власники тварин знаходять одне одного</target>
       </trans-unit>
-      <trans-unit id="WtfW0h." resname="We have created a platform that helps customers&#10;                    easily find reliable professionals and groomers - to develop&#10;                    their business and get more orders. Groomify is quality,&#10;                    convenience and mutual trust.">
-        <source>We have created a platform that helps customers
-                    easily find reliable professionals and groomers - to develop
-                    their business and get more orders. Groomify is quality,
-                    convenience and mutual trust.</source>
-        <target>Ми створили платформу, яка допомагає клієнтам легко знаходити надійних фахівців,
-                а грумерам — розвивати свою справу
-                та отримувати більше замовлень.
-                Groomify — це якість, зручність і взаємна довіра.</target>
+      <trans-unit id="zyR0g_K" resname="platform_description">
+        <source>platform_description</source>
+        <target>Ми створили платформу, яка допомагає клієнтам легко знаходити надійних фахівців, а грумерам — розвивати свою справу та отримувати більше замовлень.
+        Groomify — це якість, зручність і взаємна довіра.</target>
       </trans-unit>
       <trans-unit id="A8mQgES" resname="For clients">
         <source>For clients</source>
         <target>Для клієнтів</target>
       </trans-unit>
-      <trans-unit id="KRIAm7G" resname="Your pet is in safe hands!&#10;                    On Groomify you quickly find&#10;                    experienced groomer, view real reviews,&#10;                    ratings and choose a professional to whom you can trust your friend.">
-        <source>Your pet is in safe hands!
-                    On Groomify you quickly find
-                    experienced groomer, view real reviews,
-                    ratings and choose a professional to whom you can trust your friend.</source>
-        <target>Ваш улюбленець у надійних руках!
-                На Groomify ви швидко знаходите
-                досвідченого грумера, переглядаєте реальні відгуки, рейтинги і обираєте професіонала, якому можна довірити свого друга.</target>
+      <trans-unit id="tKap50H" resname="platform_clients">
+        <source>platform_clients</source>
+        <target>Ваш улюбленець у надійних руках! На Groomify ви швидко знаходите досвідченого грумера, переглядаєте реальні відгуки, рейтинги і обираєте професіонала, якому можна довірити свого друга.</target>
       </trans-unit>
       <trans-unit id="HeHEwfK" resname="For groomers">
-        <source></source>
+        <source>For groomers</source>
         <target>Для грумерів</target>
       </trans-unit>
-      <trans-unit id="mRhRa.a" resname="Join Groomify as a master, build your own rating,&#10;                    receive orders without unnecessary time and effort.&#10;                    We help you focus on the main thing - love to animals and developing your skills.">
-        <source>Join Groomify as a master, build your own rating,
-                    receive orders without unnecessary time and effort.
-                    We help you focus on the main thing - love to animals and developing your skills.</source>
+      <trans-unit id="okdFtBs" resname="platform_groomers">
+        <source>platform_groomers</source>
         <target>Приєднуйтесь до Groomify, будуйте власний рейтинг, отримуйте замовлення без зайвих витрат часу і зусиль. Ми допомагаємо вам зосередитись на головному — любові до тварин та своїй майстерності.</target>
       </trans-unit>
       <trans-unit id="aidTNtj" resname="Join a team">
         <source>Join a team</source>
         <target>Доєднатись до команди</target>
+      </trans-unit>
+      <trans-unit id="dPArjlm" resname="2025 All rights reserved">
+        <source>2025 All rights reserved</source>
+        <target>2025 All rights reserved</target>
+      </trans-unit>
+      <trans-unit id="UG.zlGI" resname="Privacy Policy">
+        <source>Privacy Policy</source>
+        <target>Privacy Policy</target>
+      </trans-unit>
+      <trans-unit id="1H18sOT" resname="More">
+        <source>More</source>
+        <target>Більше</target>
+      </trans-unit>
+      <trans-unit id="WcvLynB" resname="Rating:">
+        <source>Rating:</source>
+        <target>Рейтинг:</target>
+      </trans-unit>
+      <trans-unit id="mnIiGid" resname="Questions">
+        <source>Questions</source>
+        <target>запитання</target>
+      </trans-unit>
+      <trans-unit id="0ZPaX3m" resname="Send a form">
+        <source>Send a form</source>
+        <target>Відправити форму</target>
+      </trans-unit>
+      <trans-unit id="FV.6C8a" resname="Join the team of groomers">
+        <source>Join the team of groomers</source>
+        <target>доєднуйся до команди грумерів</target>
+      </trans-unit>
+      <trans-unit id="3NHVIj9" resname="Name">
+        <source>Name</source>
+        <target>Ім’я</target>
+      </trans-unit>
+      <trans-unit id="92LaBfT" resname="Surname">
+        <source>Surname</source>
+        <target>Прізвище</target>
+      </trans-unit>
+      <trans-unit id="lpzL089" resname="Email">
+        <source>Email</source>
+        <target>Email</target>
+      </trans-unit>
+      <trans-unit id="_XIrku7" resname="how was created our">
+        <source>how was created our</source>
+        <target>як створювалася наша</target>
+      </trans-unit>
+      <trans-unit id="0pT8zgz" resname="platform">
+        <source>platform</source>
+        <target>платформа</target>
+      </trans-unit>
+      <trans-unit id="DIb7Deb" resname="Once four friends gathered, each with their own. experience and views, and decided that it was time for something. change. That's how the platform was born, which became. a real bridge between groomers and their customers.">
+        <source>Once four friends gathered, each with their own. experience and views, and decided that it was time for something. change. That's how the platform was born, which became. a real bridge between groomers and their customers.</source>
+        <target>Якось зібрались четверо друзів, кожен зі своїм досвідом і поглядами, і вирішили, що пора щось змінювати. Так і народилася платформа, яка стала справжнім містком між грумерами та їхніми клієнтами.</target>
+      </trans-unit>
+      <trans-unit id="BIr9qEZ" resname="Now you can easily find a professional who is right. just for you, and you no longer need to run around all the salons of the city. spending time searching and comparing. You just choose. comfortable, decent and experienced groomer — and that's it!">
+        <source>Now you can easily find a professional who is right. just for you, and you no longer need to run around all the salons of the city. spending time searching and comparing. You just choose. comfortable, decent and experienced groomer — and that's it!</source>
+        <target>Тепер можна легко знайти професіонала, який підходить саме тобі, і не потрібно більше бігати по всіх салонах міста, витрачаючи час на пошуки та порівняння. Ти просто обираєш зручного, порядного та досвідченого грумера — і все!</target>
       </trans-unit>
     </body>
   </file>

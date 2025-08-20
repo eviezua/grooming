@@ -16,6 +16,26 @@ final class HomepageController extends AbstractController
     #[Route('/{_locale<%app.supported_locales%>}/', name: 'app_homepage')]
     public function index(): Response
     {
-        return $this->render('base.html.twig');
+        return $this->render('pages/homepage.html.twig');
+    }
+    #[Route('/{_locale<%app.supported_locales%>}/about', name: 'app_about')]
+    public function about(): Response
+    {
+        return $this->render('pages/about.html.twig');
+    }
+    #[Route('/{_locale<%app.supported_locales%>}/groomers', name: 'app_groomers')]
+    public function groomers(): Response
+    {
+        return $this->render('pages/groomers.html.twig');
+    }
+    #[Route('/{_locale<%app.supported_locales%>}/faq', name: 'app_faq')]
+    public function faq(): Response
+    {
+        return $this->render('pages/faq.html.twig');
+    }
+    #[Route('/{_locale<%app.supported_locales%>}/join', name: 'app_join')]
+    public function join(): Response
+    {
+        return $this->render('pages/join.html.twig');
     }
 }

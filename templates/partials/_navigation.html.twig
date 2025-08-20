@@ -1,0 +1,118 @@
+{% set links = [
+    { path: path('app_homepage', {'_locale': app.request.locale}), label: 'Home'|trans },
+    { path: path('app_about', {'_locale': app.request.locale}), label: 'About us'|trans },
+    { path: path('app_groomers', {'_locale': app.request.locale}), label: 'Groomers'|trans },
+    { path: path('app_faq', {'_locale': app.request.locale}), label: 'FAQ'|trans },
+    { path: path('app_join', {'_locale': app.request.locale}), label: 'Join us'|trans }
+] %}
+
+<div class="{{ location == 'header' and app.request.attributes.get('_route') != 'app_homepage' ? 'fixed-top bg-orange' }}">
+    <nav class="container-wide groomify-header align-items-center justify-content-between navigation--{{ location|default('default') }} ">
+        {% if location == 'header' %}
+            {# Burger menu (mobile) #}
+            <div class="burger-nav d-lg-none">
+                <button class="btn p-0 border-0" type="button" data-bs-toggle="offcanvas" data-bs-target="#burgerMenu">
+                    <img src="/uploads/icons/menu.png" alt="Menu">
+                </button>
+                <div class="offcanvas offcanvas-start" tabindex="-1" id="burgerMenu">
+                    <div class="offcanvas-header bg-orange">
+                        <h5 class="offcanvas-title groomify-title">groomify</h5>
+                    </div>
+                    <div class="offcanvas-body bg-orange inter-22">
+                        {% for link in links %}
+                            <a href="{{ link.path }}" class="fw-500 hover-text d-block mb-2">{{ link.label }}</a>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+
+        <div class="nav-left">
+            <a href="/">Groomify</a>
+        </div>
+
+        <div class="nav-center d-flex flex-grow-1 justify-content-between align-items-center text-center">
+            {% for link in links %}
+                <a href="{{ link.path }}" class="fw-500 hover-text">{{ link.label }}</a>
+            {% endfor %}
+        </div>
+
+        {% if location == 'header' %}
+            <div class="languages d-flex gap-4 align-items-center justify-content-center">
+                {% for locale in ['ua', 'en'] %}
+                    <a href="{{ path(app.request.attributes.get('_route'), app.request.attributes.get('_route_params')|merge({'_locale': locale})) }}"
+                       class="hover-text {% if app.request.locale == locale %}text-shadow-0_5{% endif %}">
+                        {{ locale|upper }}
+                    </a>
+                {% endfor %}
+            </div>
+            <div class="icons d-flex gap-4 justify-content-center">
+                <div class="position-relative">
+                    <button class="hover-img contacts"
+                            type="button"
+                            data-bs-toggle="collapse"
+                            data-bs-target="#contactsCollapse"
+                            aria-expanded="false"
+                            aria-controls="contactsCollapse">
+                        <img src="/uploads/icons/contacts.png" class="icon default">
+                        <img src="/uploads/icons/contacts_hover.png" class="icon hover">
+                    </button>
+                    <div class="collapse position-absolute contacts-but" id="contactsCollapse">
+                        <a href="tel: {{ phone }} " class="d-block text-center black-link">{{ phone_formatted }}"</a>
+                        <a href="mailto:{{ email }}" class="d-block text-center black-link">{{ email }}</a>
+                    </div>
+                </div>
+                <div class="d-flex">
+                    <div class="position-relative">
+                        <button class="hover-img contacts"
+                                type="button"
+                                data-bs-toggle="collapse"
+                                data-bs-target="#profileCollapse"
+                                aria-expanded="false"
+                                aria-controls="profileCollapse">
+                            <img src="/uploads/icons/profile.png" alt="Profile" class="icon default">
+                            <img src="/uploads/icons/button_paw.png" alt="Profile" class="icon hover">
+                        </button>
+                        <div class="collapse position-absolute profile-but inter-22 p-4" id="profileCollapse">
+                            <div class="row py-2">
+                                <div class="col d-flex align-items-center justify-content-between">
+                                    <span class="hover-text">Account</span>
+                                    <img src="/uploads/icons/skills.png" class="icon">
+                                </div>
+                            </div>
+                            <div class="row py-2">
+                                <div class="col d-flex align-items-center justify-content-between">
+                                    <span class="hover-text">Bookings</span>
+                                    <img src="/uploads/icons/booking.png" class="icon">
+                                </div>
+                            </div>
+                            <div class="row py-2">
+                                <div class="col d-flex align-items-center justify-content-between">
+                                    <span class="hover-text">Clients</span>
+                                    <img src="/uploads/icons/customers.png" class="icon">
+                                </div>
+                            </div>
+                            <div class="row py-2">
+                                <div class="col d-flex align-items-center justify-content-between">
+                                    <span class="hover-text">Services</span>
+                                    <img src="/uploads/icons/price-tag.png" class="icon">
+                                </div>
+                            </div>
+                            <div class="row py-2">
+                                <div class="col d-flex align-items-center justify-content-between">
+                                    <span class="hover-text">Schedule</span>
+                                    <img src="/uploads/icons/calendar.png" class="icon">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% elseif location == 'footer' %}
+            <div class="nav-right d-flex align-items-center gap-5">
+                <a href="#rights" class="fw-500 hover-text">{{ '2025 All rights reserved'|trans }}</a>
+                <a href="#policy" class="fw-500 hover-text">{{ 'Privacy Policy'|trans }}</a>
+            </div>
+        {% endif %}
+        </nav>
+</div>

@@ -1,0 +1,25 @@
+<div class="section-title m-auto container-wide">
+    <h1 class="mb-4">
+        <span>Groomify</span> — {{ 'a space where groomers and animal owners find each other'|trans }}
+        <img src="/uploads/icons/paw_orange.png">
+    </h1>
+    <div class="hero-info-wrapper row gap-4">
+        <div class="hero-info bg-orange text-white m-auto">
+            <img src="/uploads/icons/paw_white.png">
+            <h3>{{ 'About us'|trans }}</h3>
+            <h4 class="my-3">{{ 'platform_description'|trans|nl2br }}</h4>
+        </div>
+        <div class="hero-info bg-black text-white m-auto">
+            <img src="/uploads/icons/paw_orange.png">
+            <h3>{{ 'For clients'|trans }}</h3>
+            <h4 class="my-3">{{ 'platform_clients'|trans|nl2br }}</h4>
+            <a href="{{ path('app_groomers', {'_locale': app.request.locale}) }}">{{ 'Search for a groomer'|trans }}<img src="/uploads/icons/arrow_white.png"></a>
+        </div>
+        <div class="hero-info bg-orange text-white m-auto">
+            <img src="/uploads/icons/paw_white.png">
+            <h3>{{ 'For groomers'|trans }}</h3>
+            <h4 class="my-3">{{ 'platform_groomers'|trans|nl2br }}</h4>
+            <a href="{{ path('app_join', {'_locale': app.request.locale}) }}">{{ 'Join a team'|trans }}<img src="/uploads/icons/arrow_white.png"></a>
+        </div>
+    </div>
+</div>
