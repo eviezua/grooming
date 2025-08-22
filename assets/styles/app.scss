@@ -75,6 +75,11 @@ html, body {
     border: none;
   }
 }
+
+img{
+  text-align: center;
+}
+
 body{
   @include custom-grid();
   grid-template-rows: auto 1fr auto;
@@ -135,6 +140,7 @@ footer {
   overflow: hidden;
   flex-shrink: 0;
   width: 25%;
+  background: white;
 
   img {
   width: 100%;

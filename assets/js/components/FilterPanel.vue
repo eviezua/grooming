@@ -24,10 +24,11 @@
         label="Послуга"
         resource="services"
     />
-    <SearchInput />
+    <SearchInput v-model="search" />
     <a
         href="#"
         class="search-button orange-but justify-content-center align-items-center text-white text-decoration-none inter-18"
+        @click.prevent="onSearchClick"
     >
       Знайти
     </a>
@@ -44,17 +45,33 @@ export default {
     BaseDropdown,
     SearchInput
   },
-  setup() {
+  setup(_, { emit }) {
     const cities = ref([])
     const districts = ref([])
     const breeds = ref([])
     const services = ref([])
+
+    const selectedCity = ref(null)
+    const selectedDistrict = ref(null)
+    const selectedBreed = ref(null)
+    const selectedService = ref(null)
+    const search = ref('')
 
     const fetchOptions = async (url, targetRef, mapFn) => {
       const res = await fetch(url)
       const json = await res.json()
       const data = json['hydra:member'] || json['member'] || []
       targetRef.value = data.map(mapFn)
+    }
+
+    const onSearchClick = () => {
+      emit('search', {
+        city: selectedCity.value?.id || null,
+        district: selectedDistrict.value?.id || null,
+        breed: selectedBreed.value?.id || null,
+        service: selectedService.value?.id || null,
+        search: search.value || null,
+      })
     }
 
     onMounted(() => {
@@ -64,11 +81,6 @@ export default {
       fetchOptions('/api/v1/services', services, i => ({ id: i.id, name: i.name }))
     })
 
-    const selectedCity = ref(null)
-    const selectedDistrict = ref(null)
-    const selectedBreed = ref(null)
-    const selectedService = ref(null)
-
     return {
       cities,
       districts,
@@ -77,7 +89,9 @@ export default {
       selectedCity,
       selectedDistrict,
       selectedBreed,
-      selectedService
+      selectedService,
+      search,
+      onSearchClick
     }
   }
 }
@@ -98,7 +112,7 @@ export default {
 }
 
 .filter-grid > * {
-  min-width: 0; /* ключевой момент для ограничения ширины колонки */
+  min-width: 0;
 }
 
 .filter-grid {
