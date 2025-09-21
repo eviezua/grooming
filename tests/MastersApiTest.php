@@ -5,7 +5,9 @@ namespace App\Tests;
 use ApiPlatform\Symfony\Bundle\Test\ApiTestCase;
 use App\Entity\Masters;
 use App\Factory\CitiesFactory;
+use App\Factory\DistrictsFactory;
 use App\Factory\MastersFactory;
+use App\Factory\MastersServicesFactory;
 use App\Factory\PetsFactory;
 use App\Factory\ScheduleFactory;
 use App\Factory\ServicesFactory;
@@ -60,15 +62,44 @@ class MastersApiTest extends ApiTestCase
         ]);
     }
 
+    public function testGetCollectionWithDistrictIdFilter(): void
+    {
+        $district = DistrictsFactory::createOne();
+        $districtId = $district->getId();
+
+        MastersFactory::CreateMany(10, ['district' => $district]);
+        MastersFactory::createMany(10);
+
+        static::createClient()->request('GET', 'api/v1/masters?district.id[]=' . $districtId);
+
+        $this->assertResponseIsSuccessful();
+        $this->assertResponseHeaderSame('content-type', 'application/ld+json; charset=utf-8');
+
+        $this->assertJsonContains([
+            '@context' => '/api/v1/contexts/Master',
+            '@id' => '/api/v1/masters',
+            '@type' => 'Collection',
+            'totalItems' => 10
+        ]);
+    }
+
     public function testGetCollectionWithServiceIdFilter(): void
     {
         $service = ServicesFactory::createOne();
         $serviceId = $service->getId();
 
-        MastersFactory::CreateMany(10, ['id_services' => [$service]]);
+        $masters = MastersFactory::new(['services_count' => 0])->createMany(10);
+
+        foreach ($masters as $master) {
+            MastersServicesFactory::createOne([
+                'master' => $master,
+                'service' => $service,
+            ]);
+        }
+
         MastersFactory::createMany(10);
 
-        static::createClient()->request('GET', 'api/v1/masters?id_services.id[]=' . $serviceId);
+        static::createClient()->request('GET', 'api/v1/masters?id_services[]=' . $serviceId);
 
         $this->assertResponseIsSuccessful();
         $this->assertResponseHeaderSame('content-type', 'application/ld+json; charset=utf-8');
@@ -209,8 +240,8 @@ class MastersApiTest extends ApiTestCase
     {
         $city = CitiesFactory::createOne();
         $cityId = $city->getId();
-        $service = ServicesFactory::createOne();
-        $serviceId = $service->getId();
+        $district = DistrictsFactory::createOne(['city' => $city]);
+        $districtId = $district->getId();
         $pet = PetsFactory::createOne();
         $petId = $pet->getId();
 
@@ -218,10 +249,9 @@ class MastersApiTest extends ApiTestCase
             'json' => [
                 "name" => "Post",
                 "surname" => "Test",
-                "servicesId" => [
-                    $serviceId
-                ],
                 "cityId" => $cityId,
+                "districtId" => $districtId,
+                "address" => 'Test address',
                 "petsId" => [
                     $petId
                 ],
@@ -240,6 +270,12 @@ class MastersApiTest extends ApiTestCase
         $this->assertJsonContains([
             "name" => "Post",
             "surname" => "Test",
+            "cityId" => $cityId,
+            "districtId" => $districtId,
+            "address" => 'Test address',
+            "petsId" => [
+                $petId
+            ],
             "email" => "test@test.com",
             "phone" => "+12523957776"
         ]);
@@ -262,6 +298,7 @@ class MastersApiTest extends ApiTestCase
                     $serviceId
                 ],
                 "cityId" => $cityId,
+                "address" => 'Test address@/#',
                 "petsId" => [
                     $petId
                 ],
@@ -280,6 +317,7 @@ class MastersApiTest extends ApiTestCase
             'violations' => [
                 ['propertyPath' => 'name', 'message' => 'Name can\'t be empty'],
                 ['propertyPath' => 'surname', 'message' => 'Surname can\'t be empty'],
+                ['propertyPath' => 'address', 'message' => 'Address contains invalid characters'],
                 ['propertyPath' => 'password', 'message' => 'Password must be at least 6 characters.'],
                 ['propertyPath' => 'email', 'message' => 'Not a valid email address.'],
                 ['propertyPath' => 'phone', 'message' => 'Invalid phone number.'],
@@ -293,8 +331,8 @@ class MastersApiTest extends ApiTestCase
         $masterId = $master->getId();
         $city = CitiesFactory::createOne();
         $cityId = $city->getId();
-        $service = ServicesFactory::createOne();
-        $serviceId = $service->getId();
+        $district = DistrictsFactory::createOne(['city' => $city]);
+        $districtId = $district->getId();
         $pet = PetsFactory::createOne();
         $petId = $pet->getId();
 
@@ -302,10 +340,9 @@ class MastersApiTest extends ApiTestCase
             'json' => [
                 "name" => "Put",
                 "surname" => "Test",
-                "servicesId" => [
-                    $serviceId
-                ],
                 "cityId" => $cityId,
+                "districtId" => $districtId,
+                "address" => 'Test address',
                 "petsId" => [
                     $petId
                 ],
@@ -323,10 +360,10 @@ class MastersApiTest extends ApiTestCase
         $this->assertJsonContains([
             "name" => "Put",
             "surname" => "Test",
-            "servicesId" => [
-                $serviceId
-            ],
+            "avgRating" => 0,
             "cityId" => $cityId,
+            "districtId" => $districtId,
+            "address" => 'Test address',
             "petsId" => [
                 $petId
             ],

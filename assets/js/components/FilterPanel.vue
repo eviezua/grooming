@@ -38,7 +38,7 @@
 <script>
 import BaseDropdown from './BaseDropdown.vue'
 import SearchInput from './SearchInput.vue'
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, watch } from 'vue'
 
 export default {
   components: {
@@ -64,21 +64,40 @@ export default {
       targetRef.value = data.map(mapFn)
     }
 
+    const fetchDistrictsByCity = async (cityId) => {
+      if (!cityId) {
+        districts.value = []
+        selectedDistrict.value = null
+        return
+      }
+      await fetchOptions(
+          `/api/v1/districts?city.id[]=${cityId}`,
+          districts,
+          i => ({ id: i.id, name: i.name })
+      )
+      selectedDistrict.value = null
+    }
+
     const onSearchClick = () => {
       emit('search', {
         city: selectedCity.value?.id || null,
         district: selectedDistrict.value?.id || null,
         breed: selectedBreed.value?.id || null,
         service: selectedService.value?.id || null,
+        serviceName: selectedService.value?.name || null,
         search: search.value || null,
       })
     }
 
     onMounted(() => {
       fetchOptions('/api/v1/cities', cities, i => ({ id: i.id, name: i.city }))
-      fetchOptions('/api/v1/cities', districts, i => ({ id: i.id, name: i.city }))
+      fetchOptions('/api/v1/districts', districts, i => ({ id: i.id, name: i.name }))
       fetchOptions('/api/v1/pets', breeds, i => ({ id: i.id, name: `${i.spice} — ${i.breed}` }))
       fetchOptions('/api/v1/services', services, i => ({ id: i.id, name: i.name }))
+    })
+
+    watch(selectedCity, (newCity) => {
+      fetchDistrictsByCity(newCity?.id)
     })
 
     return {

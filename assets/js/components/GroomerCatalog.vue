@@ -3,7 +3,7 @@
     <filter-panel @search="onSearch"></filter-panel>
   </div>
   <div id="groomers-list">
-    <groomer-list :filters="filters"></groomer-list>
+    <groomer-list :filters="filters" :preview="preview"></groomer-list>
   </div>
 </template>
 
@@ -14,6 +14,9 @@ import GroomerList from './GroomerList.vue'
 
 export default {
   components: { FilterPanel, GroomerList },
+  props: {
+    preview: { type: Boolean, default: true }
+  },
   setup() {
     const filters = ref({})
 

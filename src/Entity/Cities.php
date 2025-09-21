@@ -28,10 +28,17 @@ class Cities
     #[ORM\Column(length: 255, enumType: Status::class)]
     private ?Status $status = null;
 
+    /**
+     * @var Collection<int, Districts>
+     */
+    #[ORM\OneToMany(targetEntity: Districts::class, mappedBy: 'city')]
+    private Collection $districts;
+
     public function __construct()
     {
         $this->masters = new ArrayCollection();
         $this->status = Status::Awaiting;
+        $this->districts = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -96,6 +103,36 @@ class Cities
     public function setStatus(Status $status): static
     {
         $this->status = $status;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Districts>
+     */
+    public function getDistricts(): Collection
+    {
+        return $this->districts;
+    }
+
+    public function addDistrict(Districts $district): static
+    {
+        if (!$this->districts->contains($district)) {
+            $this->districts->add($district);
+            $district->setCity($this);
+        }
+
+        return $this;
+    }
+
+    public function removeDistrict(Districts $district): static
+    {
+        if ($this->districts->removeElement($district)) {
+            // set the owning side to null (unless already changed)
+            if ($district->getCity() === $this) {
+                $district->setCity(null);
+            }
+        }
 
         return $this;
     }

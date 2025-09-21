@@ -28,19 +28,19 @@ class Services
     #[ORM\Column(type: Types::TIME_IMMUTABLE)]
     private ?DateTimeImmutable $default_time = null;
 
-    /**
-     * @var Collection<int, Masters>
-     */
-    #[ORM\ManyToMany(targetEntity: Masters::class, mappedBy: 'id_services')]
-    private Collection $masters;
-
     #[ORM\Column(length: 255, enumType: Status::class)]
     private ?Status $status = null;
 
+    /**
+     * @var Collection<int, MastersServices>
+     */
+    #[ORM\OneToMany(targetEntity: MastersServices::class, mappedBy: 'service')]
+    private Collection $mastersServices;
+
     public function __construct()
     {
-        $this->masters = new ArrayCollection();
         $this->status = Status::Awaiting;
+        $this->mastersServices = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -91,39 +91,6 @@ class Services
         return $this;
     }
 
-    /**
-     * @return Collection<int, Masters>
-     */
-    public function getMasters(): Collection
-    {
-        return $this->masters;
-    }
-
-    #[Groups(["services:read"])]
-    public function getMastersId(): array
-    {
-        return array_map(fn(Masters $master) => $master->getId(), $this->masters->toArray());
-    }
-
-    public function addMaster(Masters $master): static
-    {
-        if (!$this->masters->contains($master)) {
-            $this->masters->add($master);
-            $master->addIdService($this);
-        }
-
-        return $this;
-    }
-
-    public function removeMaster(Masters $master): static
-    {
-        if ($this->masters->removeElement($master)) {
-            $master->removeIdService($this);
-        }
-
-        return $this;
-    }
-
     public function getStatus(): ?Status
     {
         return $this->status;
@@ -133,5 +100,44 @@ class Services
     {
         $this->status = $status;
         return $this;
+    }
+
+    /**
+     * @return Collection<int, MastersServices>
+     */
+    public function getMastersServices(): Collection
+    {
+        return $this->mastersServices;
+    }
+
+    public function addMastersService(MastersServices $mastersService): static
+    {
+        if (!$this->mastersServices->contains($mastersService)) {
+            $this->mastersServices->add($mastersService);
+            $mastersService->setService($this);
+        }
+
+        return $this;
+    }
+
+    public function removeMastersService(MastersServices $mastersService): static
+    {
+        if ($this->mastersServices->removeElement($mastersService)) {
+            // set the owning side to null (unless already changed)
+            if ($mastersService->getService() === $this) {
+                $mastersService->setService(null);
+            }
+        }
+
+        return $this;
+    }
+
+    #[Groups(["services:read"])]
+    public function getMastersId(): array
+    {
+        return array_map(
+            fn(MastersServices $ms) => $ms->getMaster()->getId(),
+            $this->mastersServices->toArray()
+        );
     }
 }

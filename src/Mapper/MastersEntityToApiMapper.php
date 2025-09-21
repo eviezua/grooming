@@ -18,8 +18,11 @@ class MastersEntityToApiMapper implements MapperInterface
         $to->id = $from->getId();
         $to->name = $from->getName();
         $to->surname = $from->getSurname();
+        $to->avgRating = $from->getAvgRating();
         $to->servicesId = $from->getServicesId();
         $to->cityId = $from->getCityId();
+        $to->districtId = $from->getDistrictId();
+        $to->address = $from->getAddress();
         $to->petsId = $from->getPetsId();
         $to->email = $from->getEmail();
         $to->phone = $from->getPhone();
@@ -39,8 +42,11 @@ class MastersEntityToApiMapper implements MapperInterface
         $to->id = $from->getId();
         $to->name = $from->getName();
         $to->surname = $from->getSurname();
+        $to->avgRating = $from->getAvgRating();
         $to->servicesId = $from->getServicesId();
         $to->cityId = $from->getCityId();
+        $to->districtId = $from->getDistrictId();
+        $to->address = $from->getAddress();
         $to->petsId = $from->getPetsId();
         $to->email = $from->getEmail();
         $to->phone = $from->getPhone();

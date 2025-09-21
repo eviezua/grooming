@@ -22,15 +22,19 @@ class Masters
     #[ORM\Column(length: 255)]
     private ?string $surname = null;
 
-    /**
-     * @var Collection<int, Services>
-     */
-    #[ORM\ManyToMany(targetEntity: Services::class, inversedBy: 'masters')]
-    private Collection $id_services;
+    #[ORM\Column(type: 'float', options: ['default' => 0])]
+    private float $avgRating = 0;
 
     #[ORM\ManyToOne(inversedBy: 'masters')]
     #[ORM\JoinColumn(nullable: false)]
     private ?Cities $id_city = null;
+
+    #[ORM\ManyToOne(targetEntity: Districts::class)]
+    #[ORM\JoinColumn(nullable: true)]
+    private ?Districts $district = null;
+
+    #[ORM\Column(length: 255)]
+    private ?string $address = null;
 
     /**
      * @var Collection<int, Pets>
@@ -65,13 +69,19 @@ class Masters
     #[ORM\Column(length: 255, enumType: Status::class)]
     private ?Status $status = null;
 
+    /**
+     * @var Collection<int, MastersServices>
+     */
+    #[ORM\OneToMany(targetEntity: MastersServices::class, mappedBy: 'master')]
+    private Collection $mastersServices;
+
     public function __construct()
     {
-        $this->id_services = new ArrayCollection();
         $this->id_pets = new ArrayCollection();
         $this->schedules = new ArrayCollection();
         $this->bookings = new ArrayCollection();
         $this->status = Status::Awaiting;
+        $this->mastersServices = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -103,40 +113,14 @@ class Masters
         return $this;
     }
 
-    /**
-     * @return Collection<int, Services>
-     */
-
-    public function getIdServices(): Collection
+    public function getAvgRating(): float
     {
-        return $this->id_services;
+        return $this->avgRating;
     }
 
-    public function getServicesId(): array
+    public function setAvgRating(float $avgRating): static
     {
-        return array_map(fn(Services $service) => $service->getId(), $this->id_services->toArray());
-    }
-
-    public function addIdService(Services $idService): static
-    {
-        if (!$this->id_services->contains($idService)) {
-            $this->id_services->add($idService);
-        }
-
-        return $this;
-    }
-
-    public function removeIdService(Services $idService): static
-    {
-        $this->id_services->removeElement($idService);
-
-        return $this;
-    }
-
-    public function clearServices(): static
-    {
-        $this->id_services->clear();
-
+        $this->avgRating = $avgRating;
         return $this;
     }
 
@@ -153,6 +137,34 @@ class Masters
     public function setIdCity(?Cities $id_city): static
     {
         $this->id_city = $id_city;
+
+        return $this;
+    }
+
+    public function getDistrict(): ?Districts
+    {
+        return $this->district;
+    }
+
+    public function getDistrictId(): ?int
+    {
+        return $this->district ? $this->district->getId() : null;
+    }
+
+    public function setDistrict(?Districts $district): static
+    {
+        $this->district = $district;
+        return $this;
+    }
+
+    public function getAddress(): ?string
+    {
+        return $this->address;
+    }
+
+    public function setAddress(string $address): static
+    {
+        $this->address = $address;
 
         return $this;
     }
@@ -320,6 +332,50 @@ class Masters
     {
         $this->status = $status;
 
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, MastersServices>
+     */
+    public function getMastersServices(): Collection
+    {
+        return $this->mastersServices;
+    }
+
+    public function getServicesId(): array
+    {
+        return array_map(
+            fn(MastersServices $ms) => $ms->getService()->getId(),
+            $this->mastersServices->toArray()
+        );
+    }
+
+    public function addMastersService(MastersServices $mastersService): static
+    {
+        if (!$this->mastersServices->contains($mastersService)) {
+            $this->mastersServices->add($mastersService);
+            $mastersService->setMaster($this);
+        }
+
+        return $this;
+    }
+
+    public function removeMastersService(MastersServices $mastersService): static
+    {
+        if ($this->mastersServices->removeElement($mastersService)) {
+            // set the owning side to null (unless already changed)
+            if ($mastersService->getMaster() === $this) {
+                $mastersService->setMaster(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function clearServices(): static
+    {
+        $this->mastersServices->clear();
         return $this;
     }
 }
