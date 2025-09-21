@@ -19,6 +19,14 @@
               alt="Search"
           />
         </li>
+        <li>
+          <a
+              class="dropdown-item inter-18 truncate text-danger"
+              @click="reset"
+          >
+            ✕ {{ 'Скинути' }}
+          </a>
+        </li>
         <li
             v-for="item in internalOptions"
             :key="item.id"
@@ -86,6 +94,9 @@ export default {
   methods: {
     select(item) {
       this.$emit('update:modelValue', item)
+    },
+    reset() {
+      this.$emit('update:modelValue', null)
     },
     async fetchFilteredOptions() {
       if (!this.resource) return;
