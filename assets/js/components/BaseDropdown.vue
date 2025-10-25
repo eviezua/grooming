@@ -5,9 +5,8 @@
       <span class="truncate">{{ selectedLabel || label }}</span>
       <img src="/uploads/icons/arrow_dropdown.png">
     </button>
-    <ul class="dropdown-menu">
-
-      <div class="dropdown-scrollable">
+    <div class="dropdown-menu">
+      <ul class="dropdown-scrollable">
         <li class="search">
           <input
               type="search"
@@ -38,8 +37,8 @@
             {{ item.name }}
           </a>
         </li>
-      </div>
-    </ul>
+      </ul>
+    </div>
   </div>
 </template>
 
@@ -164,6 +163,8 @@ export default {
 }
 
 .dropdown-scrollable {
+  list-style: none;
+  padding: 0;
   max-height: 300px;
   overflow-y: auto;
   overflow-x: hidden;

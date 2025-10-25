@@ -5,6 +5,7 @@
         :key="g.id || g.name"
         :groomer="g"
         :selected-service="selectedServiceName"
+        @open-booking="openBookingModal"
     />
   </div>
   <a
@@ -16,14 +17,20 @@
   >
     {{ $t('More') }}
   </a>
+  <BookingForm
+      ref="bookingForm"
+      :groomer="selectedGroomer"
+      @close="closeBookingModal"
+  />
 </template>
 
 <script>
 import GroomerItem from './GroomerItem.vue'
-import { ref, onMounted, watch, computed } from 'vue'
+import { ref, onMounted, watch, computed, nextTick } from 'vue'
+import BookingFormVue from "./BookingForm.vue";
 
 export default {
-  components: { GroomerItem },
+  components: {BookingForm: BookingFormVue, GroomerItem },
   props: {
     filters: {
       type: Object,
@@ -36,6 +43,8 @@ export default {
     const currentPage = ref(1)
     const lastPage = ref(1)
     const loading = ref(false)
+    const bookingForm = ref(null)
+    const selectedGroomer = ref(null)
 
     const buildUrl = (page = 1) => {
       let url = `/api/v1/masters?page=${page}`
@@ -79,6 +88,19 @@ export default {
     }
 
     const hasMore = computed(() => currentPage.value < lastPage.value)
+    const openBookingModal = async (groomer) => {
+      selectedGroomer.value = groomer;
+      await nextTick();
+      if (bookingForm.value?.open) {
+        bookingForm.value.open();
+      }
+    };
+
+    const closeBookingModal = () => {
+      if (bookingForm.value?.close) {
+        bookingForm.value.close();
+      }
+    };
 
     onMounted(() => fetchGroomers(1, true))
 
@@ -94,7 +116,7 @@ export default {
 
     const selectedServiceName = computed(() => props.filters.serviceName || null)
 
-    return { groomers, selectedServiceName, hasMore, loadMore }
+    return { groomers, selectedServiceName, hasMore, loadMore, selectedGroomer, bookingForm, openBookingModal, closeBookingModal }
   }
 }
 </script>

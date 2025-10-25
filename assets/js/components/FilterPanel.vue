@@ -32,6 +32,10 @@
     >
       Знайти
     </a>
+   <div class="btn-secondary white-but inter-18 text-black d-flex justify-content-between align-items-center" style=" padding: 20px 30px; grid-row: auto; grid-column: 1 / -1; ">
+      <span>Інші фільтри</span>
+      <img src="/uploads/icons/filter.png" class="icon">
+    </div>
   </div>
 </template>
 

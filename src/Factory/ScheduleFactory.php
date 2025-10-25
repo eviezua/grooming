@@ -42,7 +42,7 @@ final class ScheduleFactory extends PersistentProxyObjectFactory
         $stopTime = new \DateTime($stopTime->format('Y-m-d H:i:s'));
         return [
             'dayOfweek' => self::faker()->randomElement(Weekdays::cases()),
-            'master' => MastersFactory::createOne(),
+            'master' => MastersFactory::new(),
             'start_time' => $startTime,
             'stop_time' => $stopTime
         ];
@@ -53,8 +53,10 @@ final class ScheduleFactory extends PersistentProxyObjectFactory
      */
     protected function initialize(): static
     {
-        return $this
-            // ->afterInstantiate(function(Schedule $schedule): void {})
-        ;
+        return $this->afterInstantiate(function(Schedule $schedule, array $attributes): void {
+            if (isset($attributes['master']) && $attributes['master'] !== null) {
+                $schedule->setMaster($attributes['master']);
+            }
+        });
     }
 }

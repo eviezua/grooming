@@ -3,8 +3,7 @@
 namespace App\DataFixtures;
 
 use App\Entity\Masters;
-use App\Entity\Schedule;
-use App\Entity\Services;
+use App\Enum\Weekdays;
 use App\Factory\BookingsFactory;
 use App\Factory\CitiesFactory;
 use App\Factory\ClientsFactory;
@@ -21,8 +20,8 @@ class AppFixtures extends Fixture
     public function load(ObjectManager $manager): void
     {
        PetsFactory::createMany(20);
-        CitiesFactory::createMany(200);
-        $cities = CitiesFactory::repository()->findAll();
+       CitiesFactory::createMany(200);
+       $cities = CitiesFactory::repository()->findAll();
 
         foreach ($cities as $city) {
             DistrictsFactory::createMany(5, ['city' => $city]);
@@ -33,7 +32,7 @@ class AppFixtures extends Fixture
         $masters = $manager->getRepository(Masters::class)->findAll();
 
         foreach ($masters as $master) {
-            $city = $master->getIdCity();
+           $city = $master->getIdCity();
             $rating = $master->getAvgRating();
             if ($city) {
                 $districts = $city->getDistricts()->toArray();
@@ -49,6 +48,30 @@ class AppFixtures extends Fixture
                 $photoNumber = random_int(1, 6);
                 $master->setPhoto("{$photoNumber}.png");
             }
+
+            $weekdaysEnum = Weekdays::cases();
+            $existingDays = [];
+
+            foreach ($master->getSchedules() as $schedule) {
+                $existingDays[] = $schedule->getDayOfweek();
+            }
+
+            $availableDays = array_filter($weekdaysEnum, fn($d) => !in_array($d, $existingDays, true));
+            $availableDays = array_values($availableDays);
+
+            if (count($availableDays) < 2) continue;
+
+            $offDaysKeys = array_rand($availableDays, 2);
+            $offDays = array_map(fn($k) => $availableDays[$k], (array)$offDaysKeys);
+            $workingDays = array_filter($availableDays, fn($d) => !in_array($d, $offDays, true));
+
+            foreach ($workingDays as $day) {
+                ScheduleFactory::createOne([
+                    'master' => $master,
+                    'dayOfweek' => $day
+                ]);
+            }
+
             $manager->persist($master);
         }
 

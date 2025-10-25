@@ -8,6 +8,8 @@ import SearchInput from './js/components/SearchInput.vue'
 import FilterPanel from "./js/components/FilterPanel.vue";
 import GroomerCatalog from "./js/components/GroomerCatalog.vue";
 import JoinForm from "./js/components/JoinForm.vue";
+import BookingCalendarVue from "./js/components/BookingCalendar.vue";
+import BookingFormVue from "./js/components/BookingForm.vue";
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 
 const currentLang = document.documentElement.lang || 'ua'
@@ -37,4 +39,6 @@ app.component('SearchInput', SearchInput)
 app.component('FilterPanel', FilterPanel)
 app.component('GroomerCatalog', GroomerCatalog)
 app.component('JoinForm', JoinForm)
+app.component('BookingCalendarVue', BookingCalendarVue)
+app.component('BookingFormVue', BookingFormVue)
 app.mount('#app-vue')
