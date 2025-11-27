@@ -31,8 +31,6 @@
 
 <script setup>
 import { ref, computed, watch, defineProps } from 'vue'
-import VueDatePicker from '@vuepic/vue-datepicker'
-import '@vuepic/vue-datepicker/dist/main.css'
 
 const props = defineProps({
   schedules: {
@@ -42,6 +40,10 @@ const props = defineProps({
   bookings: {
     type: Array,
     default: () => []
+  },
+  slotStep: {
+    type: Number,
+    default: 30
   }
 })
 
@@ -51,6 +53,8 @@ const today = ref(new Date())
 
 const selectedDate = ref(null)
 const selectedTime = ref(null)
+
+const stepMinutes = computed(() => props.slotStep && props.slotStep > 0 ? props.slotStep : 30);
 
 function getDayOfWeek(date) {
   return date.toLocaleDateString('en-US', { weekday: 'long' })
@@ -66,7 +70,7 @@ function onSelectDate(date) {
   emit('update:selectedDate', date)
 }
 
-function generateSlots(startTime, stopTime) {
+function generateSlots(startTime, stopTime, bookingsList = []) {
   const slots = []
   const [startH, startM] = startTime.split(':').map(Number)
   const [stopH, stopM] = stopTime.split(':').map(Number)
@@ -81,20 +85,35 @@ function generateSlots(startTime, stopTime) {
         selectedDate.value?.toDateString() === today.value.toDateString() &&
         current < new Date()
     ) {
-      current.setMinutes(current.getMinutes() + 30)
+      current.setMinutes(current.getMinutes() + stepMinutes.value)
       continue
     }
 
+    const next = new Date(current.getTime())
+    next.setMinutes(next.getMinutes() + stepMinutes.value)
+
+    if (next > end) break
+
     const slotStr = `${current.getHours().toString().padStart(2,'0')}:${current.getMinutes().toString().padStart(2,'0')}`
 
-    const isBooked = props.bookings?.some(b => {
-      const bookedStart = b.timeStart.slice(0,5)
-      const bookedEnd = b.timeStop.slice(0,5)
+    const isBooked = bookingsList?.some(b => {
+      const bookingDate = new Date(b.date)
+      const sameDay =
+          bookingDate.getFullYear() === selectedDate.value.getFullYear() &&
+          bookingDate.getMonth() === selectedDate.value.getMonth() &&
+          bookingDate.getDate() === selectedDate.value.getDate()
+
+      if (!sameDay) {
+        return false
+      }
+
+      const bookedStart = b.timeStart.slice(0, 5)
+      const bookedEnd = b.timeStop.slice(0, 5)
       return slotStr >= bookedStart && slotStr < bookedEnd
     })
 
     if (!isBooked) slots.push(slotStr)
-    current.setMinutes(current.getMinutes() + 30)
+    current.setMinutes(current.getMinutes() + stepMinutes.value)
   }
 
   return slots
@@ -107,7 +126,7 @@ const timeSlots = computed(() => {
   const scheduleForDay = props.schedules.find(s => s.dayOfweek === dayName)
   if (!scheduleForDay) return []
 
-  return generateSlots(scheduleForDay.start_time, scheduleForDay.stop_time)
+  return generateSlots(scheduleForDay.start_time, scheduleForDay.stop_time, props.bookings)
 })
 
 function selectTime(slot) {
@@ -126,22 +145,19 @@ watch(selectedDate, async (newDate) => {
 
 .scheduler-container {
   display: grid;
-  grid-template-columns: 1fr 180px;
+  grid-template-columns: repeat(2, 1fr);
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
 .calendar {
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
   border-radius: 8px;
-  padding: 10px;
 }
 
 .slots-container {
-  max-height: 385px;
   overflow-y: auto;
   border: 1px solid #e0e0e0;
   border-radius: 10px;
-  padding: 10px;
+  padding: 8px;
   background-color: #fafafa;
   box-shadow: 0 4px 12px rgba(0,0,0,0.05);
 }
@@ -153,30 +169,33 @@ watch(selectedDate, async (newDate) => {
 }
 
 .slots-list {
-  display: grid;
-  grid-template-rows: repeat(auto-fill, minmax(40px, 1fr));
-  gap: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
 }
 
 .slot {
   cursor: pointer;
-  padding: 8px 10px;
   border-radius: 6px;
+  align-items: center;
+  display: flex;
+  justify-content: center;
   text-align: center;
   transition: all 0.2s ease;
+  padding: 10px 0;
   border: 1px solid transparent;
 }
 
 .slot:hover {
   background-color: #e0f0ff;
-  border-color: #007bff;
+  border-color: #FF9229;
 }
 
 .slot.selected {
-  background-color: #007bff;
+  background-color: #FF9229;
   color: white;
   font-weight: 600;
-  box-shadow: 0 2px 6px rgba(0,123,255,0.4);
+  box-shadow: 0 2px 6px rgba(255, 146, 41, 0.4);;
 }
 
 .selection {

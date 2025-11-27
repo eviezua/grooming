@@ -6,95 +6,102 @@
           <h5 class="modal-title">Бронювання</h5>
           <button type="button" class="btn-close" @click="close"></button>
         </div>
-
         <div class="modal-body">
-          <form id="bookingForm">
-            <div class="mb-3" v-if="groomer">
-              <strong>Майстер: </strong>{{ groomer.name }} {{ groomer.surname }}
-            </div>
-
-            <div class="mb-3">
+          <div class="mb-3" v-if="groomer">
+            <strong>Майстер: </strong>{{ groomer.name }} {{ groomer.surname }}
+          </div>
+          <form-wizard id="bookingForm" @on-complete="onComplete" color="#FF9229" :use-validation="false">
+            <tab-content title="Step 1">
+              <div class="mb-3">
                 <VueMultiselect
                     v-model="selectedServices"
                     :options="serviceOptions"
                     :multiple="true"
                     :taggable="true"
+                    :internal-search="false"
+                    :searchable="true"
                     placeholder="Оберіть послуги"
                     label="name"
                     track-by="id"
+                    @search-change="onSearchService"
                 />
-            </div>
-            <div class="mb-3">
-              <VueMultiselect
-                  v-model="selectedSpecies"
-                  :options="speciesOptions"
-                  :multiple="false"
-                  placeholder="Оберіть вид тварини"
-                  label="name"
-                  track-by="id"
-              />
-            </div>
-            <div class="mb-3">
-              <VueMultiselect
-                  v-if="breedOptions.length"
-                  v-model="selectedBreed"
-                  :options="breedOptions"
-                  :multiple="false"
-                  placeholder="Оберіть породу тварини"
-                  label="name"
-                  track-by="id"
-              />
-            </div>
-            <div class="mb-3" v-if="schedules.length">
-              <strong>Графік майстра:</strong>
-              <ul>
-                <li v-for="s in schedules" :key="s.id">
-                  {{ s.dayOfweek }}: {{ s.start_time }} - {{ s.stop_time }}
-                </li>
-              </ul>
-            </div>
-            <div class="mb-3">
-              <BookingCalendar :schedules="schedules" :bookings="bookings" :onDateChange="fetchBookings" v-model:selectedDate="selectedDate"
-                               v-model:selectedTime="selectedTime"/>
-            </div>
-
-            <div class="form-check mb-3">
-              <input class="form-check-input" type="checkbox" v-model="showFullForm" id="toggleFullForm">
-              <label class="form-check-label" for="toggleFullForm">
-                Вперше у нас?
-              </label>
-            </div>
-
-            <div class="mb-3">
-              <label class="form-label">Email</label>
-              <input v-model="client.email" type="email" class="form-control" placeholder="user@example.com" required>
-              <div v-if="emailError" class="text-danger mt-1">{{ emailError }}</div>
-            </div>
-
-            <div v-if="showFullForm">
-              <div class="mb-3">
-                <label class="form-label">Ім’я</label>
-                <input v-model="client.name" type="text" class="form-control" placeholder="Ваше ім’я" required>
               </div>
-
               <div class="mb-3">
-                <label class="form-label">Прізвище</label>
-                <input v-model="client.surname" type="text" class="form-control" placeholder="Ваше прізвище" required>
+                <VueMultiselect
+                    v-model="selectedSpecies"
+                    :options="speciesOptions"
+                    :multiple="false"
+                    placeholder="Оберіть вид тварини"
+                    label="name"
+                    track-by="id"
+                />
               </div>
-
               <div class="mb-3">
-                <label class="form-label">Телефон</label>
-                <input v-model="client.phone" type="tel" class="form-control" placeholder="+380..." required>
+                <VueMultiselect
+                    v-if="selectedSpecies"
+                    v-model="selectedBreed"
+                    :options="breedOptions"
+                    :multiple="false"
+                    :internal-search="false"
+                    :searchable="true"
+                    placeholder="Оберіть породу тварини"
+                    label="name"
+                    track-by="id"
+                    @search-change="onSearchBreed"
+                />
               </div>
+              <div class="mb-3" v-if="selectedServices.length">
+                <p><strong>Загальна вартість:</strong> {{ totalCost }} грн</p>
+                <p><strong>Вартість з урахуванням майстра:</strong> {{ totalMasterCost }} грн</p>
+              </div>
+            </tab-content>
 
-            </div>
-          </form>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" @click="close">Скасувати</button>
-          <button type="button" class="btn btn-primary" @click="submitBooking">
-            Підтвердити
-          </button>
+            <tab-content title="Step 2">
+              <div class="mb-3" v-if="schedules.length">
+                <strong>Графік майстра:</strong>
+                <ul>
+                  <li v-for="s in schedules" :key="s.id">
+                    {{ s.dayOfweek }}: {{ s.start_time }} - {{ s.stop_time }}
+                  </li>
+                </ul>
+              </div>
+              <div class="mb-3">
+                <BookingCalendar :schedules="schedules"
+                                 :bookings="bookings"
+                                 :onDateChange="fetchBookings"
+                                 :slotStep="totalMinutes"
+                                 v-model:selectedDate="selectedDate"
+                                 v-model:selectedTime="selectedTime"/>
+              </div>
+            </tab-content>
+
+            <tab-content title="Step 3">
+              <div class="form-check mb-3">
+                <input class="form-check-input" type="checkbox" v-model="showFullForm" id="toggleFullForm">
+                <label class="form-check-label" for="toggleFullForm">
+                  Вперше у нас?
+                </label>
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Email</label>
+                <input v-model="client.email" type="email" class="form-control" placeholder="user@example.com" required>
+              </div>
+              <div v-if="showFullForm">
+                <div class="mb-3">
+                  <label class="form-label">Ім’я</label>
+                  <input v-model="client.name" type="text" class="form-control" placeholder="Ваше ім’я" required>
+                </div>
+                <div class="mb-3">
+                  <label class="form-label">Прізвище</label>
+                  <input v-model="client.surname" type="text" class="form-control" placeholder="Ваше прізвище" required>
+                </div>
+                <div class="mb-3">
+                  <label class="form-label">Телефон</label>
+                  <input v-model="client.phone" type="tel" class="form-control" placeholder="+380..." required>
+                </div>
+              </div>
+            </tab-content>
+          </form-wizard>
         </div>
       </div>
     </div>
@@ -102,12 +109,16 @@
 </template>
 
 <script>
-import { ref, watch, defineExpose, nextTick, onMounted } from "vue";
+import { ref, watch, defineExpose, nextTick, onMounted} from "vue";
 import BookingCalendar from "./BookingCalendar.vue";
-import VueMultiselect from 'vue-multiselect';
+import { useApiFetch } from "../useFetchResource";
+import { useWizardComplete } from "../useWizardComplete";
+import { useSubmit } from "../usePostResource";
+import { useDebounce } from "../useDebounce";
+import { useTotals } from '../useTotals';
 
 export default {
-  components: { BookingCalendar, VueMultiselect },
+  components: { BookingCalendar},
   props: { groomer: Object },
   setup(props) {
     const visible = ref(false);
@@ -134,161 +145,159 @@ export default {
     const selectedDate = ref(null)
     const selectedTime = ref(null)
 
-    const emailError = ref('');
     const showFullForm = ref(false);
+    const { fetchData } = useApiFetch();
+    const { submit, loading } = useSubmit();
+    const isSearchTooShort = (s, min = 3) => s && s.length < min;
 
-    const fetchServices = async () => {
-      if (!props.groomer?.servicesId?.length) {
+    const fetchServices = async (search = '') => {
+      if (!props.groomer?.servicesId?.length || isSearchTooShort(search)) {
         serviceOptions.value = [];
         return;
       }
-      const params = new URLSearchParams();
-      props.groomer.servicesId.forEach((id) => params.append("id[]", id));
-      params.append("id_masters", props.groomer.id);
 
-      const res = await fetch(`/api/v1/services?${params.toString()}`);
-      const data = await res.json();
-      serviceOptions.value = data.member.map((s) => ({ id: s.id, name: s.name })) || [];
+      const params = { id_masters: props.groomer.id };
+      params['id[]'] = props.groomer.servicesId;
+      params.search = search;
+
+      const baseServices = await fetchData('/api/v1/services', params, data =>
+          (data.member || []).map(s => ({ ...s, master_price: null }))
+      );
+
+      if (!baseServices) {
+        serviceOptions.value = [];
+        return;
+      }
+
+      await Promise.all(
+          baseServices.map(async service => {
+            const priceData = await fetchData(
+                '/api/v1/masters_services',
+                { page: 1, 'service.id': service.id, 'master.id': props.groomer.id },
+                d => d.member?.[0] || null
+            );
+            service.master_price = priceData?.price ?? service.cost;
+          })
+      );
+
+      serviceOptions.value = baseServices;
     };
 
-    const fetchBreeds = async (speciesName) => {
+    const onSearchService = useDebounce((search) => {
+      if (!isSearchTooShort(search)) fetchServices(search);
+    }, 400);
+
+    const fetchBreeds = async (speciesName, search = '') => {
       if (!speciesName) {
         breedOptions.value = [];
         selectedBreed.value = null;
         return;
       }
-      try {
-        const res = await fetch(`/api/v1/pets?page=1&spice=${speciesName}`);
-        const data = await res.json();
-        breedOptions.value = (data.member || []).map((pet) => ({ id: pet.id, name: pet.breed }));
-      } catch {
-        breedOptions.value = [];
-      }
+      if (isSearchTooShort(search)) return;
+
+      const params = { page: 1, spice: speciesName };
+      params.search = search;
+
+      const data = await fetchData('/api/v1/pets', params, d =>
+          (d.member || []).map(pet => ({ id: pet.id, name: pet.breed, cost_coficient: pet.cost_coficient }))
+      );
+
+      breedOptions.value = data || [];
     };
+
+    const onSearchBreed = useDebounce(search => fetchBreeds(selectedSpecies.value?.name, search), 400);
 
     const fetchSchedules = async () => {
       if (!props.groomer?.id) return;
-      try {
-        const res = await fetch(`/api/v1/schedules?page=1&master.id=${props.groomer.id}`);
-        const data = await res.json();
-        schedules.value = data.member || [];
-      } catch {
-        schedules.value = [];
-      }
+      const data = await fetchData('/api/v1/schedules', { page: 1, 'master.id': props.groomer.id });
+      schedules.value = data.member || [];
     };
 
     const fetchBookings = async (date) => {
       if (!props.groomer?.id || !date) return;
-      const formattedDate = date.toISOString().split('T')[0]; // YYYY-MM-DD
-      try {
-        const res = await fetch(`/api/v1/bookings?page=1&date[after]=${formattedDate}&id_master.id=${props.groomer.id}`);
-        const data = await res.json();
-        bookings.value = data.member || [];
-      } catch {
-        bookings.value = [];
-      }
+      const formattedDate = date.toISOString().split('T')[0];
+      const data = await fetchData('/api/v1/bookings', { page: 1, 'date[after]': formattedDate, 'id_master.id': props.groomer.id });
+      bookings.value = data.member || [];
     };
 
     const fetchClientByEmail = async (email) => {
       if (!email) {
         client.value.id = null;
-        emailError.value = '';
         return;
       }
-      try {
-        const res = await fetch(`/api/v1/v1/clients/find-by-email?email=${encodeURIComponent(email)}`);
-        const data = await res.json();
-        if (res.ok) {
-          client.value.id = data.id;
-          emailError.value = '';
-          showFullForm.value = false;
-        } else {
-          client.value.id = null;
-          if (!showFullForm.value) {
-            emailError.value = data.error || 'Client not found';
-          } else {
-            emailError.value = '';
-          }
-        }
-      } catch {
+
+      const data = await fetchData('/api/v1/v1/clients/find-by-email', { email: email }, data => data, "Клієнта знайдено!" );
+
+      if (data) {
+        showFullForm.value = false;
+        client.value.id = data.id;
+      } else {
         client.value.id = null;
-        emailError.value = 'Server error';
       }
     };
 
     function getTimeStop(timeStart) {
-      const [h, m] = timeStart.split(':').map(Number)
-      const date = new Date()
-      date.setHours(h, m)
-      date.setMinutes(date.getMinutes() + 30)
-      return `${date.getHours().toString().padStart(2,'0')}:${date.getMinutes().toString().padStart(2,'0')}`
+      if (!timeStart) return null;
+      const [h, m] = timeStart.split(':').map(Number);
+      const date = new Date();
+      date.setHours(h, m);
+      date.setMinutes(date.getMinutes() + totalMinutes.value);
+      return `${date.getHours().toString().padStart(2,'0')}:${date.getMinutes().toString().padStart(2,'0')}`;
     }
 
     const submitBooking = async () => {
-      console.log('submitBooking called');
-
-      const formatTime = (time) => time.length === 5 ? `${time}:00` : time;
-      const timeStop = formatTime(getTimeStop(selectedTime.value));
-
-      if (!selectedServices.value.length || !selectedBreed.value || !selectedDate.value || !selectedTime.value) {
-        alert('Заповніть всі обов’язкові поля');
-        return;
+      const formatTime = (time) => {
+        if (!time) return null;
+        return time.length === 5 ? `${time}:00` : time;
       }
 
       const baseData = {
         masterId: props.groomer.id,
         services: selectedServices.value.map(s => s.id),
-        date: selectedDate.value.toISOString().split('T')[0],
+        date: selectedDate.value?.toISOString().split("T")[0],
         timeStart: formatTime(selectedTime.value),
-        timeStop: timeStop,
-        petId: selectedBreed.value.id,
+        timeStop: formatTime(getTimeStop(selectedTime.value)),
+        petId: selectedBreed.value?.id
       };
 
-      let url = '/api/v1/bookings';
-      let method = 'POST';
-      let payload = {};
+      const payload = { ...baseData };
+      let url = "/api/v1/bookings";
 
       if (client.value.id) {
-        payload = { ...baseData, clientId: client.value.id };
+        payload.clientId = client.value.id;
+      } else {
+        payload.clientName = client.value.name;
+        payload.clientSurname = client.value.surname;
+        payload.clientEmail = client.value.email;
+        payload.clientPhone = client.value.phone;
+        url = "/api/v1/bookings/with-new-client";
       }
 
-      else if (client.value.name && client.value.surname && client.value.email && client.value.phone) {
-        url = '/api/v1/bookings/with-new-client';
-        payload = {
-          ...baseData,
-          clientName: client.value.name,
-          clientSurname: client.value.surname,
-          clientEmail: client.value.email,
-          clientPhone: client.value.phone,
-        };
-      }
-
-      else {
-        alert('Заповніть усі дані клієнта або введіть існуючий email');
-        return;
-      }
-
-      try {
-        const res = await fetch(url, {
-          method,
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload),
-        });
-
-        const data = await res.json();
-
-        if (res.ok) {
-          alert('Бронювання створено!');
-          close();
-        } else {
-          console.error('Server error:', data);
-          alert(data.error || (data.errors ? data.errors.join(', ') : 'Помилка при бронюванні'));
-        }
-      } catch (e) {
-        console.error('Request failed:', e);
-        alert('Помилка з’єднання з сервером');
-      }
+      await submit({
+        url,
+        payload: payload || {},
+        required: ["masterId", "services", "date", "timeStart", "timeStop", "petId"],
+        successMessage: "Бронювання створено!",
+        onSuccess: () => close()
+      });
     };
+
+    const { totalCost, totalMasterCost, totalMinutes, totalTime } = useTotals(selectedServices, selectedBreed);
+
+    const { runWizardComplete } = useWizardComplete();
+    const onComplete = () =>{
+      runWizardComplete(submitBooking);
+    }
+
+    function resetForm() {
+      selectedServices.value = [];
+      selectedSpecies.value = null;
+      selectedBreed.value = null;
+      breedOptions.value = [];
+      schedules.value = [];
+      selectedDate.value = null;
+      selectedTime.value = null;
+    }
 
     const open = async () => {
       await nextTick();
@@ -300,40 +309,24 @@ export default {
 
     const close = () => {
       visible.value = false;
-      selectedServices.value = [];
-      selectedSpecies.value = null;
-      selectedBreed.value = null;
-      breedOptions.value = [];
-      schedules.value = [];
-      selectedDate.value = null;
-      selectedTime.value = null;
+      resetForm();
     };
 
     defineExpose({ open, close });
 
-    watch(selectedSpecies, (newSpecies) => {
-      if (newSpecies) fetchBreeds(newSpecies.name);
-      else breedOptions.value = [];
-    });
+    watch(selectedSpecies, newSpecies => fetchBreeds(newSpecies?.name || ''));
 
-    watch(() => props.groomer, (g) => {
-      if (!g) serviceOptions.value = [];
-    });
+    watch(() => props.groomer, g => { if (!g) serviceOptions.value = [] });
 
-    watch(() => client.value.email, (newEmail) => {
-      fetchClientByEmail(newEmail);
-    });
+    watch(() => client.value.email, useDebounce((email) => fetchClientByEmail(email), 400));
 
-    watch(showFullForm, (newValue) => {
-      if (newValue) {
-        emailError.value = '';
-      } else {
+    watch(showFullForm, newValue => {
+      if (!newValue) {
         client.value.name = '';
         client.value.surname = '';
         client.value.phone = '';
       }
     });
-
 
     onMounted(() => {
       const el = document.getElementById("app");
@@ -343,49 +336,7 @@ export default {
       }
     });
 
-    return { visible, open, close, speciesOptions, selectedSpecies, serviceOptions, selectedServices, breedOptions, selectedBreed, schedules, bookings, client, emailError, showFullForm, selectedDate, selectedTime, submitBooking };
+    return { visible, open, close, speciesOptions, selectedSpecies, serviceOptions, selectedServices, breedOptions, selectedBreed, schedules, bookings, client, showFullForm, selectedDate, selectedTime, submitBooking, loading, totalCost, totalTime, totalMasterCost, totalMinutes, onSearchBreed, onSearchService, onComplete, fetchBookings };
   }
 };
 </script>
-
-<style>
-@import "vue-multiselect/dist/vue-multiselect.min.css";
-
-.multiselect__tag {
-  background-color: #ccc;
-  color: #000;
-}
-
-.multiselect__option--selected {
-  background-color: #eee;
-  color: #000;
-}
-
-.multiselect__option--highlight {
-  background-color: #ddd;
-}
-
-.modal {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0,0,0,0.5);
-  overflow-y: auto;
-  z-index: 1050;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.modal-dialog {
-  margin: 0;
-}
-
-.modal-content {
-  max-width: 600px;
-  width: 100%;
-  overflow: visible;
-}
-</style>

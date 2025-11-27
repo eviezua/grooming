@@ -1,0 +1,22 @@
+.vue-form-wizard {
+    font-family: 'Inter', sans-serif !important;
+    background: transparent;
+    border: none;
+    box-shadow: none;
+
+    i{
+      font-style: normal !important;
+    }
+  .wizard-progress-with-circle {
+        .wizard-progress-bar{
+
+        }
+        .wizard-icon-circle {
+
+            &.active,
+            &.completed {
+
+            }
+        }
+    }
+}
