@@ -13,7 +13,6 @@ use App\Factory\MastersServicesFactory;
 use App\Factory\PetsFactory;
 use App\Factory\ScheduleFactory;
 use App\Factory\ServicesFactory;
-use DateTime;
 use Elastic\Elasticsearch\Client;
 use Zenstruck\Foundry\Test\Factories;
 use Zenstruck\Foundry\Test\ResetDatabase;
@@ -411,6 +410,73 @@ class MastersApiTest extends ApiTestCase
             '@type' => 'Collection',
             'totalItems' => 1
         ]);
+    }
+
+    public function testMasterPriceFilter(): void
+    {
+        $masterCheap = MastersFactory::createOne(['name' => 'Cheap', 'surname' => 'Master']);
+        $masterExpensive = MastersFactory::createOne(['name' => 'Expensive', 'surname' => 'Master']);
+
+        $service1 = ServicesFactory::createOne(['id' => 1]);
+        $service2 = ServicesFactory::createOne(['id' => 2]);
+
+        MastersServicesFactory::createOne(['master' => $masterExpensive, 'service' => $service1, 'price' => 125]);
+        MastersServicesFactory::createOne(['master' => $masterExpensive, 'service' => $service2, 'price' => 200]);
+
+        MastersServicesFactory::createOne(['master' => $masterCheap, 'service' => $service1, 'price' => 150]);
+        MastersServicesFactory::createOne(['master' => $masterCheap, 'service' => $service2, 'price' => 75]);
+
+        $client = static::createClient();
+
+        $response = $client->request('GET', '/api/v1/masters?services[]=1&services[]=2&budget=300');
+        $this->assertResponseIsSuccessful();
+        $data = $response->toArray();
+
+        $this->assertEquals(1, $data['totalItems']);
+        $this->assertEquals('Cheap', $data['member'][0]['name']);
+
+        $response = $client->request('GET', '/api/v1/masters?services[]=1&services[]=2&budget=350&order[totalPrice]=asc');
+        $data = $response->toArray();
+
+        $this->assertEquals(2, $data['totalItems']);
+        $this->assertEquals('Cheap', $data['member'][0]['name']);
+        $this->assertEquals('Expensive', $data['member'][1]['name']);
+
+        $response = $client->request('GET', '/api/v1/masters?services[]=1&services[]=2&budget=350&order[totalPrice]=desc');
+        $data = $response->toArray();
+
+        $this->assertEquals('Expensive', $data['member'][0]['name']);
+        $this->assertEquals('Cheap', $data['member'][1]['name']);
+
+        ServicesFactory::createOne(['id' => 3]);
+        $response = $client->request('GET', '/api/v1/masters?services[]=1&services[]=2&services[]=3&budget=1000');
+        $data = $response->toArray();
+
+        $this->assertEquals(0, $data['totalItems']);
+    }
+
+    public function testMastersOrderFilterByRating(): void
+    {
+        MastersFactory::createOne(['name' => 'LowRating', 'avgRating' => 1.2]);
+        MastersFactory::createOne(['name' => 'MidRating', 'avgRating' => 3.5]);
+        MastersFactory::createOne(['name' => 'HighRating', 'avgRating' => 4.9]);
+
+        $client = static::createClient();
+
+        $response = $client->request('GET', '/api/v1/masters?order[avgRating]=desc');
+        $this->assertResponseIsSuccessful();
+        $data = $response->toArray();
+
+        $this->assertEquals(3, $data['totalItems']);
+        $this->assertEquals('HighRating', $data['member'][0]['name'] );
+        $this->assertEquals('LowRating', $data['member'][2]['name']);
+
+        $response = $client->request('GET', '/api/v1/masters?order[avgRating]=asc');
+        $this->assertResponseIsSuccessful();
+        $data = $response->toArray();
+
+        $this->assertEquals('LowRating', $data['member'][0]['name']);
+        $this->assertEquals('HighRating', $data['member'][2]['name']);
     }
 
     public function testGetMaster(): void

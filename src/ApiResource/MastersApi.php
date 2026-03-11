@@ -2,7 +2,9 @@
 
 namespace App\ApiResource;
 
+use ApiPlatform\Doctrine\Orm\Filter\OrderFilter;
 use ApiPlatform\Doctrine\Orm\Filter\NumericFilter;
+use ApiPlatform\Doctrine\Orm\Filter\RangeFilter;
 use ApiPlatform\Doctrine\Orm\State\Options;
 use ApiPlatform\Metadata\ApiFilter;
 use ApiPlatform\Metadata\ApiResource;
@@ -13,6 +15,7 @@ use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\Put;
 use App\Entity\Masters;
 use App\Filter\MasterAvailableTimeFilter;
+use App\Filter\MasterPriceFilter;
 use App\Filter\MasterSearchFilter;
 use App\Filter\ServiceIdFilter;
 use App\State\EntityClassDtoStateProcessor;
@@ -32,15 +35,18 @@ use Symfony\Component\Validator\Constraints as Assert;
     ],
     normalizationContext: ['groups' => ['master:read'], 'enable_max_depth' => true],
     denormalizationContext: ['groups' => ['master:write']],
+    paginationItemsPerPage: 6,
     provider: EntityToDtoStateProvider::class,
     processor: EntityClassDtoStateProcessor::class,
-    paginationItemsPerPage: 6,
     stateOptions: new Options(entityClass: Masters::class),
 )]
 #[ApiFilter(MasterSearchFilter::class)]
 #[ApiFilter(MasterAvailableTimeFilter::class)]
+#[ApiFilter(MasterPriceFilter::class)]
 #[ApiFilter(ServiceIdFilter::class)]
+#[ApiFilter(RangeFilter::class, properties: ['avgRating'])]
 #[ApiFilter(NumericFilter::class, properties: ['id_city.id', 'id_pets.id', 'district.id'])]
+#[ApiFilter(OrderFilter::class, properties: ['avgRating'])]
 class MastersApi
 {
     #[Groups(["master:read"])]
