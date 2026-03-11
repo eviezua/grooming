@@ -3,6 +3,8 @@
 namespace App\ApiResource;
 
 use ApiPlatform\Doctrine\Orm\Filter\NumericFilter;
+use ApiPlatform\Doctrine\Orm\Filter\OrderFilter;
+use ApiPlatform\Doctrine\Orm\Filter\RangeFilter;
 use ApiPlatform\Doctrine\Orm\State\Options;
 use ApiPlatform\Metadata\ApiFilter;
 use ApiPlatform\Metadata\ApiResource;
@@ -32,6 +34,8 @@ use Symfony\Component\Serializer\Annotation\Groups;
     processor: EntityClassDtoStateProcessor::class,
     stateOptions: new Options(entityClass: MastersServices::class)
 )]
+#[ApiFilter(OrderFilter::class, properties: ['price'])]
+#[ApiFilter(RangeFilter::class, properties: ['price'])]
 #[ApiFilter(NumericFilter::class, properties: ['master.id', 'service.id'])]
 class MastersServicesApi
 {
