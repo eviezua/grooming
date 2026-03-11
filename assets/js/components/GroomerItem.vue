@@ -16,7 +16,7 @@
 
 <script>
 import filterPanel from "./FilterPanel.vue";
-import { ref, onMounted, computed } from "vue";
+import {computed} from "vue";
 
 export default {
   computed: {
@@ -29,73 +29,46 @@ export default {
       type: Object,
       required: true
     },
-    selectedService: {
-      type: String,
-      default: null
+    selectedServicesIds: {
+      type: Array,
+      default: []
+    },
+    serviceNames: {
+      type: Object,
+      default: () => ({})
+    },
+    pricesMap: {
+      type: Object,
+      default: () => ({})
+    },
+    cityNames: {
+      type: Object,
+      default: () => ({})
+    },
+    districtNames: {
+      type: Object,
+      default: () => ({})
     }
   },
   setup(props) {
-    const cityName = ref("")
-    const districtName = ref("")
-    const servicesWithPrices = ref([])
     const filteredServices = computed(() => {
-      if (!props.selectedService) return []
-      return servicesWithPrices.value.filter(s => s.serviceName === props.selectedService)
-    })
+      return props.selectedServicesIds.map(sId => {
+        const price = props.pricesMap[`${props.groomer.id}_${sId}`];
+        if (price !== undefined) {
+          return {
+            id: sId,
+            serviceName: props.serviceNames[sId] || '...',
+            price: price
+          };
+        }
+        return null;
+      }).filter(s => s !== null);
+    });
 
+    const cityName = computed(() => props.cityNames[props.groomer.cityId] || "...");
+    const districtName = computed(() => props.districtNames[props.groomer.districtId] || "");
 
-    async function loadServices() {
-      try {
-        const res = await fetch(`/api/v1/masters_services?master.id=${props.groomer.id}`)
-        const data = await res.json()
-        const rawServices = data['hydra:member'] || data['member'] || data
-
-        const servicesWithNames = await Promise.all(
-            rawServices.map(async s => {
-              try {
-                const srvRes = await fetch(`/api/v1/services/${s.serviceId}`)
-                const srvData = await srvRes.json()
-                return { ...s, serviceName: srvData.name }
-              } catch {
-                return { ...s, serviceName: 'Unknown' }
-              }
-            })
-        )
-
-        servicesWithPrices.value = servicesWithNames
-      } catch (e) {
-        servicesWithPrices.value = []
-      }
-    }
-
-    async function loadCity() {
-      try {
-        const res = await fetch(`/api/v1/cities/${props.groomer.cityId}`)
-        const data = await res.json()
-        cityName.value = data.city
-      } catch (e) {
-        cityName.value = "Unknown"
-      }
-    }
-
-    async function loadDistrict() {
-      if (!props.groomer.districtId) return
-      try {
-        const res = await fetch(`/api/v1/districts/${props.groomer.districtId}`)
-        const data = await res.json()
-        districtName.value = data.name
-      } catch (e) {
-        districtName.value = "Unknown"
-      }
-    }
-
-    onMounted(() => {
-      if (props.groomer.cityId) loadCity()
-      if (props.groomer.districtId) loadDistrict()
-      loadServices()
-    })
-
-    return { cityName, districtName, servicesWithPrices, filteredServices }
+    return { cityName, districtName, filteredServices }
   }
 }
 </script>
