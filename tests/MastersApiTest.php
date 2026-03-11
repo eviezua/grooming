@@ -4,6 +4,8 @@ namespace App\Tests;
 
 use ApiPlatform\Symfony\Bundle\Test\ApiTestCase;
 use App\Entity\Masters;
+use App\Enum\Weekdays;
+use App\Factory\BookingsFactory;
 use App\Factory\CitiesFactory;
 use App\Factory\DistrictsFactory;
 use App\Factory\MastersFactory;
@@ -190,27 +192,46 @@ class MastersApiTest extends ApiTestCase
         ]);
     }
 
-    public function testGetCollectionWithTimeAvailableFilter(): void
+    public function testMastersAvailableTimeFilter(): void
     {
+        $today = new \DateTime('today');
+        $dayOfWeek = Weekdays::from($today->format('l'));
+        $dateStr = $today->format('Y-m-d');
+
+        $master1 = MastersFactory::createOne();
+        $master2 = MastersFactory::createOne();
+
         ScheduleFactory::createOne([
-            'start_time' => new DateTime('08:00:00'),
-            'stop_time' => new DateTime('10:00:00'),
-        ]);
-        ScheduleFactory::createOne([
-            'start_time' => new DateTime('12:00:00'),
-            'stop_time' => new DateTime('14:00:00'),
+            'master' => $master1,
+            'dayOfweek' => $dayOfWeek,
+            'start_time' => new \DateTime('08:00:00'),
+            'stop_time' => new \DateTime('13:00:00'),
         ]);
 
         ScheduleFactory::createOne([
-            'start_time' => new DateTime('06:00:00'),
-            'stop_time' => new DateTime('08:00:00'),
-        ]);
-        ScheduleFactory::createOne([
-            'start_time' => new DateTime('20:00:00'),
-            'stop_time' => new DateTime('23:30:00'),
+            'master' => $master2,
+            'dayOfweek' => $dayOfWeek,
+            'start_time' => new \DateTime('09:00:00'),
+            'stop_time' => new \DateTime('14:00:00'),
         ]);
 
-        static::createClient()->request('GET', '/api/v1/masters?start_time=07:00:00&stop_time=23:00:00');
+        BookingsFactory::createOne([
+            'id_master' => $master1,
+            'date' => $today,
+            'time_start' => new \DateTime('09:00:00'),
+            'time_stop' => new \DateTime('10:00:00'),
+        ]);
+
+        BookingsFactory::createOne([
+            'id_master' => $master2,
+            'date' => $today,
+            'time_start' => new \DateTime('12:00:00'),
+            'time_stop' => new \DateTime('13:00:00'),
+        ]);
+
+        $client = static::createClient();
+
+        $client->request('GET', "/api/v1/masters?date_from={$dateStr}&start_time=11:00&end_time=12:00");
 
         $this->assertResponseIsSuccessful();
         $this->assertJsonContains([
@@ -218,6 +239,177 @@ class MastersApiTest extends ApiTestCase
             '@id' => '/api/v1/masters',
             '@type' => 'Collection',
             'totalItems' => 2
+        ]);
+
+        $client->request('GET', "/api/v1/masters?date_from={$dateStr}&start_time=09:00&end_time=10:00");
+
+        $this->assertResponseIsSuccessful();
+        $this->assertJsonContains([
+            '@context' => '/api/v1/contexts/Master',
+            '@id' => '/api/v1/masters',
+            '@type' => 'Collection',
+            'totalItems' => 1
+        ]);
+
+        $client->request('GET', "/api/v1/masters?date_from={$dateStr}&start_time=12:00&end_time=13:00");
+
+        $this->assertResponseIsSuccessful();
+        $this->assertJsonContains([
+            '@context' => '/api/v1/contexts/Master',
+            '@id' => '/api/v1/masters',
+            '@type' => 'Collection',
+            'totalItems' => 1
+        ]);
+    }
+
+    public function testMasterAvailableTimeFilterRange(): void
+    {
+        $today = new \DateTime('today');
+        $tomorrow = (clone $today)->modify('+1 day');
+        $plus5 = (clone $today)->modify('+5 day');
+        $plus7 = (clone $today)->modify('+7 day');
+        $plus8 = (clone $today)->modify('+8 day');
+        $plus10 = (clone $today)->modify('+10 day');
+
+        $client = static::createClient();
+
+        $master1 = MastersFactory::createOne();
+        $master2 = MastersFactory::createOne();
+
+        foreach ([$today, $tomorrow, $plus5] as $date) {
+            $dayOfWeek = Weekdays::from($date->format('l'));
+            ScheduleFactory::createOne([
+                'master' => $master1,
+                'dayOfweek' => $dayOfWeek,
+                'start_time' => new \DateTime('08:00:00'),
+                'stop_time' => new \DateTime('17:00:00'),
+            ]);
+            ScheduleFactory::createOne([
+                'master' => $master2,
+                'dayOfweek' => $dayOfWeek,
+                'start_time' => new \DateTime('09:00:00'),
+                'stop_time' => new \DateTime('18:00:00'),
+            ]);
+        }
+
+        BookingsFactory::createOne([
+            'id_master' => $master1,
+            'date' => $today,
+            'time_start' => new \DateTime('10:00:00'),
+            'time_stop' => new \DateTime('11:00:00'),
+        ]);
+
+        BookingsFactory::createOne([
+            'id_master' => $master2,
+            'date' => $plus5,
+            'time_start' => new \DateTime('12:00:00'),
+            'time_stop' => new \DateTime('13:00:00'),
+        ]);
+
+        BookingsFactory::createOne([
+            'id_master' => $master2,
+            'date' => $tomorrow,
+            'time_start' => new \DateTime('10:00:00'),
+            'time_stop' => new \DateTime('13:00:00'),
+        ]);
+
+        BookingsFactory::createOne([
+            'id_master' => $master1,
+            'date' => $plus5,
+            'time_start' => new \DateTime('12:00:00'),
+            'time_stop' => new \DateTime('15:00:00'),
+        ]);
+
+        BookingsFactory::createOne([
+            'id_master' => $master1,
+            'date' => $plus5,
+            'time_start' => new \DateTime('12:00:00'),
+            'time_stop' => new \DateTime('15:00:00'),
+        ]);
+
+        BookingsFactory::createOne([
+            'id_master' => $master1,
+            'date' => $plus7,
+            'time_start' => new \DateTime('12:00:00'),
+            'time_stop' => new \DateTime('13:30:00'),
+        ]);
+
+        BookingsFactory::createOne([
+            'id_master' => $master1,
+            'date' => $plus8,
+            'time_start' => new \DateTime('13:30:00'),
+            'time_stop' => new \DateTime('15:00:00'),
+        ]);
+
+        $client->request('GET', "/api/v1/masters?date_from={$today->format('Y-m-d')}&date_to={$plus5->format('Y-m-d')}&start_time=09:00&end_time=10:00");
+        $this->assertResponseIsSuccessful();
+        $this->assertJsonContains(['totalItems' => 2]);
+
+        $client->request('GET', "/api/v1/masters?date_from={$plus5->format('Y-m-d')}&date_to={$today->format('Y-m-d')}&start_time=09:00&end_time=10:00");
+        $this->assertResponseIsSuccessful();
+        $this->assertJsonContains(['totalItems' => 2]);
+
+        $client->request('GET', "/api/v1/masters?date_from={$today->format('Y-m-d')}&date_to={$tomorrow->format('Y-m-d')}&start_time=10:30&end_time=11:30");
+        $this->assertResponseIsSuccessful();
+        $this->assertJsonContains(['totalItems' => 2]);
+
+        $client->request('GET', "/api/v1/masters?date_from={$tomorrow->format('Y-m-d')}&date_to={$plus5->format('Y-m-d')}&start_time=12:00&end_time=13:00");
+        $this->assertResponseIsSuccessful();
+        $this->assertJsonContains(['totalItems' => 1]);
+
+        $dayOfWeekPlus10 = Weekdays::from($plus10->format('l'));
+        ScheduleFactory::createOne([
+            'master' => $master1,
+            'dayOfweek' => $dayOfWeekPlus10,
+            'start_time' => new \DateTime('13:00:00'),
+            'stop_time' => new \DateTime('17:00:00'),
+        ]);
+        ScheduleFactory::createOne([
+            'master' => $master2,
+            'dayOfweek' => $dayOfWeekPlus10,
+            'start_time' => new \DateTime('13:00:00'),
+            'stop_time' => new \DateTime('17:00:00'),
+        ]);
+
+        BookingsFactory::createOne([
+            'id_master' => $master1,
+            'date' => $plus10,
+            'time_start' => new \DateTime('13:00:00'),
+            'time_stop' => new \DateTime('14:00:00'),
+        ]);
+
+        $client->request('GET', "/api/v1/masters?date_from={$plus5->format('Y-m-d')}&date_to={$plus10->format('Y-m-d')}&start_time=13:00&end_time=14:00");
+        $this->assertResponseIsSuccessful();
+        $this->assertJsonContains(['totalItems' => 1]);
+
+        $client->request('GET', "/api/v1/masters?date_from={$today->format('Y-m-d')}&date_to={$plus10->format('Y-m-d')}&start_time=16:00&end_time=17:00");
+        $this->assertResponseIsSuccessful();
+        $this->assertJsonContains(['totalItems' => 2]);
+
+        $client->request('GET', "/api/v1/masters?date_from={$today->format('Y-m-d')}&date_to={$plus5->format('Y-m-d')}&start_time=07:00&end_time=18:00");
+        $this->assertResponseIsSuccessful();
+        $this->assertJsonContains(['totalItems' => 0]);
+
+    }
+
+    public function testMastersRatingFilter(): void
+    {
+        MastersFactory::createOne(['avgRating' => 1.00]);
+        MastersFactory::createOne(['avgRating' => 2.00]);
+        MastersFactory::createOne(['avgRating' => 3.00]);
+        MastersFactory::createOne(['avgRating' => 4.00]);
+        MastersFactory::createOne(['avgRating' => 5.00]);
+
+        $client = static::createClient();
+
+        $client->request('GET', '/api/v1/masters?avgRating[gt]=2&avgRating[lt]=4');
+
+        $this->assertResponseIsSuccessful();
+        $this->assertJsonContains([
+            '@context' => '/api/v1/contexts/Master',
+            '@id' => '/api/v1/masters',
+            '@type' => 'Collection',
+            'totalItems' => 1
         ]);
     }
 
@@ -360,7 +552,6 @@ class MastersApiTest extends ApiTestCase
         $this->assertJsonContains([
             "name" => "Put",
             "surname" => "Test",
-            "avgRating" => 0,
             "cityId" => $cityId,
             "districtId" => $districtId,
             "address" => 'Test address',
@@ -383,6 +574,7 @@ class MastersApiTest extends ApiTestCase
             'json' => [
                 "name" => "Patch",
                 "surname" => "Test",
+                "address" => 'Test address',
                 "email" => "test@test.com",
                 "phone" => "+12523957776",
             ],
@@ -395,6 +587,7 @@ class MastersApiTest extends ApiTestCase
         $this->assertJsonContains([
             "name" => "Patch",
             "surname" => "Test",
+            "address" => 'Test address',
             "email" => "test@test.com",
             "phone" => "+12523957776"
         ]);
