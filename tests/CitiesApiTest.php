@@ -34,6 +34,26 @@ class CitiesApiTest extends ApiTestCase
         ]);
     }
 
+    public function testGetCitiesByMultipleIds(): void
+    {
+        $cities = CitiesFactory::createMany(5);
+        $targetIds = [$cities[0]->getId(), $cities[2]->getId()];
+
+        $client = static::createClient();
+        $client->request('GET', '/api/v1/cities?id[]=' . $targetIds[0] . '&id[]=' . $targetIds[1]);
+
+        $this->assertResponseIsSuccessful();
+        $this->assertJsonContains([
+            'totalItems' => 2,
+        ]);
+
+        $data = $client->getResponse()->toArray();
+        $returnedIds = array_map(fn($item) => $item['id'], $data['member']);
+
+        $this->assertContains($targetIds[0], $returnedIds);
+        $this->assertContains($targetIds[1], $returnedIds);
+    }
+
     public function testGetBySearchNameFilterFull(): void
     {
         $client = static::createClient();

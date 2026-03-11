@@ -2,7 +2,9 @@
 
 namespace App\ApiResource;
 
+use ApiPlatform\Doctrine\Orm\Filter\OrderFilter;
 use ApiPlatform\Doctrine\Orm\Filter\NumericFilter;
+use ApiPlatform\Doctrine\Orm\Filter\RangeFilter;
 use ApiPlatform\Doctrine\Orm\State\Options;
 use ApiPlatform\Metadata\ApiFilter;
 use ApiPlatform\Metadata\ApiResource;
@@ -13,7 +15,9 @@ use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\Put;
 use App\Entity\Masters;
 use App\Filter\MasterAvailableTimeFilter;
+use App\Filter\MasterPriceFilter;
 use App\Filter\MasterSearchFilter;
+use App\Filter\ServiceIdFilter;
 use App\State\EntityClassDtoStateProcessor;
 use App\State\EntityToDtoStateProvider;
 use Symfony\Component\Serializer\Annotation\Groups;
@@ -31,13 +35,18 @@ use Symfony\Component\Validator\Constraints as Assert;
     ],
     normalizationContext: ['groups' => ['master:read'], 'enable_max_depth' => true],
     denormalizationContext: ['groups' => ['master:write']],
+    paginationItemsPerPage: 6,
     provider: EntityToDtoStateProvider::class,
     processor: EntityClassDtoStateProcessor::class,
-    stateOptions: new Options(entityClass: Masters::class)
+    stateOptions: new Options(entityClass: Masters::class),
 )]
 #[ApiFilter(MasterSearchFilter::class)]
 #[ApiFilter(MasterAvailableTimeFilter::class)]
-#[ApiFilter(NumericFilter::class, properties: ['id_city.id', 'id_services.id', 'id_pets.id',])]
+#[ApiFilter(MasterPriceFilter::class)]
+#[ApiFilter(ServiceIdFilter::class)]
+#[ApiFilter(RangeFilter::class, properties: ['avgRating'])]
+#[ApiFilter(NumericFilter::class, properties: ['id_city.id', 'id_pets.id', 'district.id'])]
+#[ApiFilter(OrderFilter::class, properties: ['avgRating'])]
 class MastersApi
 {
     #[Groups(["master:read"])]
@@ -51,11 +60,27 @@ class MastersApi
     #[Assert\NotBlank(message: "Surname can't be empty")]
     public ?string $surname = null;
 
-    #[Groups(["master:read", "master:write"])]
+    #[Groups(["master:read"])]
+    #[Assert\Range(min: 0, max: 5, notInRangeMessage: 'Rating must be between {{ min }} and {{ max }}')]
+    public float $avgRating = 0;
+
+    #[Groups(["master:read"])]
     public array $servicesId = [];
 
     #[Groups(["master:read", "master:write"])]
     public ?int $cityId = null;
+
+    #[Groups(["master:read", "master:write"])]
+    public ?int $districtId = null;
+
+    #[Groups(["master:read", "master:write"])]
+    #[Assert\Length(max: 255, maxMessage: "Address is too long")]
+    #[Assert\Regex(
+        pattern: "/^[\p{L}\d\s.,-]+$/u",
+        message: "Address contains invalid characters"
+    )]
+    #[Assert\NotBlank(message: "Address can't be empty")]
+    public ?string $address = null;
 
     #[Groups(["master:read", "master:write"])]
     public array $petsId = [];

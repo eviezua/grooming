@@ -4,9 +4,9 @@ namespace App\Mapper;
 
 use App\ApiResource\MastersApi;
 use App\Entity\Cities;
+use App\Entity\Districts;
 use App\Entity\Masters;
 use App\Entity\Pets;
-use App\Entity\Services;
 use App\Service\EntityLoaderHelper;
 use Psr\Log\LoggerInterface;
 use Symfonycasts\MicroMapper\AsMapper;
@@ -38,21 +38,10 @@ class MastersApiToEntityMapper implements MapperInterface
         $to->setName($from->name);
         $to->setSurname($from->surname);
 
-        $to->clearServices();
-
-        if (!empty($from->servicesId)) {
-            $validIds = array_filter($from->servicesId);
-            try {
-                $services = $this->loader->loadMultiple(Services::class, $validIds, 'Services');
-                foreach ($services as $service) {
-                    $to->addIdService($service);
-                }
-            } catch (Throwable $e) {
-                $this->logger->warning('Some services could not be loaded: ' . $e->getMessage());
-            }
-        }
-
         $to->setIdCity($this->loader->load(Cities::class, $from->cityId, 'Cities'));
+        $district = $from->districtId ? $this->loader->load(Districts::class, $from->districtId, 'Districts') : null;
+        $to->setDistrict($district);
+        $to->setAddress($from->address);
         $to->clearPets();
 
         if (!empty($from->petsId)) {

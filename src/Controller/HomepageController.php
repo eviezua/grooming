@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Enum\Species;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -26,7 +27,9 @@ final class HomepageController extends AbstractController
     #[Route('/{_locale<%app.supported_locales%>}/groomers', name: 'app_groomers')]
     public function groomers(): Response
     {
-        return $this->render('pages/groomers.html.twig');
+        return $this->render('pages/groomers.html.twig', [
+            'speciesList' => Species::values(),
+        ]);
     }
     #[Route('/{_locale<%app.supported_locales%>}/faq', name: 'app_faq')]
     public function faq(): Response

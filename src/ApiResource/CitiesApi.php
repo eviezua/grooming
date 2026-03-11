@@ -2,6 +2,7 @@
 
 namespace App\ApiResource;
 
+use ApiPlatform\Doctrine\Orm\Filter\NumericFilter;
 use ApiPlatform\Doctrine\Orm\State\Options;
 use ApiPlatform\Metadata\ApiFilter;
 use ApiPlatform\Metadata\ApiResource;
@@ -30,6 +31,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
     stateOptions: new Options(entityClass: Cities::class)
 )]
 #[ApiFilter(CitySearchFilter::class)]
+#[ApiFilter(NumericFilter::class, properties: ['id'])]
 class CitiesApi
 {
     #[Groups(["city:read"])]

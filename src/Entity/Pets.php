@@ -11,7 +11,6 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
-use Symfony\Component\Serializer\Attribute\SerializedName;
 
 #[ORM\Entity(repositoryClass: PetsRepository::class)]
 class Pets
@@ -112,30 +111,30 @@ class Pets
     }
     public function getHairCoefficient(): float
     {
-        return match ($this->hair) {
-            'short' => 1.1,
-            'medium' => 1.2,
-            'long' => 1.3,
+        return match ($this->hair?->value) {
+            'Short' => 1.1,
+            'Middle' => 1.15,
+            'Long' => 1.3,
             default => 1.0
         };
     }
 
     public function getSizeCoefficient(): float
     {
-        return match ($this->size) {
-            'small' => 1.0,
-            'medium' => 1.2,
-            'large' => 1.5,
+        return match ($this->size?->value) {
+            'Small' => 1.0,
+            'Medium' => 1.25,
+            'Big' => 1.5,
             default => 1.0
         };
     }
 
     public function getTypeCoefficient(): float
     {
-        return match ($this->spice) {
-            'dog' => 1.5,
-            'cat' => 1.2,
-            'rabbit' => 1.1,
+        return match ($this->spice?->value) {
+            'Dog' => 1.4,
+            'Cat' => 1.1,
+            'Rabbit' => 1.0,
             default => 1.0
         };
     }
@@ -157,7 +156,7 @@ class Pets
         $sizeCoefficient = $this->getSizeCoefficient();
         $typeCoefficient = $this->getTypeCoefficient();
 
-        return round(($hairCoefficient + $sizeCoefficient + $typeCoefficient), 2);
+        return round(($hairCoefficient * $sizeCoefficient * $typeCoefficient), 2);
     }
 
     public function setCostCoficient(float $cost_coficient): static

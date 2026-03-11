@@ -5,9 +5,8 @@
       <span class="truncate">{{ selectedLabel || label }}</span>
       <img src="/uploads/icons/arrow_dropdown.png">
     </button>
-    <ul class="dropdown-menu">
-
-      <div class="dropdown-scrollable">
+    <div class="dropdown-menu">
+      <ul class="dropdown-scrollable">
         <li class="search">
           <input
               type="search"
@@ -18,6 +17,14 @@
               src="/uploads/icons/search.png"
               alt="Search"
           />
+        </li>
+        <li>
+          <a
+              class="dropdown-item inter-18 truncate text-danger"
+              @click="reset"
+          >
+            ✕ {{ 'Скинути' }}
+          </a>
         </li>
         <li
             v-for="item in internalOptions"
@@ -30,12 +37,14 @@
             {{ item.name }}
           </a>
         </li>
-      </div>
-    </ul>
+      </ul>
+    </div>
   </div>
 </template>
 
 <script>
+import { useApiFetch } from "../useFetchResource";
+import { useDebounce } from "../useDebounce";
 export default {
   props: {
     options: {
@@ -56,6 +65,10 @@ export default {
     }
   },
   emits: ['update:modelValue'],
+  setup() {
+    const { fetchData, loading } = useApiFetch();
+    return { fetchData, loading };
+  },
   data() {
     return {
       searchQuery: '',
@@ -67,7 +80,7 @@ export default {
       if (value.length < 3 || !value) {
         this.internalOptions = [...this.options];
       } else {
-        this.fetchFilteredOptions();
+        this.debouncedFetch();
       }
     },
     options(newVal) {
@@ -83,34 +96,42 @@ export default {
       return match?.name || null;
     }
   },
+  created() {
+    this.debouncedFetch = useDebounce(() => {
+      this.fetchFilteredOptions();
+    }, 400);
+  },
   methods: {
     select(item) {
       this.$emit('update:modelValue', item)
     },
+    reset() {
+      this.$emit('update:modelValue', null)
+    },
     async fetchFilteredOptions() {
       if (!this.resource) return;
 
-      const query = `/api/v1/${this.resource}?search=${encodeURIComponent(this.searchQuery)}`;
-
-      try {
-        const res = await fetch(query);
-        const json = await res.json();
-        const rawItems = json['hydra:member'] || json['member'] || json || [];
-
-        this.internalOptions = rawItems.map(item => {
-          if (this.resource === 'cities') {
-            return { id: item.id, name: item.city };
+      const data = await this.fetchData(
+          `/api/v1/${this.resource}`,
+          { search: this.searchQuery },
+          (json) => {
+            const rawItems = json['hydra:member'] || json['member'] || json || [];
+            return rawItems.map(item => {
+              if (this.resource === 'cities') {
+                return { id: item.id, name: item.city };
+              }
+              if (this.resource === 'pets') {
+                return { id: item.id, name: `${item.spice} — ${item.breed}` };
+              }
+              return { id: item.id, name: item.name };
+            });
           }
-          if (this.resource === 'pets') {
-            return { id: item.id, name: `${item.spice} — ${item.breed}` };
-          }
-          return { id: item.id, name: item.name };
-        });
-      } catch (err) {
-        console.error('Failed to fetch filtered options', err);
+      );
+
+      if (data) {
+        this.internalOptions = data;
       }
     }
-
   }
 }
 </script>
@@ -153,6 +174,8 @@ export default {
 }
 
 .dropdown-scrollable {
+  list-style: none;
+  padding: 0;
   max-height: 300px;
   overflow-y: auto;
   overflow-x: hidden;

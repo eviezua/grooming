@@ -23,7 +23,7 @@ export default {
   },
   computed: {
     currentRating() {
-      return this.modelValue;
+      return Number(this.modelValue) || 0
     }
   },
   methods: {

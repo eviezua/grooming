@@ -12,6 +12,7 @@ use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Post;
 use App\Entity\Services;
+use App\Filter\MasterIdFilter;
 use App\Filter\ServiceSearchFilter;
 use App\State\EntityClassDtoStateProcessor;
 use App\State\EntityToDtoStateProvider;
@@ -35,7 +36,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 )]
 #[ApiFilter(ServiceSearchFilter::class)]
 #[ApiFilter(RangeFilter::class, properties: ['cost'])]
-#[ApiFilter(NumericFilter::class, properties: ['masters.id'])]
+#[ApiFilter(MasterIdFilter::class)]
 class ServicesApi
 {
     #[Groups(["services:read"])]

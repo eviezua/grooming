@@ -5,6 +5,7 @@ namespace App\Tests;
 use ApiPlatform\Symfony\Bundle\Test\ApiTestCase;
 use App\Entity\Services;
 use App\Factory\MastersFactory;
+use App\Factory\MastersServicesFactory;
 use App\Factory\ServicesFactory;
 use Elastic\Elasticsearch\Client;
 use Zenstruck\Foundry\Test\Factories;
@@ -172,10 +173,14 @@ class ServicesApiTest extends ApiTestCase
 
         ServicesFactory::CreateMany(10);
 
-        $master = MastersFactory::createOne(['id_services' => [$service]]);
+        $master = MastersFactory::new(['services_count' => 0])->createOne();
+        MastersServicesFactory::createOne([
+            'master' => $master,
+            'service' => $service,
+        ]);
         $masterId = $master->getId();
 
-        static::createClient()->request('GET', 'api/v1/services?masters.id[]=' . $masterId);
+        static::createClient()->request('GET', 'api/v1/services?id_masters[]=' . $masterId);
 
         $this->assertResponseIsSuccessful();
         $this->assertResponseHeaderSame('content-type', 'application/ld+json; charset=utf-8');

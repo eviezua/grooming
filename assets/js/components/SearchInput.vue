@@ -17,10 +17,26 @@
 
 <script>
 export default {
+  props: {
+    modelValue: {
+      type: String,
+      default: ''
+    }
+  },
+  emits: ['update:modelValue'],
   data() {
     return {
       isFocused: false,
-      searchText: ''
+    }
+  },
+  computed: {
+    searchText: {
+      get() {
+        return this.modelValue
+      },
+      set(val) {
+        this.$emit('update:modelValue', val)
+      }
     }
   },
   mounted() {

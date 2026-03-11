@@ -2,6 +2,7 @@
 
 namespace App\ApiResource;
 
+use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
 use ApiPlatform\Doctrine\Orm\State\Options;
 use ApiPlatform\Metadata\ApiFilter;
 use ApiPlatform\Metadata\ApiResource;
@@ -10,6 +11,8 @@ use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\Put;
+use ApiPlatform\OpenApi\Model\Operation;
+use App\Controller\FindClientByEmailController;
 use App\Entity\Clients;
 use App\Filter\ClientSearchFilter;
 use App\State\EntityClassDtoStateProcessor;
@@ -26,6 +29,25 @@ use Symfony\Component\Validator\Constraints as Assert;
         new Post(),
         new Put(),
         new Patch(),
+        new Get(
+            uriTemplate: '/v1/clients/find-by-email',
+            controller: FindClientByEmailController::class,
+            openapi: new Operation(
+                summary: 'Find client by email',
+                parameters: [
+                    [
+                        'name' => 'email',
+                        'in' => 'query',
+                        'required' => true,
+                        'schema' => ['type' => 'string'],
+                        'description' => 'Email to find the client by',
+                    ],
+                ]
+            ),
+            read: false,
+            deserialize: false,
+            name: 'find_by_email'
+        )
     ],
     normalizationContext: ['groups' => ['client:read']],
     denormalizationContext: ['groups' => ['client:write']],
@@ -34,6 +56,7 @@ use Symfony\Component\Validator\Constraints as Assert;
     stateOptions: new Options(entityClass: Clients::class)
 )]
 #[ApiFilter(ClientSearchFilter::class)]
+#[ApiFilter(SearchFilter::class, properties: ['email' => 'exact'])]
 class ClientsApi
 {
     #[Groups(["client:read"])]

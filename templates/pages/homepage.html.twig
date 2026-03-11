@@ -9,7 +9,7 @@
         {% include 'partials/_info.html.twig' %}
     </div>
     <div class="bg-gray py-5">
-        {% include 'partials/_masters.html.twig' %}
+        {% include 'partials/_masters.html.twig' with { preview: true } %}
         <a href="{{ path('app_groomers', {'_locale': app.request.locale}) }}" class="orange-but d-flex justify-content-center align-items-center text-white text-decoration-none inter-18 mx-auto" style="width: 182px; height: 73px;">
             {{ 'More'|trans }}
         </a>

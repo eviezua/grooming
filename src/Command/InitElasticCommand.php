@@ -3,6 +3,7 @@
 namespace App\Command;
 
 use App\Entity\Clients;
+use App\Entity\Districts;
 use App\Entity\Masters;
 use App\Entity\Pets;
 use App\Entity\Services;
@@ -30,6 +31,7 @@ class InitElasticCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $this->recreateCitiesIndex($output);
+        $this->recreateDistrictsIndex($output);
         $this->recreateClientsIndex($output);
         $this->recreateMastersIndex($output);
         $this->recreatePetsIndex($output);
@@ -62,6 +64,33 @@ class InitElasticCommand extends Command
 
         $output->writeln("✅ Indexed " . count($cities) . " cities.");
     }
+
+    private function recreateDistrictsIndex(OutputInterface $output): void
+    {
+        $indexName = 'districts';
+        $this->createIndex($indexName, [
+            'name' => [
+                'type' => 'text',
+                'analyzer' => 'ngram_analyzer',
+                'search_analyzer' => 'ngram_search',
+            ],
+        ], $output);
+
+        $districts = $this->entityManager->getRepository(Districts::class)->findAll();
+
+        foreach ($districts as $district) {
+            $this->client->index([
+                'index' => $indexName,
+                'id' => $district->getId(),
+                'body' => [
+                    'name' => $district->getName(),
+                ],
+            ]);
+        }
+
+        $output->writeln("✅ Indexed " . count($districts) . " districts.");
+    }
+
 
     private function recreateClientsIndex(OutputInterface $output): void
     {
