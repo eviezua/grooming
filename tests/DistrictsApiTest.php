@@ -35,6 +35,18 @@ class DistrictsApiTest extends ApiTestCase
         ]);
     }
 
+    public function testGetDistrictsByMultipleIds(): void
+    {
+        $districts = DistrictsFactory::createMany(5);
+        $targetIds = [$districts[1]->getId(), $districts[3]->getId()];
+
+        $client = static::createClient();
+        $client->request('GET', '/api/v1/districts?id[]=' . $targetIds[0] . '&id[]=' . $targetIds[1]);
+
+        $this->assertResponseIsSuccessful();
+        $this->assertJsonContains(['totalItems' => 2]);
+    }
+
     public function testGetBySearchNameFilterFull(): void
     {
         $client = static::createClient();

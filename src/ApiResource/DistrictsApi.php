@@ -31,7 +31,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
     stateOptions: new Options(entityClass: Districts::class)
 )]
 #[ApiFilter(DistrictSearchFilter::class)]
-#[ApiFilter(NumericFilter::class, properties: ['city.id'])]
+#[ApiFilter(NumericFilter::class, properties: ['city.id', 'id'])]
 class DistrictsApi
 {
     #[Groups(["district:read"])]
