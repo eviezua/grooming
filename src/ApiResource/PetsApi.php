@@ -2,6 +2,7 @@
 
 namespace App\ApiResource;
 
+use ApiPlatform\Doctrine\Orm\Filter\NumericFilter;
 use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
 use ApiPlatform\Doctrine\Orm\State\Options;
 use ApiPlatform\Metadata\ApiFilter;
@@ -35,6 +36,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 )]
 #[ApiFilter(PetSearchFilter::class)]
 #[ApiFilter(SearchFilter::class, properties: ['spice' => 'exact'])]
+#[ApiFilter(NumericFilter::class, properties: ['id'])]
 class PetsApi
 {
     #[Groups(["pets:read"])]

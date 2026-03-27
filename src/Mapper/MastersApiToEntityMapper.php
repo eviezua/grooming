@@ -9,6 +9,7 @@ use App\Entity\Masters;
 use App\Entity\Pets;
 use App\Service\EntityLoaderHelper;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfonycasts\MicroMapper\AsMapper;
 use Symfonycasts\MicroMapper\MapperInterface;
 use Throwable;
@@ -19,6 +20,7 @@ class MastersApiToEntityMapper implements MapperInterface
     public function __construct(
         private LoggerInterface $logger,
         private EntityLoaderHelper $loader,
+        private UserPasswordHasherInterface $passwordHasher
     ) {
     }
 
@@ -57,7 +59,8 @@ class MastersApiToEntityMapper implements MapperInterface
         }
 
         if ($from->password !== null) {
-            $to->setPassword($from->password);
+            $hashedPassword = $this->passwordHasher->hashPassword($to, $from->password);
+            $to->setPassword($hashedPassword);
         }
 
         $to->setEmail($from->email);

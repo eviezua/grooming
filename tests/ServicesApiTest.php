@@ -193,6 +193,28 @@ class ServicesApiTest extends ApiTestCase
         ]);
     }
 
+    public function testGetServicesByMultipleIds(): void
+    {
+        $s1 = ServicesFactory::createOne(['name' => 'Grooming']);
+        $s2 = ServicesFactory::createOne(['name' => 'Washing']);
+        $s3 = ServicesFactory::createOne(['name' => 'Nails']);
+
+        $client = static::createClient();
+
+        $client->request('GET', '/api/v1/services', [
+            'query' => ['id' => [$s1->getId(), $s3->getId()]]
+        ]);
+
+        $this->assertResponseIsSuccessful();
+        $this->assertJsonContains(['totalItems' => 2]);
+
+        $data = $client->getResponse()->toArray();
+        $names = array_column($data['member'], 'name');
+        $this->assertContains('Grooming', $names);
+        $this->assertContains('Nails', $names);
+        $this->assertNotContains('Washing', $names);
+    }
+
     public function testGetService(): void
     {
         $service = ServicesFactory::createOne();

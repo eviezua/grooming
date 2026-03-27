@@ -13,6 +13,8 @@ use App\Factory\ServicesFactory;
 use DateInterval;
 use DateTime;
 use DateTimeZone;
+use Symfony\Component\BrowserKit\Cookie;
+use Zenstruck\Foundry\Persistence\Proxy;
 use Zenstruck\Foundry\Test\Factories;
 use Zenstruck\Foundry\Test\ResetDatabase;
 
@@ -39,6 +41,21 @@ class BookingApiTest extends ApiTestCase
             '@type' => 'Collection',
             'totalItems' => 100
         ]);
+    }
+
+    public function testMasterGetCollection(): void
+    {
+        $email = 'master@test.com';
+        $client = $this->createAuthenticatedClient($email);
+        $master = MastersFactory::find(['email' => $email]);
+
+        BookingsFactory::createMany(50, ['id_master' => $master]);
+        BookingsFactory::createMany(50);
+
+        $client->request('GET', '/api/v1/bookings');
+
+        $this->assertResponseIsSuccessful();
+        $this->assertJsonContains(['totalItems' => 50]);
     }
 
     public function testGetCollectionWithDateFilter(): void
@@ -152,10 +169,14 @@ class BookingApiTest extends ApiTestCase
 
     public function testGetBooking(): void
     {
-        $booking = BookingsFactory::createOne();
+        $email = 'viewer@test.com';
+        $client = $this->createAuthenticatedClient($email);
+        $master = MastersFactory::find(['email' => $email]);
+
+        $booking = BookingsFactory::createOne(['id_master' => $master]);
         $bookingId = $booking->getId();
 
-        static::createClient()->request('GET', "/api/v1/bookings/$bookingId");
+        $client->request('GET', "/api/v1/bookings/$bookingId");
 
         $this->assertResponseIsSuccessful();
         $this->assertJsonContains([
@@ -299,19 +320,22 @@ class BookingApiTest extends ApiTestCase
 
     public function testPutBooking(): void
     {
+        $email = 'master_edit@test.com';
+        $client = $this->createAuthenticatedClient($email);
+        $master = MastersFactory::find(['email' => $email]);
+
         $tomorrow = new DateTime('+2 day', new DateTimeZone('UTC'));
 
-        $booking = BookingsFactory::createOne();
+        $booking = BookingsFactory::createOne(['id_master' => $master]);
         $bookingId = $booking->getId();
 
-        $data = $this->prepareData();
+        $data = $this->prepareData($master);
 
         $masterId = $data["masterId"];
         $servicesIds = $data['servicesIds'];
         $petId = $data['petId'];
         $clientId = $data['clientId'];
 
-        $client = static::createClient();
         $client->request('PUT', '/api/v1/bookings/' . $bookingId, [
             'json' => [
                 "masterId" => $masterId,
@@ -346,12 +370,15 @@ class BookingApiTest extends ApiTestCase
 
     public function testPatchBooking(): void
     {
+        $email = 'master_edit@test.com';
+        $client = $this->createAuthenticatedClient($email);
+        $master = MastersFactory::find(['email' => $email]);
+
         $tomorrow = new DateTime('+2 day', new DateTimeZone('UTC'));
 
-        $booking = BookingsFactory::createOne();
+        $booking = BookingsFactory::createOne(['id_master' => $master]);
         $bookingId = $booking->getId();
 
-        $client = static::createClient();
         $client->request('PATCH', '/api/v1/bookings/' . $bookingId, [
             'json' => [
                 "date" => $tomorrow->format('Y-m-d'),
@@ -374,10 +401,14 @@ class BookingApiTest extends ApiTestCase
 
     public function testDeleteBooking(): void
     {
-        $booking = BookingsFactory::createOne();
+        $email = 'master_edit@test.com';
+        $client = $this->createAuthenticatedClient($email);
+        $master = MastersFactory::find(['email' => $email]);
+
+        $booking = BookingsFactory::createOne(['id_master' => $master]);
         $bookingId = $booking->getId();
 
-        static::createClient()->request('DELETE', '/api/v1/bookings/' . $bookingId);
+        $client->request('DELETE', '/api/v1/bookings/' . $bookingId);
 
         $this->assertResponseStatusCodeSame(204);
         $this->assertNull(
@@ -387,9 +418,9 @@ class BookingApiTest extends ApiTestCase
         );
     }
 
-    private function prepareData(): array
+    private function prepareData(?Masters $existingMaster = null): array
     {
-        $master = MastersFactory::createOne();
+        $master = $existingMaster ? (method_exists($existingMaster, '_real') ? $existingMaster->_real() : $existingMaster) : MastersFactory::createOne()->_real();
         $masterId = $master->getId();
 
         $service = ServicesFactory::createMany(3);
@@ -407,5 +438,31 @@ class BookingApiTest extends ApiTestCase
             'petId' => $petId,
             'clientId' => $clientId,
         ];
+    }
+
+    private function createAuthenticatedClient($userOrEmail = 'master@test.com', bool $isAdmin = false)
+    {
+        $client = static::createClient();
+
+        if ($userOrEmail instanceof Masters) {
+            $master = $userOrEmail;
+        } else {
+            $proxy = MastersFactory::repository()->findOneBy(['email' => $userOrEmail])
+                ?? MastersFactory::createOne([
+                    'email' => $userOrEmail,
+                    'password' => 'password',
+                    'roles' => $isAdmin ? ['ROLE_ADMIN'] : ['ROLE_MASTER']
+                ]);
+            $master = ($proxy instanceof Proxy) ? $proxy->_real() : $proxy;
+        }
+
+        $jwtManager = static::getContainer()->get('lexik_jwt_authentication.jwt_manager');
+        $token = $jwtManager->create($master);
+
+        $cookieJar = $client->getCookieJar();
+        $cookie = new Cookie('jwt', $token);
+        $cookieJar->set($cookie);
+
+        return $client;
     }
 }

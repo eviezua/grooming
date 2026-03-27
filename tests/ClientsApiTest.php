@@ -4,10 +4,14 @@ namespace App\Tests;
 
 use ApiPlatform\Symfony\Bundle\Test\ApiTestCase;
 use App\Entity\Clients;
+use App\Entity\Masters;
 use App\Factory\BookingsFactory;
 use App\Factory\ClientsFactory;
+use App\Factory\MastersFactory;
 use App\Factory\PetsFactory;
 use Elastic\Elasticsearch\Client;
+use Symfony\Component\BrowserKit\Cookie;
+use Zenstruck\Foundry\Persistence\Proxy;
 use Zenstruck\Foundry\Test\Factories;
 use Zenstruck\Foundry\Test\ResetDatabase;
 
@@ -21,13 +25,18 @@ class ClientsApiTest extends ApiTestCase
 
     public function testGetCollection(): void
     {
-        ClientsFactory::createMany(100);
+        $email = 'boss@test.com';
+        $client = $this->createAuthenticatedClient($email);
 
-        static::createClient()->request('GET', 'api/v1/clients');
+        $master = MastersFactory::find(['email' => $email]);
+        $clients = ClientsFactory::createMany(100);
+        foreach ($clients as $c) {
+            BookingsFactory::createOne(['id_master' => $master, 'id_client' => $c]);
+        }
 
+        $client->request('GET', '/api/v1/clients');
         $this->assertResponseIsSuccessful();
         $this->assertResponseHeaderSame('content-type', 'application/ld+json; charset=utf-8');
-
         $this->assertJsonContains([
             '@context' => '/api/v1/contexts/Client',
             '@id' => '/api/v1/clients',
@@ -36,11 +45,46 @@ class ClientsApiTest extends ApiTestCase
         ]);
     }
 
+    public function testGetCollectionFilteredByIds(): void
+    {
+        $email = 'filter_ids@test.com';
+        $client = $this->createAuthenticatedClient($email);
+        $master = MastersFactory::find(['email' => $email]);
+
+        $clients = ClientsFactory::createMany(5);
+        foreach ($clients as $c) {
+            BookingsFactory::createOne(['id_master' => $master, 'id_client' => $c]);
+        }
+
+        $id1 = $clients[0]->getId();
+        $id2 = $clients[2]->getId();
+
+        $client->request('GET', '/api/v1/clients', [
+            'query' => [
+                'id' => [$id1, $id2]
+            ]
+        ]);
+
+        $this->assertResponseIsSuccessful();
+        $this->assertJsonContains([
+            'totalItems' => 2,
+        ]);
+
+        $json = $client->getResponse()->toArray();
+        $returnedIds = array_column($json['member'], 'id');
+
+        $this->assertContains($id1, $returnedIds);
+        $this->assertContains($id2, $returnedIds);
+        $this->assertNotContains($clients[1]->getId(), $returnedIds);
+    }
+
     public function testGetBySearchFilterFullName(): void
     {
-        $client = static::createClient();
+        $email = 'searcher@test.com';
+        $client = $this->createAuthenticatedClient($email);
+        $master = MastersFactory::find(['email' => $email]);
 
-        $this->indexClient('Rayden', 'Crawford');
+        $this->indexClient('Rayden', 'Crawford', $master);
 
         $client->request('GET', 'api/v1/clients?search=rayden crawford');
 
@@ -57,9 +101,11 @@ class ClientsApiTest extends ApiTestCase
 
     public function testGetBySearchFilterByName(): void
     {
-        $client = static::createClient();
+        $email = 'searcher_name@test.com';
+        $client = $this->createAuthenticatedClient($email);
+        $master = MastersFactory::find(['email' => $email]);
 
-        $this->indexClient('Rayden', 'Crawford');
+        $this->indexClient('Rayden', 'Crawford', $master);
 
         $client->request('GET', 'api/v1/clients?search=den');
 
@@ -76,9 +122,11 @@ class ClientsApiTest extends ApiTestCase
 
     public function testGetBySearchFilterBySurname(): void
     {
-        $client = static::createClient();
+        $email = 'searcher_surname@test.com';
+        $client = $this->createAuthenticatedClient($email);
+        $master = MastersFactory::find(['email' => $email]);
 
-        $this->indexClient('Rayden', 'Crawford');
+        $this->indexClient('Rayden', 'Crawford', $master);
 
         $client->request('GET', 'api/v1/clients?search=craw');
 
@@ -95,10 +143,15 @@ class ClientsApiTest extends ApiTestCase
 
     public function testGetClient(): void
     {
-        $client = ClientsFactory::createOne();
-        $clientId = $client->getId();
+        $email = 'item@test.com';
+        $client = $this->createAuthenticatedClient($email);
+        $master = MastersFactory::find(['email' => $email]);
 
-        static::createClient()->request('GET', "/api/v1/clients/$clientId");
+        $myClient = ClientsFactory::createOne();
+        BookingsFactory::createOne(['id_master' => $master, 'id_client' => $myClient]);
+        $clientId = $myClient->getId();
+
+        $client->request('GET', "/api/v1/clients/$clientId");
 
         $this->assertResponseIsSuccessful();
         $this->assertJsonContains([
@@ -110,7 +163,9 @@ class ClientsApiTest extends ApiTestCase
 
     public function testPostClient(): void
     {
-        static::createClient()->request('POST', '/api/v1/clients', [
+        $client = $this->createAuthenticatedClient();
+
+        $client->request('POST', '/api/v1/clients', [
             'json' => [
                 "name" => "Post",
                 "surname" => "Test",
@@ -134,7 +189,9 @@ class ClientsApiTest extends ApiTestCase
 
     public function testPostInvalidClient(): void
     {
-        static::createClient()->request('POST', '/api/v1/clients', [
+        $client = $this->createAuthenticatedClient();
+
+        $client->request('POST', '/api/v1/clients', [
             'json' => [
                 'name' => '',
                 'surname' => '',
@@ -156,13 +213,17 @@ class ClientsApiTest extends ApiTestCase
 
     public function testPutClient(): void
     {
-        $client = ClientsFactory::createOne();
-        $clientId = $client->getId();
+        $email = 'editor@test.com';
+        $client = $this->createAuthenticatedClient($email, true);
+        $master = MastersFactory::find(['email' => $email]);
+
+        $myClient = ClientsFactory::createOne();
+        $clientId = $myClient->getId();
         $pet = PetsFactory::createOne();
         $petId = $pet->getId();
-        BookingsFactory::createOne(['id_client' => $client, 'pet' => $pet]);
+        BookingsFactory::createOne(['id_master' => $master, 'id_client' => $myClient, 'pet' => $pet]);
 
-        static::createClient()->request('PUT', '/api/v1/clients/' . $clientId, [
+        $client->request('PUT', '/api/v1/clients/' . $clientId, [
             'json' => [
                 "id" => $clientId,
                 "name" => "Put",
@@ -190,10 +251,15 @@ class ClientsApiTest extends ApiTestCase
 
     public function testPatchClient(): void
     {
-        $client = ClientsFactory::createOne();
-        $clientId = $client->getId();
+        $email = 'patcher@test.com';
+        $client = $this->createAuthenticatedClient($email, true);
+        $master = MastersFactory::find(['email' => $email]);
 
-        static::createClient()->request('PATCH', '/api/v1/clients/' . $clientId, [
+        $myClient = ClientsFactory::createOne();
+        $clientId = $myClient->getId();
+        BookingsFactory::createOne(['id_master' => $master, 'id_client' => $myClient]);
+
+        $client->request('PATCH', '/api/v1/clients/' . $clientId, [
             'json' => [
                 "name" => "Patch",
                 "surname" => "Test",
@@ -214,12 +280,37 @@ class ClientsApiTest extends ApiTestCase
         ]);
     }
 
-    private function indexClient(string $name, string $surname): void
+    public function testFindByEmailSuccess(): void
     {
-        ClientsFactory::createOne(['name' => $name, 'surname' => $surname]);
-        $client = static::getContainer()->get('doctrine')->getRepository(Clients::class)->findOneBy(
-            ['name' => $name, 'surname' => $surname]
-        );
+        $client = static::createClient();
+        $email = 'target@example.com';
+
+        $target = ClientsFactory::createOne(['email' => $email]);
+        $targetId = $target->getId();
+
+        $client->request('GET', '/api/v1/v1/clients/find-by-email?email=' . $email);
+
+        $this->assertResponseIsSuccessful();
+        $this->assertJsonContains([
+            'id' => $targetId
+        ]);
+    }
+
+    public function testFindByEmailNotFound(): void
+    {
+        $client = static::createClient();
+
+        $client->request('GET', '/api/v1/v1/clients/find-by-email?email=nonexistent@test.com');
+
+        $this->assertResponseStatusCodeSame(404);
+    }
+
+    private function indexClient(string $name, string $surname, $master = null): void
+    {
+        $client = ClientsFactory::createOne(['name' => $name, 'surname' => $surname]);
+        if ($master) {
+            BookingsFactory::createOne(['id_master' => $master, 'id_client' => $client]);
+        }
 
         $elasticsearchClient = static::getContainer()->get(Client::class);
         $elasticsearchClient->index([
@@ -228,5 +319,31 @@ class ClientsApiTest extends ApiTestCase
             'body' => ['name' => $client->getName(), 'surname' => $client->getSurname()],
         ]);
         $elasticsearchClient->indices()->refresh(['index' => 'clients']);
+    }
+
+    private function createAuthenticatedClient($userOrEmail = 'master@test.com', bool $isAdmin = false)
+    {
+        $client = static::createClient();
+
+        if ($userOrEmail instanceof Masters) {
+            $master = $userOrEmail;
+        } else {
+            $proxy = MastersFactory::repository()->findOneBy(['email' => $userOrEmail])
+                ?? MastersFactory::createOne([
+                    'email' => $userOrEmail,
+                    'password' => 'password',
+                    'roles' => $isAdmin ? ['ROLE_ADMIN'] : ['ROLE_MASTER']
+                ]);
+            $master = ($proxy instanceof Proxy) ? $proxy->_real() : $proxy;
+        }
+
+        $jwtManager = static::getContainer()->get('lexik_jwt_authentication.jwt_manager');
+        $token = $jwtManager->create($master);
+
+        $cookieJar = $client->getCookieJar();
+        $cookie = new Cookie('jwt', $token);
+        $cookieJar->set($cookie);
+
+        return $client;
     }
 }

@@ -2,6 +2,7 @@
 
 namespace App\ApiResource;
 
+use ApiPlatform\Doctrine\Orm\Filter\NumericFilter;
 use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
 use ApiPlatform\Doctrine\Orm\State\Options;
 use ApiPlatform\Metadata\ApiFilter;
@@ -24,11 +25,11 @@ use Symfony\Component\Validator\Constraints as Assert;
     shortName: 'Client',
     description: 'Our dear clients!',
     operations: [
-        new Get(),
-        new GetCollection(),
-        new Post(),
-        new Put(),
-        new Patch(),
+        new Get(security: "is_granted('CLIENT_VIEW', object)"),
+        new GetCollection(security: "is_granted('ROLE_MASTER')"),
+        new Post(security: "is_granted('ROLE_MASTER')"),
+        new Put(security: "is_granted('CLIENT_EDIT', object)"),
+        new Patch(security: "is_granted('CLIENT_EDIT', object)"),
         new Get(
             uriTemplate: '/v1/clients/find-by-email',
             controller: FindClientByEmailController::class,
@@ -44,6 +45,7 @@ use Symfony\Component\Validator\Constraints as Assert;
                     ],
                 ]
             ),
+            security: "is_granted('PUBLIC_ACCESS')",
             read: false,
             deserialize: false,
             name: 'find_by_email'
@@ -57,6 +59,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 )]
 #[ApiFilter(ClientSearchFilter::class)]
 #[ApiFilter(SearchFilter::class, properties: ['email' => 'exact'])]
+#[ApiFilter(NumericFilter::class, properties: ['id'])]
 class ClientsApi
 {
     #[Groups(["client:read"])]

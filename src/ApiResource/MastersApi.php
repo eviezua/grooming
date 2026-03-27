@@ -2,8 +2,8 @@
 
 namespace App\ApiResource;
 
-use ApiPlatform\Doctrine\Orm\Filter\OrderFilter;
 use ApiPlatform\Doctrine\Orm\Filter\NumericFilter;
+use ApiPlatform\Doctrine\Orm\Filter\OrderFilter;
 use ApiPlatform\Doctrine\Orm\Filter\RangeFilter;
 use ApiPlatform\Doctrine\Orm\State\Options;
 use ApiPlatform\Metadata\ApiFilter;
@@ -13,6 +13,8 @@ use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\Put;
+use ApiPlatform\OpenApi\Model\Operation;
+use App\Controller\MeController;
 use App\Entity\Masters;
 use App\Filter\MasterAvailableTimeFilter;
 use App\Filter\MasterPriceFilter;
@@ -27,11 +29,22 @@ use Symfony\Component\Validator\Constraints as Assert;
     shortName: 'Master',
     description: 'Our Masters.',
     operations: [
-        new Get(),
-        new GetCollection(),
-        new Post(),
-        new Put(),
-        new Patch(inputFormats: ['json' => ['application/merge-patch+json']])
+        new Get(security: "is_granted('PUBLIC_ACCESS')"),
+        new GetCollection(security: "is_granted('PUBLIC_ACCESS')"),
+        new Get(
+            uriTemplate: '/v1/master/me',
+            controller: MeController::class,
+            openapi: new Operation(
+                summary: 'Get current logged in master ID',
+            ),
+            security: "is_granted('ROLE_MASTER')",
+            read: false,
+            deserialize: false,
+            name: 'api_me'
+        ),
+        new Post(security: "is_granted('PUBLIC_ACCESS')"),
+        new Put(security: "is_granted('MASTER_EDIT', object)"),
+        new Patch(inputFormats: ['json' => ['application/merge-patch+json']], security: "is_granted('MASTER_EDIT', object)"),
     ],
     normalizationContext: ['groups' => ['master:read'], 'enable_max_depth' => true],
     denormalizationContext: ['groups' => ['master:write']],

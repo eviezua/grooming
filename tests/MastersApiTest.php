@@ -14,6 +14,8 @@ use App\Factory\PetsFactory;
 use App\Factory\ScheduleFactory;
 use App\Factory\ServicesFactory;
 use Elastic\Elasticsearch\Client;
+use Symfony\Component\BrowserKit\Cookie;
+use Zenstruck\Foundry\Persistence\Proxy;
 use Zenstruck\Foundry\Test\Factories;
 use Zenstruck\Foundry\Test\ResetDatabase;
 
@@ -24,6 +26,51 @@ use Zenstruck\Foundry\Test\ResetDatabase;
 class MastersApiTest extends ApiTestCase
 {
     use ResetDatabase, Factories;
+
+    public function testMasterLogin(): void
+    {
+        $client = static::createClient();
+
+        $password = 'password123';
+        MastersFactory::createOne([
+            'email' => 'master@groomify.com',
+            'password' => $password,
+        ]);
+
+        $response = $client->request('POST', '/api/v1/login_check', [
+            'json' => [
+                'email' => 'master@groomify.com',
+                'password' => $password,
+            ],
+        ]);
+
+        $this->assertResponseIsSuccessful();
+        $data = $response->toArray();
+        $this->assertArrayHasKey('token', $data);
+
+        $token = $data['token'];
+
+        $client->request('GET', '/api/v1/clients', [
+            'auth_bearer' => $token,
+        ]);
+
+        $this->assertResponseIsSuccessful();
+    }
+
+    public function testLoginWithInvalidCredentials(): void
+    {
+        $client = static::createClient();
+        MastersFactory::createOne(['email' => 'real@test.com', 'password' => 'real_pass']);
+
+        $client->request('POST', '/api/v1/login_check', [
+            'json' => [
+                'email' => 'real@test.com',
+                'password' => 'wrong_pass',
+            ],
+        ]);
+
+        $this->assertResponseStatusCodeSame(401);
+    }
 
     public function testGetCollection(): void
     {
@@ -479,6 +526,31 @@ class MastersApiTest extends ApiTestCase
         $this->assertEquals('HighRating', $data['member'][2]['name']);
     }
 
+    public function testGetMeSuccess(): void
+    {
+        $email = 'me_test@groomify.com';
+        $master = MastersFactory::createOne(['email' => $email]);
+        $masterId = $master->getId();
+
+        $client = $this->createAuthenticatedClient($master);
+
+        $client->request('GET', '/api/v1/v1/master/me');
+
+        $this->assertResponseIsSuccessful();
+        $this->assertJsonContains([
+            'id' => $masterId
+        ]);
+    }
+
+    public function testGetMeUnauthorized(): void
+    {
+        $client = static::createClient();
+
+        $client->request('GET', '/api/v1/v1/master/me');
+
+        $this->assertResponseStatusCodeSame(401);
+    }
+
     public function testGetMaster(): void
     {
         $master = MastersFactory::createOne();
@@ -594,7 +666,9 @@ class MastersApiTest extends ApiTestCase
         $pet = PetsFactory::createOne();
         $petId = $pet->getId();
 
-        static::createClient()->request('PUT', '/api/v1/masters/' . $masterId, [
+        $client = $this->createAuthenticatedClient($master);
+
+        $client->request('PUT', '/api/v1/masters/' . $masterId, [
             'json' => [
                 "name" => "Put",
                 "surname" => "Test",
@@ -605,7 +679,7 @@ class MastersApiTest extends ApiTestCase
                     $petId
                 ],
                 "password" => "password",
-                "email" => "test@test.com",
+                "email" => $master->getEmail(),
                 "phone" => "+12523957776",
                 "photo" => "photo.jpg",
             ],
@@ -624,7 +698,7 @@ class MastersApiTest extends ApiTestCase
             "petsId" => [
                 $petId
             ],
-            "email" => "test@test.com",
+            "email" => $master->getEmail(),
             "phone" => "+12523957776",
             "photo" => "photo.jpg",
         ]);
@@ -635,8 +709,9 @@ class MastersApiTest extends ApiTestCase
         $master = MastersFactory::createOne();
         $masterId = $master->getId();
 
+        $client = $this->createAuthenticatedClient($master);
 
-        static::createClient()->request('PATCH', '/api/v1/masters/' . $masterId, [
+        $client->request('PATCH', '/api/v1/masters/' . $masterId, [
             'json' => [
                 "name" => "Patch",
                 "surname" => "Test",
@@ -659,6 +734,57 @@ class MastersApiTest extends ApiTestCase
         ]);
     }
 
+    public function testMasterCannotEditAnotherMasterProfile(): void
+    {
+        $owner = MastersFactory::createOne();
+        $intruder = MastersFactory::createOne();
+
+        $client = $this->createAuthenticatedClient($intruder);
+
+        $client->request('PATCH', '/api/v1/masters/' . $owner->getId(), [
+            'json' => [
+                "name" => "I am a Hacker",
+            ],
+            'headers' => [
+                'Content-Type' => 'application/merge-patch+json',
+            ]
+        ]);
+
+        $this->assertResponseStatusCodeSame(403);
+
+        $this->assertJsonContains([
+            'detail' => 'Access Denied.',
+        ]);
+    }
+
+    public function testAdminCanEditAnyMasterProfile(): void
+    {
+        $master = MastersFactory::createOne();
+        $masterId = $master->getId();
+
+        $adminClient = $this->createAuthenticatedClient('admin@test.com', true);
+
+        $adminClient->request('PATCH', '/api/v1/masters/' . $masterId, [
+            'json' => [
+                "name" => "Admin Overwrite",
+                "surname" => "Power",
+            ],
+            'headers' => [
+                'Content-Type' => 'application/merge-patch+json',
+            ]
+        ]);
+
+        $this->assertResponseIsSuccessful();
+
+        $this->assertJsonContains([
+            "name" => "Admin Overwrite",
+            "surname" => "Power",
+        ]);
+
+        $updatedMaster = MastersFactory::repository()->find($masterId);
+        $this->assertSame('Admin Overwrite', $updatedMaster->getName());
+    }
+
     private function indexMaster(string $name, string $surname): void
     {
         MastersFactory::createOne(['name' => $name, 'surname' => $surname]);
@@ -673,5 +799,31 @@ class MastersApiTest extends ApiTestCase
             'body' => ['name' => $client->getName(), 'surname' => $client->getSurname()],
         ]);
         $elasticsearchClient->indices()->refresh(['index' => 'masters']);
+    }
+
+    private function createAuthenticatedClient($userOrEmail = 'master@test.com', bool $isAdmin = false)
+    {
+        $client = static::createClient();
+
+        if ($userOrEmail instanceof Masters) {
+            $master = $userOrEmail;
+        } else {
+            $proxy = MastersFactory::repository()->findOneBy(['email' => $userOrEmail])
+                ?? MastersFactory::createOne([
+                    'email' => $userOrEmail,
+                    'password' => 'password',
+                    'roles' => $isAdmin ? ['ROLE_ADMIN'] : ['ROLE_MASTER']
+                ]);
+            $master = ($proxy instanceof Proxy) ? $proxy->_real() : $proxy;
+        }
+
+        $jwtManager = static::getContainer()->get('lexik_jwt_authentication.jwt_manager');
+        $token = $jwtManager->create($master);
+
+        $cookieJar = $client->getCookieJar();
+        $cookie = new Cookie('jwt', $token);
+        $cookieJar->set($cookie);
+
+        return $client;
     }
 }
