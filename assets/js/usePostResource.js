@@ -24,10 +24,19 @@ export function useSubmit() {
             const res = await fetch(url, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(payload)
+                body: JSON.stringify(payload),
+                credentials: 'include'
             });
 
-            const data = await res.json();
+            const contentType = res.headers.get("content-type");
+            let data = {};
+
+            if (contentType && contentType.includes("application/json")) {
+                data = await res.json();
+            } else {
+                const text = await res.text();
+                if (res.ok) data = { success: true };
+            }
 
             if (!res.ok) {
                 if (data.errors && typeof data.errors === 'object') {
