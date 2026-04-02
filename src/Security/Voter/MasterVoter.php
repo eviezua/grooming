@@ -19,7 +19,7 @@ final class MasterVoter extends Voter
 
     protected function supports(string $attribute, mixed $subject): bool
     {
-        return $attribute === self::EDIT && $subject instanceof MastersApi;
+        return $attribute === self::EDIT && ($subject instanceof MastersApi || $subject instanceof Masters);
     }
 
     protected function voteOnAttribute(string $attribute, mixed $subject, TokenInterface $token): bool
@@ -34,8 +34,8 @@ final class MasterVoter extends Voter
             return true;
         }
 
-        $dto = $subject;
+        $subjectId = ($subject instanceof MastersApi) ? $subject->id : $subject->getId();
 
-        return $dto->id !== null && (int)$dto->id === (int)$user->getId();
+        return $subjectId !== null && (int)$subjectId === (int)$user->getId();
     }
 }
