@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Enum\Species;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
@@ -37,8 +38,10 @@ final class HomepageController extends AbstractController
         return $this->render('pages/faq.html.twig');
     }
     #[Route('/{_locale<%app.supported_locales%>}/join', name: 'app_join')]
-    public function join(): Response
+    public function join(Request $request): Response
     {
-        return $this->render('pages/join.html.twig');
+        return $this->render('pages/join.html.twig', [
+            'initialMode' => $request->query->get('action', 'register')
+        ]);
     }
 }

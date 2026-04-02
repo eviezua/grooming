@@ -3,12 +3,15 @@
 namespace App\Tests;
 
 use ApiPlatform\Symfony\Bundle\Test\ApiTestCase;
+use App\Entity\Masters;
 use App\Entity\Schedule;
 use App\Enum\Weekdays;
 use App\Factory\MastersFactory;
 use App\Factory\ScheduleFactory;
 use DateTime;
 use DateTimeZone;
+use Symfony\Component\BrowserKit\Cookie;
+use Zenstruck\Foundry\Persistence\Proxy;
 use Zenstruck\Foundry\Test\Factories;
 use Zenstruck\Foundry\Test\ResetDatabase;
 
@@ -106,7 +109,7 @@ class ScheduleApiTest extends ApiTestCase
         $master = MastersFactory::createOne();
         $masterId = $master->getId();
 
-        $client = static::createClient();
+        $client = $this->createAuthenticatedClient($master);
 
         $client->request('POST', '/api/v1/schedules', [
             'json' => [
@@ -134,11 +137,16 @@ class ScheduleApiTest extends ApiTestCase
 
     public function testPostInvalidSchedule(): void
     {
-        static::createClient()->request('POST', '/api/v1/schedules', [
+        $master = MastersFactory::createOne();
+        $masterId = $master->getId();
+        $client = $this->createAuthenticatedClient($master);
+
+        $client->request('POST', '/api/v1/schedules', [
             'json' => [
                 'dayOfweek' => 'blabla',
                 'start_time' => '00.50',
                 'stop_time' => '20 00',
+                'masterId' => $masterId,
             ],
             'headers' => [
                 'Content-Type' => 'application/ld+json',
@@ -151,21 +159,20 @@ class ScheduleApiTest extends ApiTestCase
                 ['propertyPath' => 'dayOfweek', 'message' => 'The value you selected is not a valid choice.'],
                 ['propertyPath' => 'start_time', 'message' => 'The start time must be in the format HH:MM:SS.'],
                 ['propertyPath' => 'stop_time', 'message' => 'The stop time must be in the format HH:MM:SS.'],
-                ['propertyPath' => 'masterId', 'message' => 'Master ID cannot be empty.']
             ],
         ]);
     }
 
     public function testPutSchedule(): void
     {
-        $schedule = ScheduleFactory::createOne();
-        $scheduleId = $schedule->getId();
         $today = new DateTime('now', new DateTimeZone('UTC'));
         $dayOfWeek = $today->format('l');
         $master = MastersFactory::createOne();
         $masterId = $master->getId();
+        $schedule = ScheduleFactory::createOne(['master' => $master]);
+        $scheduleId = $schedule->getId();
 
-        $client = static::createClient();
+        $client = $this->createAuthenticatedClient($master);
 
         $client->request('PUT', '/api/v1/schedules/' . $scheduleId, [
             'json' => [
@@ -195,10 +202,11 @@ class ScheduleApiTest extends ApiTestCase
 
     public function testPatchSchedule(): void
     {
-        $schedule = ScheduleFactory::createOne();
+        $master = MastersFactory::createOne();
+        $schedule = ScheduleFactory::createOne(['master' => $master]);
         $scheduleId = $schedule->getId();
 
-        $client = static::createClient();
+        $client = $this->createAuthenticatedClient($master);
 
         $client->request('PATCH', '/api/v1/schedules/' . $scheduleId, [
             'json' => [
@@ -220,10 +228,13 @@ class ScheduleApiTest extends ApiTestCase
 
     public function testDeleteSchedule(): void
     {
-        $schedule = ScheduleFactory::createOne();
+        $master = MastersFactory::createOne();
+        $schedule = ScheduleFactory::createOne(['master' => $master]);
         $scheduleId = $schedule->getId();
 
-        static::createClient()->request('DELETE', '/api/v1/schedules/' . $scheduleId);
+        $client = $this->createAuthenticatedClient($master);
+
+        $client->request('DELETE', '/api/v1/schedules/' . $scheduleId);
 
         $this->assertResponseStatusCodeSame(204);
         $this->assertNull(
@@ -231,5 +242,31 @@ class ScheduleApiTest extends ApiTestCase
                 ['id' => $scheduleId]
             )
         );
+    }
+
+    private function createAuthenticatedClient($userOrEmail = 'master@test.com', bool $isAdmin = false)
+    {
+        $client = static::createClient();
+
+        if ($userOrEmail instanceof Masters) {
+            $master = $userOrEmail;
+        } else {
+            $proxy = MastersFactory::repository()->findOneBy(['email' => $userOrEmail])
+                ?? MastersFactory::createOne([
+                    'email' => $userOrEmail,
+                    'password' => 'password',
+                    'roles' => $isAdmin ? ['ROLE_ADMIN'] : ['ROLE_MASTER']
+                ]);
+            $master = ($proxy instanceof Proxy) ? $proxy->_real() : $proxy;
+        }
+
+        $jwtManager = static::getContainer()->get('lexik_jwt_authentication.jwt_manager');
+        $token = $jwtManager->create($master);
+
+        $cookieJar = $client->getCookieJar();
+        $cookie = new Cookie('jwt', $token);
+        $cookieJar->set($cookie);
+
+        return $client;
     }
 }

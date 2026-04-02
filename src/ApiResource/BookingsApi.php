@@ -27,20 +27,21 @@ use Symfony\Component\Validator\Constraints as Assert;
     shortName: 'Booking',
     description: 'Your bookings are here!',
     operations: [
-        new Get(),
-        new GetCollection(),
-        new Post(),
+        new Get(security: "is_granted('BOOKING_VIEW', object)"),
+        new GetCollection(security: "is_granted('PUBLIC_ACCESS')"),
+        new Post(securityPostDenormalize: "is_granted('BOOKING_CREATE', object)"),
         new Post(
             uriTemplate: '/bookings/with-new-client',
             controller: CreateBookingWithNewClientController::class,
             normalizationContext: ['groups' => ['booking:read']],
             denormalizationContext: ['groups' => ['booking:new-client:write']],
+            securityPostDenormalize: "is_granted('BOOKING_CREATE', object)",
             validationContext: ['groups' => ['booking:new-client:write']],
             read: false,
         ),
-        new Put(),
-        new Patch(inputFormats: ['json' => ['application/merge-patch+json']]),
-        new Delete(),
+        new Put(securityPostDenormalize: "is_granted('BOOKING_EDIT', object)"),
+        new Patch(inputFormats: ['json' => ['application/merge-patch+json']], securityPostDenormalize: "is_granted('BOOKING_EDIT', object)"),
+        new Delete(security: "is_granted('BOOKING_DELETE', object)"),
     ],
     normalizationContext: ['groups' => ['booking:read'], 'enable_max_depth' => true],
     denormalizationContext: ['groups' => ['booking:write']],
@@ -101,6 +102,6 @@ class BookingsApi
     #[Assert\Regex(pattern: "/^\+?[0-9]{7,15}$/", message: "Invalid phone number.", groups: ['booking:new-client:write'])]
     public ?string $clientPhone = null;
 
-    #[Groups(["booking:read"])]
+    #[Groups(["booking:read", "booking:write"])]
     public ?string $status = null;
 }

@@ -16,6 +16,7 @@
         "doctrine/doctrine-migrations-bundle": "^3.3",
         "doctrine/orm": "^3.3",
         "elasticsearch/elasticsearch": "^8.11",
+        "lexik/jwt-authentication-bundle": "^3.2",
         "nelmio/cors-bundle": "^2.5",
         "phpdocumentor/reflection-docblock": "^5.6",
         "phpstan/phpdoc-parser": "^2.0",
@@ -38,7 +39,8 @@
         "symfony/validator": "6.4.*",
         "symfony/webpack-encore-bundle": "^2.2",
         "symfony/yaml": "6.4.*",
-        "symfonycasts/micro-mapper": "^0.2.1"
+        "symfonycasts/micro-mapper": "^0.2.1",
+        "vich/uploader-bundle": "^2.9"
     },
     "config": {
         "allow-plugins": {

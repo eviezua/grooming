@@ -37,6 +37,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[ApiFilter(ServiceSearchFilter::class)]
 #[ApiFilter(RangeFilter::class, properties: ['cost'])]
 #[ApiFilter(MasterIdFilter::class)]
+#[ApiFilter(NumericFilter::class, properties: ['id'])]
 class ServicesApi
 {
     #[Groups(["services:read"])]

@@ -10,6 +10,7 @@ use ApiPlatform\State\ProcessorInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfonycasts\MicroMapper\MicroMapperInterface;
 
@@ -21,6 +22,7 @@ class EntityClassDtoStateProcessor implements ProcessorInterface
         private MicroMapperInterface $microMapper,
         private LoggerInterface $logger,
         private EntityManagerInterface $entityManager,
+        private RequestStack $requestStack,
     ) {
     }
     public function process(mixed $data, Operation $operation, array $uriVariables = [], array $context = []): mixed
@@ -62,6 +64,14 @@ class EntityClassDtoStateProcessor implements ProcessorInterface
         }
 
         $this->entityManager->flush();
+
+        $fullClassName = get_class($entity);
+
+        $shortName = strtolower(substr($fullClassName, strrpos($fullClassName, '\\') + 1));
+
+        $attributeKey = sprintf('_refreshed_%s_entity', $shortName);
+
+        $this->requestStack->getCurrentRequest()?->attributes->set($attributeKey, $entity);
 
         return $entity;
     }

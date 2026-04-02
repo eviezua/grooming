@@ -19,6 +19,8 @@ services:
             $client: '@Elastic\Elasticsearch\Client'
         tags: [ 'api_platform.filter' ]
 
+    Lexik\Bundle\JWTAuthenticationBundle\Security\Http\Cookie\JWTCookieProvider: '@lexik_jwt_authentication.cookie_provider.jwt'
+
     # default configuration for services in *this* file
     _defaults:
         autowire: true      # Automatically injects dependencies in your services.

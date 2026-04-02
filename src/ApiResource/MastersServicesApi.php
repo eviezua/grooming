@@ -22,11 +22,11 @@ use Symfony\Component\Serializer\Annotation\Groups;
     shortName: 'MastersServices',
     description: 'Services and prices of great people!',
     operations: [
-        new Get(),
-        new GetCollection(),
-        new Post(),
-        new Patch(inputFormats: ['json' => ['application/merge-patch+json']]),
-        new Delete()
+        new Get(security: "is_granted('PUBLIC_ACCESS')"),
+        new GetCollection(security: "is_granted('PUBLIC_ACCESS')"),
+        new Post(securityPostDenormalize: "is_granted('MS_CREATE', object)"),
+        new Patch(inputFormats: ['json' => ['application/merge-patch+json']], securityPostDenormalize: "is_granted('MS_EDIT', object)"),
+        new Delete(security: "is_granted('MS_DELETE', object)")
     ],
     normalizationContext: ['groups' => ['ms:read']],
     denormalizationContext: ['groups' => ['ms:write']],

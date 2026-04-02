@@ -1,5 +1,5 @@
 <div class="paw-bg"></div>
 <div class="hero-title text-center position-relative">
     <h1 class="pt-5">groomify</h1>
-    <join-form></join-form>
+    <join-form mode="{{ app.request.query.get('action', 'register') }}"></join-form>
 </div>

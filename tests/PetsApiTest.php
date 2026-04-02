@@ -140,6 +140,30 @@ class PetsApiTest extends ApiTestCase
         ]);
     }
 
+    public function testGetPetsByMultipleIds(): void
+    {
+        $pets = PetsFactory::createMany(5);
+
+        $id1 = $pets[0]->getId();
+        $id2 = $pets[2]->getId();
+
+        $client = static::createClient();
+
+        $client->request('GET', "/api/v1/pets?id[]=$id1&id[]=$id2");
+
+        $this->assertResponseIsSuccessful();
+        $this->assertJsonContains([
+            'totalItems' => 2,
+        ]);
+
+        $data = $client->getResponse()->toArray();
+        $idsInResponse = array_column($data['member'], 'id');
+
+        $this->assertContains($id1, $idsInResponse);
+        $this->assertContains($id2, $idsInResponse);
+        $this->assertNotContains($pets[1]->getId(), $idsInResponse);
+    }
+
     public function testGetPet(): void
     {
         $pet = PetsFactory::createOne();

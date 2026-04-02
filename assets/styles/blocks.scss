@@ -33,6 +33,9 @@
     a {
       color: white;
     }
+    .collapse a{
+      color: black;
+    }
   }
 
   .nav-left a {
@@ -161,9 +164,9 @@
   }
 
   .circle-block{
-    width: 33%;
     max-width: 180px;
-    top: clamp(-10%, -12%, -15%);
+    max-height: 180px;
+    top: -15%;
     right: 0;
   }
 }

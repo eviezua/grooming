@@ -1,8 +1,10 @@
 api_platform:
     title: Hello API Platform
     version: 1.0.0
+    mercure:
+        enabled: false
     defaults:
-        stateless: true
+        stateless: false
         path: /api/v1
         cache_headers:
             vary: ['Content-Type', 'Authorization', 'Origin']
@@ -16,3 +18,8 @@ api_platform:
         jsonproblem: [ 'application/problem+json' ]
         jsonld: [ 'application/ld+json' ]
         jsonapi: [ 'application/vnd.api+json' ]
+    swagger:
+        api_keys:
+            JWT:
+                name: Authorization
+                type: header

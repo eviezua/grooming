@@ -228,7 +228,7 @@ footer {
   @include pill-button(white, 30px, 0.75%);
   height: 0;
   width: 420%;
-  max-height: 305px;
+  max-height: 355px;
   right: 0;
   top: 120%;
   overflow: hidden;
@@ -239,7 +239,7 @@ footer {
 }
 
 .profile-but.collapse.show {
-  height: 305px;
+  height: 355px;
   opacity: 1;
 }
 
