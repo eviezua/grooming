@@ -58,6 +58,8 @@ class MastersApiToEntityMapper implements MapperInterface
             }
         }
 
+        $to->setOldPassword($from->oldPassword);
+
         if ($from->password !== null) {
             $hashedPassword = $this->passwordHasher->hashPassword($to, $from->password);
             $to->setPassword($hashedPassword);

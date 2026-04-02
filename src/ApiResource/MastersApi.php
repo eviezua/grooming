@@ -27,6 +27,7 @@ use App\State\EntityClassDtoStateProcessor;
 use App\State\EntityToDtoStateProvider;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Security\Core\Validator\Constraints as SecurityAssert;
 
 #[ApiResource(
     shortName: 'Master',
@@ -124,6 +125,15 @@ class MastersApi
     #[Groups(["master:write"])]
     #[Assert\Length(min: 6, max: 100, minMessage: "Password must be at least {{ limit }} characters.")]
     public ?string $password = null;
+
+    #[Groups(["master:write"])]
+    #[Assert\When(
+        expression: "this.oldPassword !== null",
+        constraints: [
+            new SecurityAssert\UserPassword(message: "Поточний пароль введено неправильно."),
+        ]
+    )]
+    public ?string $oldPassword = null;
 
     #[Groups(["master:read", "master:write"])]
     #[Assert\NotBlank(message: "Email can't be empty")]

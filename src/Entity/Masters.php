@@ -53,6 +53,8 @@ class Masters implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(length: 255)]
     private ?string $password = null;
 
+    private ?string $oldPassword = null;
+
     #[ORM\Column(length: 255, unique: true)]
     private ?string $email = null;
 
@@ -247,6 +249,17 @@ class Masters implements UserInterface, PasswordAuthenticatedUserInterface
     {
         $this->password = $password;
 
+        return $this;
+    }
+
+    public function getOldPassword(): ?string
+    {
+        return $this->oldPassword;
+    }
+
+    public function setOldPassword(?string $oldPassword): self
+    {
+        $this->oldPassword = $oldPassword;
         return $this;
     }
 
