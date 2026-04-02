@@ -5,7 +5,6 @@ namespace App\Mapper;
 use App\ApiResource\ClientsApi;
 use App\Entity\Bookings;
 use App\Entity\Clients;
-use App\Entity\Pets;
 use Symfonycasts\MicroMapper\AsMapper;
 use Symfonycasts\MicroMapper\MapperInterface;
 
@@ -22,12 +21,11 @@ class ClientsEntityToApiMapper implements MapperInterface
         $to->surname = $from->getSurname();
         $to->email = $from->getEmail();
         $to->phone = $from->getPhone();
-        $pets = $from->getPets();
-        if (!$pets->isEmpty()) {
-            $to->pets = array_map(fn(Pets $pet) => $pet->getId(), $pets->toArray());
-        } else {
-            $to->pets = [];
+        $petIds = [];
+        foreach ($from->getPets() as $pet) {
+            $petIds[] = $pet->getId();
         }
+        $to->pets = $petIds;
 
         return $to;
     }
@@ -43,12 +41,11 @@ class ClientsEntityToApiMapper implements MapperInterface
         $to->email = $from->getEmail();
         $to->phone = $from->getPhone();
 
-        $pets = $from->getPets();
-        if (!$pets->isEmpty()) {
-            $to->pets = array_map(fn(Pets $pet) => $pet->getId(), $pets->toArray());
-        } else {
-            $to->pets = [];
+        $petIds = [];
+        foreach ($from->getPets() as $pet) {
+            $petIds[] = $pet->getId();
         }
+        $to->pets = $petIds;
 
         $bookings = $from->getBookings();
         if (!$bookings->isEmpty()) {
