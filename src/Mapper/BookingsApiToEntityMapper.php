@@ -8,6 +8,7 @@ use App\Entity\Clients;
 use App\Entity\Masters;
 use App\Entity\Pets;
 use App\Entity\Services;
+use App\Enum\Status;
 use App\Service\EntityLoaderHelper;
 use App\Service\TimeFormatter;
 use DateTime;
@@ -54,6 +55,10 @@ class BookingsApiToEntityMapper implements MapperInterface
             foreach ($this->loader->loadMultiple(Services::class, $from->services, 'Services') as $service) {
                 $to->addIdService($service);
             }
+        }
+
+        if ($from->status) {
+            $to->setStatus(Status::from($from->status));
         }
 
         return $to;

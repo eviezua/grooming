@@ -102,6 +102,6 @@ class BookingsApi
     #[Assert\Regex(pattern: "/^\+?[0-9]{7,15}$/", message: "Invalid phone number.", groups: ['booking:new-client:write'])]
     public ?string $clientPhone = null;
 
-    #[Groups(["booking:read"])]
+    #[Groups(["booking:read", "booking:write"])]
     public ?string $status = null;
 }
