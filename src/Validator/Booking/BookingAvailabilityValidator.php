@@ -8,6 +8,7 @@ use DateTimeImmutable;
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
 use LogicException;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;
 
@@ -15,6 +16,7 @@ final class BookingAvailabilityValidator extends ConstraintValidator
 {
     public function __construct(
         private EntityManagerInterface $entityManager,
+        private RequestStack $requestStack
     ) {
     }
 
@@ -33,6 +35,16 @@ final class BookingAvailabilityValidator extends ConstraintValidator
         if (!$object instanceof BookingsApi) {
             return;
         }
+
+        /**
+         * TODO: Fix DTO ID persistence.
+         * CurrentId is null in DTO during PUT/PATCH, causing self-collision in validation.
+         * Fetching ID from RequestStack is a quick fix. Fix at the Mapper/Provider level.
+         */
+
+        $request = $this->requestStack->getCurrentRequest();
+        $previousData = $request?->attributes->get('previous_data');
+        $currentId = $previousData?->id;
 
         if (!$object->masterId || !$object->timeStart || !$object->timeStop || !$object->date) {
             return;
@@ -56,9 +68,9 @@ final class BookingAvailabilityValidator extends ConstraintValidator
             ->setParameter('startTime', $timeStart->format('H:i:s'))
             ->setParameter('stopTime', $timeStop->format('H:i:s'));
 
-        if ($object->id !== null) {
-            $existingBooking->andWhere('b.id != :currentBookingId')
-                ->setParameter('currentBookingId', $object->id);
+        if ($currentId !== null) {
+            $existingBooking->andWhere('b.id != :currentId')
+                ->setParameter('currentId', $currentId);
         }
 
         if ($existingBooking->getQuery()->getOneOrNullResult()) {
