@@ -33,7 +33,6 @@ import GroomerItem from './GroomerItem.vue'
 import { ref, onMounted, watch, computed, nextTick } from 'vue'
 import BookingFormVue from "./BookingForm.vue";
 import { useApiFetch } from "../useFetchResource";
-import { useDebounce } from "../useDebounce";
 
 export default {
   components: {BookingForm: BookingFormVue, GroomerItem },
@@ -49,18 +48,12 @@ export default {
     const groomers = ref([])
     const currentPage = ref(1)
     const lastPage = ref(1)
-    const loading = ref(false)
     const bookingForm = ref(null)
     const selectedGroomer = ref(null)
     const serviceNames = ref({})
     const pricesMap = ref({})
     const cityNames = ref({})
     const districtNames = ref({})
-
-    const mapItems = (json, nameKey) => (json['hydra:member'] || json['member'] || []).forEach(item => {
-      if (nameKey === 'city') cityNames.value[item.id] = item.city;
-      if (nameKey === 'dist') districtNames.value[item.id] = item.name;
-    });
 
     const ServiceIds = computed(() => {
       const ids = new Set();
@@ -70,29 +63,6 @@ export default {
       }
       return [...ids];
     });
-    const buildUrl = (page = 1) => {
-      let url = `/api/v1/masters?page=${page}`
-      const params = new URLSearchParams()
-      const allServiceIds = new Set();
-      if (props.filters.search && props.filters.search.length >= 3) params.append('search', props.filters.search)
-      if (props.filters.city) params.append('id_city.id', props.filters.city)
-      if (props.filters.district) params.append('district.id', props.filters.district)
-      if (props.filters.breed) params.append('id_pets.id', props.filters.breed)
-      if (props.filters.service) allServiceIds.add(props.filters.service)
-      if (props.filters.services?.length) {
-        props.filters.services.forEach(id => allServiceIds.add(id))
-      }
-      if (props.filters.budget) params.append('budget', props.filters.budget)
-      if (props.filters.minRating) params.append('avgRating[gte]', props.filters.minRating)
-      if (props.filters.maxRating) params.append('avgRating[lte]', props.filters.maxRating)
-
-      if (props.filters.sortField && props.filters.sortDirection) {
-        params.append(`order[${props.filters.sortField}]`, props.filters.sortDirection);
-      }
-      allServiceIds.forEach(id => params.append('id_services[]', id));
-      if ([...params].length > 0) url += `&${params.toString()}`
-      return url
-    }
 
     const loadPricesAndNames = async (masters) => {
       const sIds = ServiceIds.value;
