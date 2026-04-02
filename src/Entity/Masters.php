@@ -7,9 +7,12 @@ use App\Repository\MastersRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
-
+use Symfony\Component\Serializer\Annotation\Ignore;
+use Vich\UploaderBundle\Mapping\Annotation as Vich;
+#[Vich\Uploadable]
 #[ORM\Entity(repositoryClass: MastersRepository::class)]
 class Masters implements UserInterface, PasswordAuthenticatedUserInterface
 {
@@ -55,6 +58,13 @@ class Masters implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $phone = null;
+
+    #[Ignore]
+    #[Vich\UploadableField(mapping: 'master_photos', fileNameProperty: 'photo')]
+    private ?File $photoFile = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?\DateTimeImmutable $updatedAt = null;
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $photo = null;
@@ -274,6 +284,24 @@ class Masters implements UserInterface, PasswordAuthenticatedUserInterface
         $this->photo = $photo;
 
         return $this;
+    }
+
+    public function setPhotoFile(?File $photoFile = null): void
+    {
+        $this->photoFile = $photoFile;
+        if (null !== $photoFile) {
+            $this->updatedAt = new \DateTimeImmutable();
+        }
+    }
+
+    public function getPhotoFile(): ?File
+    {
+        return $this->photoFile;
+    }
+
+    public function getUpdatedAt(): ?\DateTimeImmutable
+    {
+        return $this->updatedAt;
     }
 
     /**

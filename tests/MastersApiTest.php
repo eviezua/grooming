@@ -15,6 +15,7 @@ use App\Factory\ScheduleFactory;
 use App\Factory\ServicesFactory;
 use Elastic\Elasticsearch\Client;
 use Symfony\Component\BrowserKit\Cookie;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Zenstruck\Foundry\Persistence\Proxy;
 use Zenstruck\Foundry\Test\Factories;
 use Zenstruck\Foundry\Test\ResetDatabase;
@@ -783,6 +784,97 @@ class MastersApiTest extends ApiTestCase
 
         $updatedMaster = MastersFactory::repository()->find($masterId);
         $this->assertSame('Admin Overwrite', $updatedMaster->getName());
+    }
+
+    public function testUploadMasterPhoto(): void
+    {
+        $master = MastersFactory::createOne();
+        $client = $this->createAuthenticatedClient($master);
+
+        $tempFilePath = tempnam(sys_get_temp_dir(), 'test_photo') . '.png';
+        file_put_contents($tempFilePath, 'fake image content');
+
+        $uploadedFile = new UploadedFile(
+            $tempFilePath,
+            'test_photo.png',
+            'image/png',
+            null,
+            true
+        );
+
+        $client->request('POST', '/api/v1/v1/masters/' . $master->getId() . '/photo', [
+            'headers' => [
+                'Content-Type' => 'multipart/form-data',
+            ],
+            'extra' => [
+                'files' => [
+                    'file' => $uploadedFile,
+                ],
+            ],
+        ]);
+
+        $this->assertResponseIsSuccessful();
+        $this->assertJsonContains([
+            'id' => $master->getId(),
+        ]);
+
+        $data = $client->getResponse()->toArray();
+        $this->assertNotNull($data['photo']);
+
+    }
+
+    public function testUploadPhotoAnotherMasterForbidden(): void
+    {
+        $owner = MastersFactory::createOne();
+        $intruder = MastersFactory::createOne();
+        $client = $this->createAuthenticatedClient($intruder);
+
+        $tempFilePath = tempnam(sys_get_temp_dir(), 'test_photo') . '.png';
+        file_put_contents($tempFilePath, 'fake image content');
+
+        $uploadedFile = new UploadedFile(
+            $tempFilePath,
+            'test_photo.png',
+            'image/png',
+            null,
+            true
+        );
+
+        $client->request('POST', '/api/v1/v1/masters/' . $owner->getId() . '/photo', [
+            'headers' => ['Content-Type' => 'multipart/form-data'],
+            'extra' => [
+                'file' => $uploadedFile,
+            ],
+        ]);
+
+        $this->assertResponseStatusCodeSame(403);
+    }
+
+    public function testDeleteMasterPhoto(): void
+    {
+        $master = MastersFactory::createOne(['photo' => 'old_photo.jpg']);
+        $client = $this->createAuthenticatedClient($master);
+
+        $client->request('DELETE', '/api/v1/v1/masters/' . $master->getId() . '/photo');
+
+        $this->assertResponseIsSuccessful();
+        $this->assertJsonContains([
+            'id' => $master->getId(),
+            'photo' => null,
+        ]);
+
+        $updatedMaster = MastersFactory::repository()->find($master->getId());
+        $this->assertNull($updatedMaster->getPhoto());
+    }
+
+    public function testDeletePhotoUnauthorized(): void
+    {
+        $master = MastersFactory::createOne(['photo' => 'test.jpg']);
+        $client = static::createClient();
+
+        $client->request('DELETE', '/api/v1/v1/masters/' . $master->getId() . '/photo');
+
+        $this->assertResponseStatusCodeSame(401);
     }
 
     private function indexMaster(string $name, string $surname): void

@@ -8,13 +8,16 @@ use ApiPlatform\Doctrine\Orm\Filter\RangeFilter;
 use ApiPlatform\Doctrine\Orm\State\Options;
 use ApiPlatform\Metadata\ApiFilter;
 use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Delete;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\Put;
 use ApiPlatform\OpenApi\Model\Operation;
+use App\Controller\DeleteMasterPhotoController;
 use App\Controller\MeController;
+use App\Controller\UploadMasterPhotoController;
 use App\Entity\Masters;
 use App\Filter\MasterAvailableTimeFilter;
 use App\Filter\MasterPriceFilter;
@@ -43,8 +46,28 @@ use Symfony\Component\Validator\Constraints as Assert;
             name: 'api_me'
         ),
         new Post(security: "is_granted('PUBLIC_ACCESS')"),
+        new Post(
+            uriTemplate: '/v1/masters/{id}/photo',
+            inputFormats: ['multipart' => ['multipart/form-data']],
+            controller: UploadMasterPhotoController::class,
+            openapi: new Operation(summary: 'Upload master photo'),
+            normalizationContext: ['groups' => ['master:read']],
+            security: "is_granted('MASTER_EDIT', object)",
+            input: MasterPhotoApi::class,
+            output: MastersApi::class,
+            read: false,
+            deserialize: false
+        ),
         new Put(security: "is_granted('MASTER_EDIT', object)"),
         new Patch(inputFormats: ['json' => ['application/merge-patch+json']], security: "is_granted('MASTER_EDIT', object)"),
+        new Delete(
+            uriTemplate: '/v1/masters/{id}/photo',
+            controller: DeleteMasterPhotoController::class,
+            openapi: new Operation(summary: 'Remove master photo'),
+            security: "is_granted('MASTER_EDIT', object)",
+            output: MastersApi::class,
+            read: false,
+        ),
     ],
     normalizationContext: ['groups' => ['master:read'], 'enable_max_depth' => true],
     denormalizationContext: ['groups' => ['master:write']],
