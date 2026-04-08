@@ -18,8 +18,9 @@
 </template>
 
 <script setup>
-import { reactive, defineProps, ref } from 'vue'
+import {reactive, defineProps, ref, onMounted} from 'vue'
 import { useSubmit } from "../usePostResource"
+import {toast} from "vue3-toastify";
 
 const props = defineProps({
   mode: {
@@ -62,4 +63,18 @@ const submitForm = async () => {
     console.log('Registration logic:', form)
   }
 }
+
+onMounted(() => {
+  const params = new URLSearchParams(window.location.search);
+
+  if (params.has('success')) {
+    toast.success("Вітаємо! Ваш email підтверджено. Тепер ви можете увійти.", {
+      autoClose: 5000,
+    });
+  }
+
+  if (params.has('already')) {
+    toast.info("Ваш email вже було підтверджено раніше.");
+  }
+})
 </script>

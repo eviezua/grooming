@@ -36,6 +36,26 @@ class NotificationService
         }
     }
 
+    public function sendAuthNotification(string $email, string $link, string $name = 'Майстер'): void
+    {
+        $this->sendEmail(
+            $email,
+            'Вітаємо в команді Groomify! ✂️🐾',
+            'auth_registration.html.twig',
+            [
+                'authLink' => $link,
+                'masterName' => $name
+            ]
+        );
+    }
+
+    public function sendAdminNewMasterNotification(array $masterData): void
+    {
+        $adminChatId = $_ENV['TELEGRAM_ADMIN_CHAT_ID'];
+
+        $this->sendTelegram($adminChatId, 'admin_new_master.html.twig', ['master' => $masterData]);
+    }
+
     private function sendEmail(string $to, string $subject, string $template, array $context): void
     {
         $email = (new NotificationEmail())

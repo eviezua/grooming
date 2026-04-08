@@ -21,12 +21,23 @@ framework:
                     queues:
                         default:
                             binding_keys: [ default ]
-
+            auth_queue:
+                dsn: '%env(MESSENGER_TRANSPORT_DSN)%'
+                options:
+                    auto_setup: true
+                    exchange:
+                        name: messenger_direct
+                        type: direct
+                    queues:
+                        auth:
+                            binding_keys: [ auth ]
             # failed: 'doctrine://default?queue_name=failed'
             sync: 'sync://'
 
         routing:
             'App\Message\BookingNotification': default_queue
+            'App\Message\AdminMessage': default_queue
+            'App\Message\AuthMessage': auth_queue
 
             'Symfony\Component\Mailer\Messenger\SendEmailMessage': sync
             'Symfony\Component\Notifier\Message\ChatMessage': sync
