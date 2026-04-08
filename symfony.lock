@@ -179,6 +179,18 @@
             "src/Kernel.php"
         ]
     },
+    "symfony/mailer": {
+        "version": "6.4",
+        "recipe": {
+            "repo": "github.com/symfony/recipes",
+            "branch": "main",
+            "version": "4.3",
+            "ref": "09051cfde49476e3c12cd3a0e44289ace1c75a4f"
+        },
+        "files": [
+            "config/packages/mailer.yaml"
+        ]
+    },
     "symfony/maker-bundle": {
         "version": "1.62",
         "recipe": {
@@ -187,6 +199,18 @@
             "version": "1.0",
             "ref": "fadbfe33303a76e25cb63401050439aa9b1a9c7f"
         }
+    },
+    "symfony/messenger": {
+        "version": "6.4",
+        "recipe": {
+            "repo": "github.com/symfony/recipes",
+            "branch": "main",
+            "version": "6.0",
+            "ref": "d8936e2e2230637ef97e5eecc0eea074eecae58b"
+        },
+        "files": [
+            "config/packages/messenger.yaml"
+        ]
     },
     "symfony/monolog-bundle": {
         "version": "3.10",
@@ -198,6 +222,18 @@
         },
         "files": [
             "config/packages/monolog.yaml"
+        ]
+    },
+    "symfony/notifier": {
+        "version": "6.4",
+        "recipe": {
+            "repo": "github.com/symfony/recipes",
+            "branch": "main",
+            "version": "5.0",
+            "ref": "178877daf79d2dbd62129dd03612cb1a2cb407cc"
+        },
+        "files": [
+            "config/packages/notifier.yaml"
         ]
     },
     "symfony/phpunit-bridge": {
@@ -240,6 +276,15 @@
             "config/packages/security.yaml",
             "config/routes/security.yaml"
         ]
+    },
+    "symfony/telegram-notifier": {
+        "version": "6.4",
+        "recipe": {
+            "repo": "github.com/symfony/recipes",
+            "branch": "main",
+            "version": "5.0",
+            "ref": "a3b62351bdaf9af180ffaf8a9c5ae0df70886abe"
+        }
     },
     "symfony/translation": {
         "version": "6.4",
@@ -322,6 +367,9 @@
     },
     "symfonycasts/micro-mapper": {
         "version": "v0.2.1"
+    },
+    "twig/extra-bundle": {
+        "version": "v3.24.0"
     },
     "vich/uploader-bundle": {
         "version": "2.9",
