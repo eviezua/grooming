@@ -31,6 +31,10 @@ framework:
                     queues:
                         auth:
                             binding_keys: [ auth ]
+
+            scheduler_main:
+                dsn: 'scheduler://default'
+
             # failed: 'doctrine://default?queue_name=failed'
             sync: 'sync://'
 

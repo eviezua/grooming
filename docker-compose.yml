@@ -104,6 +104,23 @@ services:
     networks:
       - app_network
 
+  messenger-scheduler:
+    image: ${IMAGES_PREFIX:-}app-php
+    build:
+      target: dev
+    restart: unless-stopped
+    command: php bin/console messenger:consume scheduler_default -vv
+    environment:
+      DATABASE_URL: ${DATABASE_URL}
+      TELEGRAM_ADMIN_CHAT_ID: ${TELEGRAM_ADMIN_CHAT_ID}
+    depends_on:
+      - database
+      - rabbitmq
+    volumes:
+      - .:/app
+    networks:
+      - app_network
+
 volumes:
   caddy_data:
   caddy_config:
