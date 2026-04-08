@@ -76,11 +76,41 @@ services:
       - "9200:9200"
     networks:
       - app_network
+
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    networks:
+      - app_network
+
+  mailcatcher:
+    image: sj26/mailcatcher:latest
+    ports:
+      - "1080:1080"
+      - "1025:1025"
+    networks:
+      - app_network
+
+  redis:
+    image: redis:alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - app_network
+
 volumes:
   caddy_data:
   caddy_config:
+  redis_data:
 ###> symfony/mercure-bundle ###
   elasticsearch_data:
+  rabbitmq_data:
 ###> doctrine/doctrine-bundle ###
   database_data:
 ###< doctrine/doctrine-bundle ###
