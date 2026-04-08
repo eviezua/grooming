@@ -61,6 +61,9 @@ class Masters implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $phone = null;
 
+    #[ORM\Column(type: 'string', nullable: true)]
+    private ?string $telegramChatId = null;
+
     #[Ignore]
     #[Vich\UploadableField(mapping: 'master_photos', fileNameProperty: 'photo')]
     private ?File $photoFile = null;
@@ -283,6 +286,18 @@ class Masters implements UserInterface, PasswordAuthenticatedUserInterface
     public function setPhone(?string $phone): static
     {
         $this->phone = $phone;
+
+        return $this;
+    }
+
+    public function getTelegramChatId(): ?string
+    {
+        return $this->telegramChatId;
+    }
+
+    public function setTelegramChatId(?string $telegramTelegramChatId): static
+    {
+        $this->telegramChatId = $telegramTelegramChatId;
 
         return $this;
     }
