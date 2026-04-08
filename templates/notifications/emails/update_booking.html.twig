@@ -1,0 +1,40 @@
+{% block content %}
+    <container>
+        <row>
+            <columns>
+                <h1 style="color: #ff9229;">Зміни у вашому бронюванні! 🐾</h1>
+
+                <p>
+                    Шановний(а) <strong>{{ clientName }}</strong>, Ваш запит на бронювання послуг: <em>{{ servicesList }}</em> для вашого улюбленця
+                    (<strong>{{ petBreed }} {{ petSpice }}</strong>) було змінено майстром
+                    <strong>{{ masterName }}</strong>.
+                </p>
+
+                <spacer size="16"></spacer>
+
+                <p style="background-color: #f8f9fa; padding: 15px; border-radius: 8px;">
+                    <strong>Оновлені деталі Вашого бронювання:</strong><br>
+                    📅 Дата: {{ date }}<br>
+                    ⏰ Початок: {{ startTime }}<br>
+                    🏁 Закінчення: {{ endTime }} <br>
+                    📌 Статус: <span style="text-transform: uppercase; font-weight: bold;">{{ status }}</span>
+                </p>
+
+                <spacer size="16"></spacer>
+
+                <p>
+                    <strong>Ось контакти вашого майстра:</strong><br>
+                    📞 Телефон: {{ masterPhone }}<br>
+                    📧 Email: {{ masterEmail }}
+                </p>
+
+                <spacer size="16"></spacer>
+
+                <p>З повагою, платформа <strong>Groomify</strong>!</p>
+                <center>
+                    <img src="cid:logo-dog" width="500" alt="Groomify Logo">
+                </center>
+            </columns>
+        </row>
+    </container>
+{% endblock %}
