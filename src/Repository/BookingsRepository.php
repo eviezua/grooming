@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\Bookings;
+use App\Enum\Status;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -14,6 +15,23 @@ class BookingsRepository extends ServiceEntityRepository
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Bookings::class);
+    }
+
+    public function findForNotification(string $date, string $time): array
+    {
+        $start = $time . ':00';
+        $end = $time . ':59';
+
+        return $this->createQueryBuilder('b')
+            ->where('b.date = :date')
+            ->andWhere('b.time_start BETWEEN :start AND :end')
+            ->andWhere('b.status = :status')
+            ->setParameter('date', $date)
+            ->setParameter('start', $start)
+            ->setParameter('end', $end)
+            ->setParameter('status', Status::Approved->value)
+            ->getQuery()
+            ->getResult();
     }
 
 //    /**

@@ -31,7 +31,16 @@ framework:
                     queues:
                         auth:
                             binding_keys: [ auth ]
-
+            scheduled_queue:
+                dsn: '%env(MESSENGER_TRANSPORT_DSN)%'
+                options:
+                    auto_setup: true
+                    exchange:
+                        name: messenger_direct
+                        type: direct
+                    queues:
+                        scheduled:
+                            binding_keys: [ scheduled ]
             scheduler_main:
                 dsn: 'scheduler://default'
 
@@ -41,6 +50,7 @@ framework:
         routing:
             'App\Message\BookingNotification': default_queue
             'App\Message\AdminMessage': default_queue
+            'App\Message\DelayedReminder': scheduled_queue
             'App\Message\AuthMessage': auth_queue
 
             'Symfony\Component\Mailer\Messenger\SendEmailMessage': sync

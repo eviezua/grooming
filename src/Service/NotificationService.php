@@ -49,6 +49,20 @@ class NotificationService
         );
     }
 
+    public function sendMasterReminder(Bookings $booking, array $context): void
+    {
+        $master = $booking->getIdMaster();
+
+        $this->sendTelegram($master->getTelegramChatId(), 'master_reminder.html.twig', $context);
+    }
+
+    public function sendClientReminder(Bookings $booking, array $context): void
+    {
+        $client = $booking->getIdClient();
+
+        $this->sendTelegram($client->getTelegramChatId(), 'client_reminder.html.twig', $context);
+    }
+
     public function sendAdminNewMasterNotification(array $masterData): void
     {
         $adminChatId = $_ENV['TELEGRAM_ADMIN_CHAT_ID'];
