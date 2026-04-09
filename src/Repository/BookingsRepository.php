@@ -17,14 +17,18 @@ class BookingsRepository extends ServiceEntityRepository
         parent::__construct($registry, Bookings::class);
     }
 
-    public function findForNotification(string $date, string $time): array
+    public function findForNotification(string $date, string $time, string $field = 'time_start'): array
     {
         $start = $time . ':00';
         $end = $time . ':59';
 
+        if (!in_array($field, ['time_start', 'time_stop'])) {
+            throw new \InvalidArgumentException("Invalid field name");
+        }
+
         return $this->createQueryBuilder('b')
             ->where('b.date = :date')
-            ->andWhere('b.time_start BETWEEN :start AND :end')
+            ->andWhere("b.$field BETWEEN :start AND :end")
             ->andWhere('b.status = :status')
             ->setParameter('date', $date)
             ->setParameter('start', $start)
