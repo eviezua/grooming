@@ -19,12 +19,14 @@ final class CheckUpcomingBookingsTriggerHandler
 
     public function __invoke(CheckUpcomingBookingsTrigger $message): void
     {
-        $targetTime = (new \DateTimeImmutable('now', new \DateTimeZone('Europe/Kyiv')))
-            ->modify('+10 minutes');
+        $now = new \DateTimeImmutable('now', new \DateTimeZone('Europe/Kyiv'));
+
+        $targetTime = $now->modify('+10 minutes');
 
         $bookings = $this->repository->findForNotification(
             $targetTime->format('Y-m-d'),
-            $targetTime->format('H:i')
+            $targetTime->format('H:i'),
+            'time_start'
         );
 
         foreach ($bookings as $booking) {
@@ -33,6 +35,19 @@ final class CheckUpcomingBookingsTriggerHandler
             ]);
 
             $this->bus->dispatch(new DelayedReminder($booking->getId(), 'client'), [
+                new AmqpStamp('scheduled')
+            ]);
+        }
+
+        $targetPast = $now->modify('-10 minutes');
+        $finishedBookings = $this->repository->findForNotification(
+            $targetPast->format('Y-m-d'),
+            $targetPast->format('H:i'),
+            'time_stop'
+        );
+
+        foreach ($finishedBookings as $booking) {
+            $this->bus->dispatch(new DelayedReminder($booking->getId(), 'rating'), [
                 new AmqpStamp('scheduled')
             ]);
         }
