@@ -55,10 +55,17 @@ framework:
 
             'Symfony\Component\Mailer\Messenger\SendEmailMessage': sync
             'Symfony\Component\Notifier\Message\ChatMessage': sync
-# when@test:
-#    framework:
-#        messenger:
-#            transports:
-#                # replace with your transport name here (e.g., my_transport: 'in-memory://')
-#                # For more Messenger testing tools, see https://github.com/zenstruck/messenger-test
-#                async: 'in-memory://'
+when@test:
+   framework:
+       messenger:
+           transports:
+                default_queue: 'sync://'
+                auth_queue: 'sync://'
+                scheduled_queue: 'sync://'
+           routing:
+               'App\Message\BookingNotification': sync
+               'App\Message\AdminMessage': sync
+               'App\Message\AuthMessage': sync
+               'App\Message\DelayedReminder': sync
+               'Symfony\Component\Mailer\Messenger\SendEmailMessage': sync
+               'Symfony\Component\Notifier\Message\ChatMessage': sync

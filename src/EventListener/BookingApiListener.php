@@ -26,11 +26,17 @@ final class BookingApiListener
         $bookingId = $this->extractBookingId($request);
 
         if ($bookingId) {
+            $stamps = [];
+
+            if ($_ENV['APP_ENV'] !== 'test') {
+                $stamps[] = new AmqpStamp('default');
+            }
+
             $this->bus->dispatch(new BookingNotification(
                 $bookingId,
                 $request->getMethod()
             ),
-                [ new AmqpStamp('default')]
+                $stamps
             );
         }
     }
