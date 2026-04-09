@@ -55,6 +55,9 @@ class Bookings
     #[ORM\Column(length: 255, enumType: Status::class)]
     private ?Status $status = null;
 
+    #[ORM\OneToOne(mappedBy: 'booking', cascade: ['persist', 'remove'])]
+    private ?Review $review = null;
+
     public function __construct()
     {
         $this->id_services = new ArrayCollection();
@@ -189,6 +192,28 @@ class Bookings
     public function setStatus(Status $status): static
     {
         $this->status = $status;
+
+        return $this;
+    }
+
+    public function getReview(): ?Review
+    {
+        return $this->review;
+    }
+
+    public function setReview(?Review $review): static
+    {
+        // unset the owning side of the relation if necessary
+        if ($review === null && $this->review !== null) {
+            $this->review->setBooking(null);
+        }
+
+        // set the owning side of the relation if necessary
+        if ($review !== null && $review->getBooking() !== $this) {
+            $review->setBooking($this);
+        }
+
+        $this->review = $review;
 
         return $this;
     }
