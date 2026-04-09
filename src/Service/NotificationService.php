@@ -5,6 +5,8 @@ namespace App\Service;
 use App\Entity\Bookings;
 use Symfony\Bridge\Twig\Mime\NotificationEmail;
 use Symfony\Component\Mailer\MailerInterface;
+use Symfony\Component\Notifier\Bridge\Telegram\Reply\Markup\Button\InlineKeyboardButton;
+use Symfony\Component\Notifier\Bridge\Telegram\Reply\Markup\InlineKeyboardMarkup;
 use Symfony\Component\Notifier\Bridge\Telegram\TelegramOptions;
 use Symfony\Component\Notifier\ChatterInterface;
 use Symfony\Component\Notifier\Message\ChatMessage;
@@ -63,6 +65,26 @@ class NotificationService
         $this->sendTelegram($client->getTelegramChatId(), 'client_reminder.html.twig', $context);
     }
 
+    public function sendClientRatingRequest(Bookings $booking, array $context): void
+    {
+        $client = $booking->getIdClient()->getTelegramChatId();
+
+        $keyboard = [
+            'inline_keyboard' => [
+                [
+                    ['text' => '⭐ 1', 'callback_data' => "rate_1_{$booking->getId()}"],
+                    ['text' => '⭐ 2', 'callback_data' => "rate_2_{$booking->getId()}"],
+                    ['text' => '⭐ 3', 'callback_data' => "rate_3_{$booking->getId()}"],
+                    ['text' => '⭐ 4', 'callback_data' => "rate_4_{$booking->getId()}"],
+                    ['text' => '⭐ 5', 'callback_data' => "rate_5_{$booking->getId()}"],
+                ]
+            ]
+        ];
+
+        $this->sendTelegram($client, 'client_rating.html.twig', $context, $keyboard);
+
+    }
+
     public function sendAdminNewMasterNotification(array $masterData): void
     {
         $adminChatId = $_ENV['TELEGRAM_ADMIN_CHAT_ID'];
@@ -82,13 +104,26 @@ class NotificationService
         $this->mailer->send($email);
     }
 
-    private function sendTelegram(?string $chatId, string $template, array $context): void
+    private function sendTelegram(?string $chatId, string $template, array $context, ?array $keyboard = null): void
     {
         if (!$chatId) return;
 
         $text = $this->twig->render("notifications/telegram/$template", $context);
         $message = new ChatMessage($text);
         $options = (new TelegramOptions())->chatId($chatId)->parseMode('');
+        if ($keyboard) {
+            $markup = new InlineKeyboardMarkup();
+
+            $row = [];
+            foreach ($keyboard['inline_keyboard'][0] as $btn) {
+                $row[] = (new InlineKeyboardButton($btn['text']))
+                    ->callbackData($btn['callback_data']);
+            }
+
+            $markup->inlineKeyboard($row);
+
+            $options->replyMarkup($markup);
+        }
         $message->options($options);
 
         $this->chatter->send($message);
