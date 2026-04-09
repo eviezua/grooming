@@ -1,0 +1,15 @@
+Хей-хей-хей! Вітаю, шановний(а) {{ clientName }}!
+
+Ваш запис {{ date }} з {{ startTime }} по {{ endTime }} до майстра {{ masterName }} було {% if method == 'POST' %}додано{% elseif method in ['PUT', 'PATCH'] %}змінено{% endif %}!
+
+Деталі вашого бронювання такі:
+📅 дата: {{ date }}
+⏰ час початку: {{ startTime }}
+🏁 час закінчення: {{ endTime }}
+{% if method in ['PUT', 'PATCH'] %}
+    📌 статус: {{ status }}
+{% endif %}
+
+Зв`язатися з вашим майстром для уточнення деталей можна так:
+{{ masterPhone }}
+{{ masterEmail }}

@@ -86,6 +86,10 @@ class EntityClassDtoStateProcessor implements ProcessorInterface
             $this->entityManager->persist($entity);
             $this->entityManager->flush();
 
+            $shortName = strtolower(substr($entityClass, strrpos($entityClass, '\\') + 1));
+            $attributeKey = sprintf('_created_%s_entity', $shortName);
+            $this->requestStack->getCurrentRequest()?->attributes->set($attributeKey, $entity);
+
             $this->logger->info('Entity created successfully', ['entity' => get_class($entity)]);
 
             return $entity;
@@ -111,10 +115,17 @@ class EntityClassDtoStateProcessor implements ProcessorInterface
         }
 
         $entity = $this->loadEntity($uriVariables['id'], $entityClass);
+
+        $id = $entity->getId();
+        $shortName = strtolower(substr($entityClass, strrpos($entityClass, '\\') + 1));
+
         $this->logger->info('Deleting entity', ['entity' => get_class($entity)]);
 
         try {
             $this->removeProcessor->process($entity, new class extends Operation implements DeleteOperationInterface {}, $uriVariables, []);
+
+            $attributeKey = sprintf('_deleted_%s_entity', $shortName);
+            $this->requestStack->getCurrentRequest()?->attributes->set($attributeKey, $id);
         } catch (\Throwable $e) {
             throw new \RuntimeException('Failed to delete entity: ' . $e->getMessage());
         }

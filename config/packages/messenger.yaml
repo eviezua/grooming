@@ -1,0 +1,71 @@
+framework:
+    messenger:
+        # Uncomment this (and the failed transport below) to send failed messages to this transport for later handling.
+        # failure_transport: failed
+        default_bus: messenger.bus.default
+        buses:
+            messenger.bus.default:
+                default_middleware:
+                    enabled: true
+                    allow_no_handlers: true
+                    allow_no_senders: false
+        transports:
+            # https://symfony.com/doc/current/messenger.html#transport-configuration
+            default_queue:
+                dsn: '%env(MESSENGER_TRANSPORT_DSN)%'
+                options:
+                    auto_setup: true
+                    exchange:
+                        name: messenger_direct
+                        type: direct
+                    queues:
+                        default:
+                            binding_keys: [ default ]
+            auth_queue:
+                dsn: '%env(MESSENGER_TRANSPORT_DSN)%'
+                options:
+                    auto_setup: true
+                    exchange:
+                        name: messenger_direct
+                        type: direct
+                    queues:
+                        auth:
+                            binding_keys: [ auth ]
+            scheduled_queue:
+                dsn: '%env(MESSENGER_TRANSPORT_DSN)%'
+                options:
+                    auto_setup: true
+                    exchange:
+                        name: messenger_direct
+                        type: direct
+                    queues:
+                        scheduled:
+                            binding_keys: [ scheduled ]
+            scheduler_main:
+                dsn: 'scheduler://default'
+
+            # failed: 'doctrine://default?queue_name=failed'
+            sync: 'sync://'
+
+        routing:
+            'App\Message\BookingNotification': default_queue
+            'App\Message\AdminMessage': default_queue
+            'App\Message\DelayedReminder': scheduled_queue
+            'App\Message\AuthMessage': auth_queue
+
+            'Symfony\Component\Mailer\Messenger\SendEmailMessage': sync
+            'Symfony\Component\Notifier\Message\ChatMessage': sync
+when@test:
+   framework:
+       messenger:
+           transports:
+                default_queue: 'sync://'
+                auth_queue: 'sync://'
+                scheduled_queue: 'sync://'
+           routing:
+               'App\Message\BookingNotification': sync
+               'App\Message\AdminMessage': sync
+               'App\Message\AuthMessage': sync
+               'App\Message\DelayedReminder': sync
+               'Symfony\Component\Mailer\Messenger\SendEmailMessage': sync
+               'Symfony\Component\Notifier\Message\ChatMessage': sync

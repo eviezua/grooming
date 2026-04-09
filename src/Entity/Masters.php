@@ -61,6 +61,9 @@ class Masters implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $phone = null;
 
+    #[ORM\Column(type: 'string', nullable: true)]
+    private ?string $telegramChatId = null;
+
     #[Ignore]
     #[Vich\UploadableField(mapping: 'master_photos', fileNameProperty: 'photo')]
     private ?File $photoFile = null;
@@ -92,6 +95,12 @@ class Masters implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(targetEntity: MastersServices::class, mappedBy: 'master')]
     private Collection $mastersServices;
 
+    /**
+     * @var Collection<int, Review>
+     */
+    #[ORM\OneToMany(targetEntity: Review::class, mappedBy: 'master')]
+    private Collection $reviews;
+
     public function __construct()
     {
         $this->id_pets = new ArrayCollection();
@@ -99,6 +108,7 @@ class Masters implements UserInterface, PasswordAuthenticatedUserInterface
         $this->bookings = new ArrayCollection();
         $this->status = Status::Awaiting;
         $this->mastersServices = new ArrayCollection();
+        $this->reviews = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -287,6 +297,18 @@ class Masters implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
+    public function getTelegramChatId(): ?string
+    {
+        return $this->telegramChatId;
+    }
+
+    public function setTelegramChatId(?string $telegramTelegramChatId): static
+    {
+        $this->telegramChatId = $telegramTelegramChatId;
+
+        return $this;
+    }
+
     public function getPhoto(): ?string
     {
         return $this->photo;
@@ -445,5 +467,35 @@ class Masters implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function eraseCredentials()
     {
+    }
+
+    /**
+     * @return Collection<int, Review>
+     */
+    public function getReviews(): Collection
+    {
+        return $this->reviews;
+    }
+
+    public function addReview(Review $review): static
+    {
+        if (!$this->reviews->contains($review)) {
+            $this->reviews->add($review);
+            $review->setMaster($this);
+        }
+
+        return $this;
+    }
+
+    public function removeReview(Review $review): static
+    {
+        if ($this->reviews->removeElement($review)) {
+            // set the owning side to null (unless already changed)
+            if ($review->getMaster() === $this) {
+                $review->setMaster(null);
+            }
+        }
+
+        return $this;
     }
 }

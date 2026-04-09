@@ -40,7 +40,7 @@ RUN set -eux; \
 
 ###> recipes ###
 ###> doctrine/doctrine-bundle ###
-RUN install-php-extensions pdo_pgsql
+RUN install-php-extensions pdo_pgsql amqp redis
 ###< doctrine/doctrine-bundle ###
 ###< recipes ###
 
@@ -72,6 +72,21 @@ RUN set -eux; \
 		xdebug \
 	;
 
+RUN apk add --no-cache \
+    curl \
+    gnupg \
+    nodejs-current \
+    npm \
+    yarn \
+    --repository=http://dl-cdn.alpinelinux.org/alpine/v3.20/community
+
+WORKDIR /app
+COPY package.json package-lock.json ./
+
+RUN npm config set fetch-retry-maxtimeout 600000 && \
+    npm config set fetch-retries 5 && \
+    npm install --no-audit --no-fund --loglevel=error
+
 RUN echo "xdebug.start_with_request=yes" >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini \
     && echo "xdebug.mode=debug,develop" >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini \
     && echo "xdebug.log=/dev/null" >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini \
@@ -79,16 +94,6 @@ RUN echo "xdebug.start_with_request=yes" >> /usr/local/etc/php/conf.d/docker-php
     && echo "xdebug.client_port=9003" >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
 
 COPY --link frankenphp/conf.d/app.dev.ini $PHP_INI_DIR/conf.d/
-
-RUN apk add --no-cache --virtual .build-deps \
-    curl \
-    gnupg \
-    && apk add --no-cache nodejs npm yarn \
-    && apk del .build-deps
-
-WORKDIR /app
-COPY package.json package-lock.json ./
-RUN npm install
 
 COPY assets/js/convert-xlf.mjs ./assets/js/convert-xlf.mjs
 COPY translations/ translations/

@@ -1,0 +1,54 @@
+{% block content %}
+    <container>
+        <row>
+            <columns>
+                <h1 style="color: #ff9229;">Вітаємо в команді Groomify! ✂️🐾</h1>
+
+                <p>
+                    Вітаємо, <strong>{{ masterName }}</strong>! Дякуємо, що приєдналися до нашої платформи.
+                    Ми раді, що тепер ви з нами!
+                </p>
+
+                <p>
+                    Ваш профіль майстра успішно створено. Щоб активувати аккаунт та почати приймати бронювання від клієнтів,
+                    будь ласка, підтвердіть вашу електронну адресу, натиснувши на кнопку нижче:
+                </p>
+
+                <spacer size="24"></spacer>
+
+                <center>
+                    <table border="0" cellpadding="0" cellspacing="0" role="presentation" style="background-color: #ff9229; border-radius: 8px;">
+                        <tr>
+                            <td align="center" style="padding: 15px 30px;">
+                                <a href="{{ authLink }}" style="color: #ffffff; text-decoration: none; font-weight: bold; font-size: 18px; display: inline-block;">
+                                    Підтвердити реєстрацію
+                                </a>
+                            </td>
+                        </tr>
+                    </table>
+                </center>
+
+                <spacer size="24"></spacer>
+
+                <p style="background-color: #f8f9fa; padding: 15px; border-radius: 8px; font-size: 13px; color: #666;">
+                    <strong>Чому це важливо?</strong><br>
+                    Підтвердження пошти гарантує безпеку вашого профілю та дозволяє отримувати сповіщення про нові записи від власників пухнастиків.
+                </p>
+
+                <p style="font-size: 12px; color: #999;">
+                    Якщо кнопка вище не працює, скопіюйте це посилання у ваш браузер:<br>
+                    <span style="color: #ff9229;">{{ authLink }}</span>
+                </p>
+
+                <spacer size="16"></spacer>
+
+                <p>З нетерпінням чекаємо на ваші перші бронювання!</p>
+                <p>З повагою, команда <strong>Groomify</strong>!</p>
+
+                <center>
+                    <img src="cid:logo-dog" width="500" alt="Groomify Logo">
+                </center>
+            </columns>
+        </row>
+    </container>
+{% endblock %}
