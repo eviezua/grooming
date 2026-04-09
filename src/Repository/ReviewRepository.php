@@ -29,6 +29,20 @@ class ReviewRepository extends ServiceEntityRepository
         return $result !== null ? (float) $result : 0.0;
     }
 
+    public function findLastReviewWithoutComment(string $chatId): ?Review
+    {
+        return $this->createQueryBuilder('r')
+            ->join('r.booking', 'b')
+            ->join('b.id_client', 'c')
+            ->where('c.telegramChatId = :chatId')
+            ->andWhere('r.comment IS NULL')
+            ->setParameter('chatId', $chatId)
+            ->orderBy('r.id', 'DESC')
+            ->setMaxResults(1)
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
+
 //    /**
 //     * @return Review[] Returns an array of Review objects
 //     */

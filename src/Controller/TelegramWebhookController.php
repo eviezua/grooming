@@ -2,8 +2,10 @@
 
 namespace App\Controller;
 
+use App\Repository\ReviewRepository;
 use App\Service\RatingService;
 use App\Service\TelegramService;
+use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -17,7 +19,9 @@ class TelegramWebhookController extends AbstractController
         Request $request,
         TelegramService $telegramService,
         RatingService $ratingService,
-        LoggerInterface $logger
+        ReviewRepository $reviewRepository,
+        LoggerInterface $logger,
+        EntityManagerInterface $em,
     ): Response {
         $data = $request->toArray();
 
@@ -50,11 +54,11 @@ class TelegramWebhookController extends AbstractController
             $chatId = (string)$data['message']['chat']['id'];
             $text = $data['message']['text'];
 
-            $lastReview = $ratingService->findLastReviewWithoutComment($chatId);
+            $lastReview = $reviewRepository->findLastReviewWithoutComment($chatId);
 
             if ($lastReview) {
                 $lastReview->setComment($text);
-                $ratingService->saveReview($lastReview);
+                $em->flush();
 
                 $telegramService->sendMessage($chatId, "Дякуємо! Ваш відгук збережено: \"$text\"");
                 return new Response('Comment saved');

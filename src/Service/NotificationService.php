@@ -5,19 +5,14 @@ namespace App\Service;
 use App\Entity\Bookings;
 use Symfony\Bridge\Twig\Mime\NotificationEmail;
 use Symfony\Component\Mailer\MailerInterface;
-use Symfony\Component\Notifier\Bridge\Telegram\Reply\Markup\Button\InlineKeyboardButton;
-use Symfony\Component\Notifier\Bridge\Telegram\Reply\Markup\InlineKeyboardMarkup;
-use Symfony\Component\Notifier\Bridge\Telegram\TelegramOptions;
-use Symfony\Component\Notifier\ChatterInterface;
-use Symfony\Component\Notifier\Message\ChatMessage;
 use Twig\Environment;
 
 class NotificationService
 {
     public function __construct(
         private MailerInterface $mailer,
-        private ChatterInterface $chatter,
-        private Environment $twig
+        private Environment $twig,
+        private TelegramService $telegramService,
     ) {}
 
     public function sendBookingUpdates(Bookings $booking, string $method, array $context): void
@@ -109,23 +104,7 @@ class NotificationService
         if (!$chatId) return;
 
         $text = $this->twig->render("notifications/telegram/$template", $context);
-        $message = new ChatMessage($text);
-        $options = (new TelegramOptions())->chatId($chatId)->parseMode('');
-        if ($keyboard) {
-            $markup = new InlineKeyboardMarkup();
 
-            $row = [];
-            foreach ($keyboard['inline_keyboard'][0] as $btn) {
-                $row[] = (new InlineKeyboardButton($btn['text']))
-                    ->callbackData($btn['callback_data']);
-            }
-
-            $markup->inlineKeyboard($row);
-
-            $options->replyMarkup($markup);
-        }
-        $message->options($options);
-
-        $this->chatter->send($message);
+        $this->telegramService->sendMessage($chatId, $text, $keyboard);
     }
 }

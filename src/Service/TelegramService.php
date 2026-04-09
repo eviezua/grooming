@@ -5,8 +5,11 @@ namespace App\Service;
 use App\Repository\ClientsRepository;
 use App\Repository\MastersRepository;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
-use Symfony\Contracts\HttpClient\HttpClientInterface;
+use Symfony\Component\Notifier\Bridge\Telegram\Reply\Markup\Button\InlineKeyboardButton;
+use Symfony\Component\Notifier\Bridge\Telegram\Reply\Markup\InlineKeyboardMarkup;
+use Symfony\Component\Notifier\Bridge\Telegram\TelegramOptions;
+use Symfony\Component\Notifier\ChatterInterface;
+use Symfony\Component\Notifier\Message\ChatMessage;
 
 class TelegramService
 {
@@ -14,8 +17,7 @@ class TelegramService
         private ClientsRepository $clientsRepository,
         private MastersRepository $mastersRepository,
         private EntityManagerInterface $em,
-        private HttpClientInterface $httpClient,
-        private ParameterBagInterface $params
+        private ChatterInterface $chatter
     ) {}
 
     public function syncContact(array $contactData, int $chatId): bool
@@ -35,21 +37,28 @@ class TelegramService
         return false;
     }
 
-    /**
-     * @TODO: needs refactoring! It's working only for Webhook now!
-     **/
-
-    public function sendMessage(string $chatId, string $text): void
+    public function sendMessage(string $chatId, string $text, ?array $keyboard = null): void
     {
-        $token = $this->params->get('telegram_token');
+        $message = new ChatMessage($text);
+        $options = (new TelegramOptions())
+            ->chatId($chatId)
+            ->parseMode('HTML');
 
-        $this->httpClient->request('POST', "https://api.telegram.org/bot$token/sendMessage", [
-            'json' => [
-                'chat_id' => $chatId,
-                'text' => $text,
-                'parse_mode' => 'HTML'
-            ]
-        ]);
+        if ($keyboard) {
+            $markup = new InlineKeyboardMarkup();
+            foreach ($keyboard['inline_keyboard'] as $row) {
+                $buttonRow = [];
+                foreach ($row as $btn) {
+                    $buttonRow[] = (new InlineKeyboardButton($btn['text']))
+                        ->callbackData($btn['callback_data']);
+                }
+                $markup->inlineKeyboard(...[$buttonRow]);
+            }
+            $options->replyMarkup($markup);
+        }
+
+        $message->options($options);
+        $this->chatter->send($message);
     }
 
 }
