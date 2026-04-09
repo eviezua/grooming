@@ -2,7 +2,6 @@
 
 namespace App\MessageHandler;
 
-use App\Enum\Status;
 use App\Message\DelayedReminder;
 use App\Repository\BookingsRepository;
 use App\Service\NotificationService;
@@ -36,10 +35,10 @@ final class DelayedReminderHandler
             'servicesList' => implode(', ', array_map(fn($s) => $s->getName(), $booking->getIdServices()->toArray())),
         ];
 
-        if ($message->getRecipientType() === 'master') {
-            $this->notifications->sendMasterReminder($booking, $context);
-        } else {
-            $this->notifications->sendClientReminder($booking, $context);
-        }
+        match ($message->getRecipientType()) {
+            'master' => $this->notifications->sendMasterReminder($booking, $context),
+            'client' => $this->notifications->sendClientReminder($booking, $context),
+            'rating' => $this->notifications->sendClientRatingRequest($booking, $context),
+        };
     }
 }
