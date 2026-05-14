@@ -138,6 +138,74 @@
         <source>Now you can easily find a professional who is right. just for you, and you no longer need to run around all the salons of the city. spending time searching and comparing. You just choose. comfortable, decent and experienced groomer — and that's it!</source>
         <target>Тепер можна легко знайти професіонала, який підходить саме тобі, і не потрібно більше бігати по всіх салонах міста, витрачаючи час на пошуки та порівняння. Ти просто обираєш зручного, порядного та досвідченого грумера — і все!</target>
       </trans-unit>
+      <trans-unit id="nNC78p1" resname="Welcome! Your email has been verified. You can now login.">
+        <source>Welcome! Your email has been verified. You can now login.</source>
+        <target>Вітаємо! Ваш email підтверджено. Тепер ви можете увійти.</target>
+      </trans-unit>
+      <trans-unit id="1S.CPcM" resname="Your email has already been verified.">
+        <source>Your email has already been verified.</source>
+        <target>Ваш email вже було підтверджено раніше.</target>
+      </trans-unit>
+      <trans-unit id=".DP3Mkb" resname="City">
+        <source>City</source>
+        <target>Місто</target>
+      </trans-unit>
+      <trans-unit id="UPGHjST" resname="District">
+        <source>District</source>
+        <target>Район</target>
+      </trans-unit>
+      <trans-unit id="Vu_PIJV" resname="Address">
+        <source>Address</source>
+        <target>Адреса</target>
+      </trans-unit>
+      <trans-unit id="Y9zriAC" resname="Phone">
+        <source>Phone</source>
+        <target>Номер телефону</target>
+      </trans-unit>
+      <trans-unit id="_hrBFRr" resname="Create password">
+        <source>Create password</source>
+        <target>Створити пароль</target>
+      </trans-unit>
+      <trans-unit id="t0Bw_Q6" resname="Repeat password">
+        <source>Repeat password</source>
+        <target>Повторити пароль</target>
+      </trans-unit>
+      <trans-unit id="H.V6Kdf" resname="Next">
+        <source>Next</source>
+        <target>Далі</target>
+      </trans-unit>
+      <trans-unit id="dpAPG.0" resname="Back">
+        <source>Back</source>
+        <target>Назад</target>
+      </trans-unit>
+      <trans-unit id="lqpRUOv" resname="Passwords do not match!">
+        <source>Passwords do not match!</source>
+        <target>Паролі не співпадають!</target>
+      </trans-unit>
+      <trans-unit id="uBidF9u" resname="Success! Please check your email to verify your account.">
+        <source>Success! Please check your email to verify your account.</source>
+        <target>Успіх! Будь ласка, перевірте пошту для підтвердження акаунта.</target>
+      </trans-unit>
+      <trans-unit id="Fc4m1fn" resname="Successful login!">
+        <source>Successful login!</source>
+        <target>Ви успішно увійшли!</target>
+      </trans-unit>
+      <trans-unit id="9AqFPli" resname="Processing...">
+        <source>Processing...</source>
+        <target>Обробка...</target>
+      </trans-unit>
+      <trans-unit id="nWMiwfT" resname="Login">
+        <source>Login</source>
+        <target>Увійти</target>
+      </trans-unit>
+      <trans-unit id=".EDfL_w" resname="Login to your account">
+        <source>Login to your account</source>
+        <target>Увійти в свій акаунт</target>
+      </trans-unit>
+      <trans-unit id="588_9PF" resname="Password">
+        <source>Password</source>
+        <target>Пароль</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>

@@ -3,8 +3,8 @@
 namespace App\Tests;
 
 use ApiPlatform\Symfony\Bundle\Test\ApiTestCase;
-use App\Entity\Clients;
 use App\Entity\Masters;
+use App\Enum\Status;
 use App\Factory\BookingsFactory;
 use App\Factory\ClientsFactory;
 use App\Factory\MastersFactory;
@@ -332,7 +332,8 @@ class ClientsApiTest extends ApiTestCase
                 ?? MastersFactory::createOne([
                     'email' => $userOrEmail,
                     'password' => 'password',
-                    'roles' => $isAdmin ? ['ROLE_ADMIN'] : ['ROLE_MASTER']
+                    'roles' => $isAdmin ? ['ROLE_ADMIN'] : ['ROLE_MASTER'],
+                    'status' => Status::Approved
                 ]);
             $master = ($proxy instanceof Proxy) ? $proxy->_real() : $proxy;
         }

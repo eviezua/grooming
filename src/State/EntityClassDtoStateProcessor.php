@@ -11,6 +11,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\HttpFoundation\RequestStack;
+use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfonycasts\MicroMapper\MicroMapperInterface;
 
@@ -94,6 +95,10 @@ class EntityClassDtoStateProcessor implements ProcessorInterface
 
             return $entity;
         } catch (\Exception $e) {
+            if ($e instanceof HttpExceptionInterface) {
+                throw $e;
+            }
+
             $this->logger->error('Error while creating entity', ['exception' => $e->getMessage()]);
             throw new \RuntimeException('Failed to create entity: ' . $e->getMessage());
         }

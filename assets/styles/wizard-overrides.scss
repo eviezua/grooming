@@ -20,3 +20,34 @@
         }
     }
 }
+
+.vue-form-wizard {
+  .form-input-wrapper & {
+    .wizard-progress-with-circle {
+      display: none !important;
+    }
+
+    .wizard-nav {
+      display: none !important;
+    }
+
+    .wizard-header {
+      padding: 0 !important;
+      margin: 0 !important;
+      min-height: 0 !important;
+    }
+
+    .wizard-btn {
+      background-color: #FF9229 !important;
+      outline: none !important;
+      @include pill-button(#FFFF, 48px, 0.5%);
+      border: none;
+      width: 250px;
+      height: 81px;
+      color: white;
+      @include inter-font(1.25rem, 500);
+      @extend .text-shadow-0_25;
+      transition: all 0.3s ease;
+    }
+  }
+}

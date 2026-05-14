@@ -42,10 +42,10 @@
 </template>
 
 <script>
-import BaseDropdown from './BaseDropdown.vue'
-import SearchInput from './SearchInput.vue'
+import BaseDropdown from './BaseDropdown.vue';
+import SearchInput from './SearchInput.vue';
 import OtherFiltersForm from "./OtherFiltersForm.vue";
-import {ref, onMounted, watch, nextTick} from 'vue'
+import {ref, onMounted, watch, nextTick} from 'vue';
 import { useApiFetch } from "../useFetchResource";
 
 export default {

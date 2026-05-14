@@ -136,7 +136,21 @@ export default {
 }
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
+
+.btn-secondary {
+  .form-input-wrapper & {
+    min-width: 361px !important;
+    max-width: 570px !important;
+    width: 95% !important;
+    height: 81px !important;
+    margin: 0 auto;
+
+    display: flex !important;
+    align-items: center !important;
+    border-radius: 100px !important;
+  }
+}
 
 .btn-secondary {
   border-radius: 100px !important;

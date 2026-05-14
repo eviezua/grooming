@@ -137,6 +137,74 @@
         <source>Now you can easily find a professional who is right. just for you, and you no longer need to run around all the salons of the city. spending time searching and comparing. You just choose. comfortable, decent and experienced groomer — and that's it!</source>
         <target>Now you can easily find a professional who is right. just for you, and you no longer need to run around all the salons of the city. spending time searching and comparing. You just choose. comfortable, decent and experienced groomer — and that's it!</target>
       </trans-unit>
+      <trans-unit id="1S.CPcM" resname="Your email has already been verified.">
+        <source>Your email has already been verified.</source>
+        <target>Your email has already been verified.</target>
+      </trans-unit>
+      <trans-unit id="nNC78p1" resname="Welcome! Your email has been verified. You can now login.">
+        <source>Welcome! Your email has been verified. You can now login.</source>
+        <target>Welcome! Your email has been verified. You can now login.</target>
+      </trans-unit>
+      <trans-unit id=".DP3Mkb" resname="City">
+        <source>City</source>
+        <target>City</target>
+      </trans-unit>
+      <trans-unit id="UPGHjST" resname="District">
+        <source>District</source>
+        <target>District</target>
+      </trans-unit>
+      <trans-unit id="Vu_PIJV" resname="Address">
+        <source>Address</source>
+        <target>Address</target>
+      </trans-unit>
+      <trans-unit id="Y9zriAC" resname="Phone">
+        <source>Phone</source>
+        <target>Phone</target>
+      </trans-unit>
+      <trans-unit id="_hrBFRr" resname="Create password">
+        <source>Create password</source>
+        <target>Create password</target>
+      </trans-unit>
+      <trans-unit id="t0Bw_Q6" resname="Repeat password">
+        <source>Repeat password</source>
+        <target>Repeat password</target>
+      </trans-unit>
+      <trans-unit id="H.V6Kdf" resname="Next">
+        <source>Next</source>
+        <target>Next</target>
+      </trans-unit>
+      <trans-unit id="dpAPG.0" resname="Back">
+        <source>Back</source>
+        <target>Back</target>
+      </trans-unit>
+      <trans-unit id="lqpRUOv" resname="Passwords do not match!">
+        <source>Passwords do not match!</source>
+        <target>Passwords do not match!</target>
+      </trans-unit>
+      <trans-unit id="uBidF9u" resname="Success! Please check your email to verify your account.">
+        <source>Success! Please check your email to verify your account.</source>
+        <target>Success! Please check your email to verify your account.</target>
+      </trans-unit>
+      <trans-unit id="Fc4m1fn" resname="Successful login!">
+        <source>Successful login!</source>
+        <target>Successful login!</target>
+      </trans-unit>
+      <trans-unit id="9AqFPli" resname="Processing...">
+        <source>Processing...</source>
+        <target>Processing...</target>
+      </trans-unit>
+      <trans-unit id="nWMiwfT" resname="Login">
+        <source>Login</source>
+        <target>Login</target>
+      </trans-unit>
+      <trans-unit id=".EDfL_w" resname="Login to your account">
+        <source>Login to your account</source>
+        <target>Login to your account</target>
+      </trans-unit>
+      <trans-unit id="588_9PF" resname="Password">
+        <source>Password</source>
+        <target>Password</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>

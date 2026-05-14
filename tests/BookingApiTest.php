@@ -5,6 +5,7 @@ namespace App\Tests;
 use ApiPlatform\Symfony\Bundle\Test\ApiTestCase;
 use App\Entity\Bookings;
 use App\Entity\Masters;
+use App\Enum\Status;
 use App\Factory\BookingsFactory;
 use App\Factory\ClientsFactory;
 use App\Factory\MastersFactory;
@@ -148,7 +149,7 @@ class BookingApiTest extends ApiTestCase
 
     public function testGetCollectionWithMasterIdFilter(): void
     {
-        $master = MastersFactory::createOne();
+        $master = MastersFactory::createOne(['status' => Status::Approved]);
         $masterId = $master->getId();
 
         BookingsFactory::CreateMany(10, ['id_master' => $master]);
@@ -420,7 +421,7 @@ class BookingApiTest extends ApiTestCase
 
     private function prepareData(?Masters $existingMaster = null): array
     {
-        $master = $existingMaster ? (method_exists($existingMaster, '_real') ? $existingMaster->_real() : $existingMaster) : MastersFactory::createOne()->_real();
+        $master = $existingMaster ? (method_exists($existingMaster, '_real') ? $existingMaster->_real() : $existingMaster) : MastersFactory::createOne(['status' => Status::Approved])->_real();
         $masterId = $master->getId();
 
         $service = ServicesFactory::createMany(3);
@@ -451,7 +452,8 @@ class BookingApiTest extends ApiTestCase
                 ?? MastersFactory::createOne([
                     'email' => $userOrEmail,
                     'password' => 'password',
-                    'roles' => $isAdmin ? ['ROLE_ADMIN'] : ['ROLE_MASTER']
+                    'roles' => $isAdmin ? ['ROLE_ADMIN'] : ['ROLE_MASTER'],
+                    'status' => Status::Approved
                 ]);
             $master = ($proxy instanceof Proxy) ? $proxy->_real() : $proxy;
         }
