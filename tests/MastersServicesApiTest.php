@@ -5,6 +5,7 @@ namespace App\Tests;
 use ApiPlatform\Symfony\Bundle\Test\ApiTestCase;
 use App\Entity\Masters;
 use App\Entity\MastersServices;
+use App\Enum\Status;
 use App\Factory\MastersFactory;
 use App\Factory\MastersServicesFactory;
 use App\Factory\ServicesFactory;
@@ -40,7 +41,7 @@ class MastersServicesApiTest extends ApiTestCase
 
     public function testGetCollectionWhenMasterAuthorized(): void
     {
-        $master = MastersFactory::createOne();
+        $master = MastersFactory::createOne(['status' => Status::Approved]);
 
         MastersServicesFactory::createMany(90);
         MastersServicesFactory::createMany(10, ['master' => $master]);
@@ -77,7 +78,7 @@ class MastersServicesApiTest extends ApiTestCase
 
     public function testGetByMasterId(): void
     {
-        $master = MastersFactory::createOne();
+        $master = MastersFactory::createOne(['status' => Status::Approved]);
         $masterId = $master->getId();
 
         MastersServicesFactory::createMany(10, ['master' => $master]);
@@ -119,7 +120,7 @@ class MastersServicesApiTest extends ApiTestCase
 
     public function testPostMasterServiceByAdmin(): void
     {
-        $master = MastersFactory::createOne();
+        $master = MastersFactory::createOne(['status' => Status::Approved]);
         $masterId = $master->getId();
         $service = ServicesFactory::createOne();
         $serviceId = $service->getId();
@@ -148,8 +149,8 @@ class MastersServicesApiTest extends ApiTestCase
 
     public function testMasterCanCreateOnlyHisOwnService(): void
     {
-        $masterA = MastersFactory::createOne();
-        $masterB = MastersFactory::createOne();
+        $masterA = MastersFactory::createOne(['status' => Status::Approved]);
+        $masterB = MastersFactory::createOne(['status' => Status::Approved]);
         $service = ServicesFactory::createOne();
 
         $client = $this->createAuthenticatedClient($masterA);
@@ -176,7 +177,7 @@ class MastersServicesApiTest extends ApiTestCase
 
     public function testPatchMasterService(): void
     {
-        $master= MastersFactory::createOne();
+        $master= MastersFactory::createOne(['status' => Status::Approved]);
         $ms = MastersServicesFactory::createOne(['master' => $master]);
         $msId = $ms->getId();
 
@@ -200,7 +201,7 @@ class MastersServicesApiTest extends ApiTestCase
 
     public function testDeleteMasterService(): void
     {
-        $master= MastersFactory::createOne();
+        $master= MastersFactory::createOne(['status' => Status::Approved]);
         $ms = MastersServicesFactory::createOne(['master' => $master]);
         $msId = $ms->getId();
 
@@ -227,7 +228,8 @@ class MastersServicesApiTest extends ApiTestCase
                 ?? MastersFactory::createOne([
                     'email' => $userOrEmail,
                     'password' => 'password',
-                    'roles' => $isAdmin ? ['ROLE_ADMIN'] : ['ROLE_MASTER']
+                    'roles' => $isAdmin ? ['ROLE_ADMIN'] : ['ROLE_MASTER'],
+                    'status' => Status::Approved
                 ]);
             $master = ($proxy instanceof Proxy) ? $proxy->_real() : $proxy;
         }

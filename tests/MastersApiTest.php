@@ -4,6 +4,7 @@ namespace App\Tests;
 
 use ApiPlatform\Symfony\Bundle\Test\ApiTestCase;
 use App\Entity\Masters;
+use App\Enum\Status;
 use App\Enum\Weekdays;
 use App\Factory\BookingsFactory;
 use App\Factory\CitiesFactory;
@@ -36,6 +37,7 @@ class MastersApiTest extends ApiTestCase
         MastersFactory::createOne([
             'email' => 'master@groomify.com',
             'password' => $password,
+            'status' => Status::Approved
         ]);
 
         $response = $client->request('POST', '/api/v1/login_check', [
@@ -57,6 +59,50 @@ class MastersApiTest extends ApiTestCase
 
         $this->assertResponseIsSuccessful();
     }
+
+    public function testMasterInvalidStatusLogin(): void
+    {
+        $client = static::createClient();
+
+        $password = 'password123';
+        $master = MastersFactory::createOne([
+            'email' => 'master@groomify.com',
+            'password' => $password,
+            'status' => Status::Awaiting
+        ]);
+
+        $client->request('POST', '/api/v1/login_check', [
+            'json' => [
+                'email' => 'master@groomify.com',
+                'password' => $password,
+            ],
+        ]);
+
+        $this->assertResponseStatusCodeSame(401);
+
+        $master->setStatus(Status::Rejected);
+
+        $client->request('POST', '/api/v1/login_check', [
+            'json' => [
+                'email' => 'master@groomify.com',
+                'password' => $password,
+            ],
+        ]);
+
+        $this->assertResponseStatusCodeSame(401);
+
+        $master->setStatus(Status::Inactive);
+
+        $client->request('POST', '/api/v1/login_check', [
+            'json' => [
+                'email' => 'master@groomify.com',
+                'password' => $password,
+            ],
+        ]);
+
+        $this->assertResponseStatusCodeSame(401);
+    }
+
 
     public function testLoginWithInvalidCredentials(): void
     {
@@ -530,7 +576,7 @@ class MastersApiTest extends ApiTestCase
     public function testGetMeSuccess(): void
     {
         $email = 'me_test@groomify.com';
-        $master = MastersFactory::createOne(['email' => $email]);
+        $master = MastersFactory::createOne(['email' => $email, 'status' => Status::Approved]);
         $masterId = $master->getId();
 
         $client = $this->createAuthenticatedClient($master);
@@ -656,9 +702,51 @@ class MastersApiTest extends ApiTestCase
         ]);
     }
 
+    public function testPostInvalidInitialsMaster(): void
+    {
+        static::createClient()->request('POST', '/api/v1/masters', [
+            'json' => [
+                "name" => "Bot999",
+                "surname" => "Test000",
+            ],
+            'headers' => [
+                'Content-Type' => 'application/ld+json',
+            ]
+        ]);
+
+        $this->assertResponseStatusCodeSame(422);
+        $this->assertJsonContains([
+            'violations' => [
+                ['propertyPath' => 'name', 'message' => 'Invalid name'],
+                ['propertyPath' => 'surname', 'message' => 'Invalid surname']
+            ],
+        ]);
+    }
+
+    public function testPostBotMaster(): void
+    {
+        static::createClient()->request('POST', '/api/v1/masters', [
+            'json' => [
+               "honeyPot" => "I am bot",
+                "name" => "Post",
+                "surname" => "Test",
+                "address" => 'Test address',
+                "password" => "password",
+                "email" => "test@test.com",
+                "phone" => "+12523957776",
+                "photo" => "photo.jpg",
+            ],
+            'headers' => [
+                'Content-Type' => 'application/ld+json',
+            ]
+        ]);
+
+        $this->assertResponseStatusCodeSame(400);
+    }
+
     public function testPutMaster(): void
     {
-        $master = MastersFactory::createOne();
+        $master = MastersFactory::createOne(['status' => Status::Approved]);
         $masterId = $master->getId();
         $city = CitiesFactory::createOne();
         $cityId = $city->getId();
@@ -707,7 +795,7 @@ class MastersApiTest extends ApiTestCase
 
     public function testPatchMaster(): void
     {
-        $master = MastersFactory::createOne();
+        $master = MastersFactory::createOne(['status' => Status::Approved]);
         $masterId = $master->getId();
 
         $client = $this->createAuthenticatedClient($master);
@@ -737,8 +825,8 @@ class MastersApiTest extends ApiTestCase
 
     public function testMasterCannotEditAnotherMasterProfile(): void
     {
-        $owner = MastersFactory::createOne();
-        $intruder = MastersFactory::createOne();
+        $owner = MastersFactory::createOne(['status' => Status::Approved]);
+        $intruder = MastersFactory::createOne(['status' => Status::Approved]);
 
         $client = $this->createAuthenticatedClient($intruder);
 
@@ -760,14 +848,14 @@ class MastersApiTest extends ApiTestCase
 
     public function testAdminCanEditAnyMasterProfile(): void
     {
-        $master = MastersFactory::createOne();
+        $master = MastersFactory::createOne(['status' => Status::Approved]);
         $masterId = $master->getId();
 
         $adminClient = $this->createAuthenticatedClient('admin@test.com', true);
 
         $adminClient->request('PATCH', '/api/v1/masters/' . $masterId, [
             'json' => [
-                "name" => "Admin Overwrite",
+                "name" => "Adminoverwrite",
                 "surname" => "Power",
             ],
             'headers' => [
@@ -778,17 +866,17 @@ class MastersApiTest extends ApiTestCase
         $this->assertResponseIsSuccessful();
 
         $this->assertJsonContains([
-            "name" => "Admin Overwrite",
+            "name" => "Adminoverwrite",
             "surname" => "Power",
         ]);
 
         $updatedMaster = MastersFactory::repository()->find($masterId);
-        $this->assertSame('Admin Overwrite', $updatedMaster->getName());
+        $this->assertSame('Adminoverwrite', $updatedMaster->getName());
     }
 
     public function testUploadMasterPhoto(): void
     {
-        $master = MastersFactory::createOne();
+        $master = MastersFactory::createOne(['status' => Status::Approved]);
         $client = $this->createAuthenticatedClient($master);
 
         $tempFilePath = tempnam(sys_get_temp_dir(), 'test_photo') . '.png';
@@ -825,8 +913,8 @@ class MastersApiTest extends ApiTestCase
 
     public function testUploadPhotoAnotherMasterForbidden(): void
     {
-        $owner = MastersFactory::createOne();
-        $intruder = MastersFactory::createOne();
+        $owner = MastersFactory::createOne(['status' => Status::Approved]);
+        $intruder = MastersFactory::createOne(['status' => Status::Approved]);
         $client = $this->createAuthenticatedClient($intruder);
 
         $tempFilePath = tempnam(sys_get_temp_dir(), 'test_photo') . '.png';
@@ -852,7 +940,7 @@ class MastersApiTest extends ApiTestCase
 
     public function testDeleteMasterPhoto(): void
     {
-        $master = MastersFactory::createOne(['photo' => 'old_photo.jpg']);
+        $master = MastersFactory::createOne(['photo' => 'old_photo.jpg', 'status' => Status::Approved]);
         $client = $this->createAuthenticatedClient($master);
 
         $client->request('DELETE', '/api/v1/v1/masters/' . $master->getId() . '/photo');
@@ -869,7 +957,7 @@ class MastersApiTest extends ApiTestCase
 
     public function testDeletePhotoUnauthorized(): void
     {
-        $master = MastersFactory::createOne(['photo' => 'test.jpg']);
+        $master = MastersFactory::createOne(['photo' => 'test.jpg', 'status' => Status::Approved]);
         $client = static::createClient();
 
         $client->request('DELETE', '/api/v1/v1/masters/' . $master->getId() . '/photo');
@@ -904,7 +992,8 @@ class MastersApiTest extends ApiTestCase
                 ?? MastersFactory::createOne([
                     'email' => $userOrEmail,
                     'password' => 'password',
-                    'roles' => $isAdmin ? ['ROLE_ADMIN'] : ['ROLE_MASTER']
+                    'roles' => $isAdmin ? ['ROLE_ADMIN'] : ['ROLE_MASTER'],
+                    'status' => Status::Approved
                 ]);
             $master = ($proxy instanceof Proxy) ? $proxy->_real() : $proxy;
         }

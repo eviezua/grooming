@@ -5,6 +5,7 @@ namespace App\Tests;
 use ApiPlatform\Symfony\Bundle\Test\ApiTestCase;
 use App\Entity\Masters;
 use App\Entity\Schedule;
+use App\Enum\Status;
 use App\Enum\Weekdays;
 use App\Factory\MastersFactory;
 use App\Factory\ScheduleFactory;
@@ -42,7 +43,7 @@ class ScheduleApiTest extends ApiTestCase
 
     public function testGetCollectionWithMasterIdFilter(): void
     {
-        $master = MastersFactory::createOne();
+        $master = MastersFactory::createOne(['status' => Status::Approved]);
         $masterId = $master->getId();
 
         ScheduleFactory::CreateMany(10, ['master' => $master]);
@@ -106,7 +107,7 @@ class ScheduleApiTest extends ApiTestCase
     {
         $today = new DateTime('now', new DateTimeZone('UTC'));
         $dayOfWeek = Weekdays::from($today->format('l'));
-        $master = MastersFactory::createOne();
+        $master = MastersFactory::createOne(['status' => Status::Approved]);
         $masterId = $master->getId();
 
         $client = $this->createAuthenticatedClient($master);
@@ -137,7 +138,7 @@ class ScheduleApiTest extends ApiTestCase
 
     public function testPostInvalidSchedule(): void
     {
-        $master = MastersFactory::createOne();
+        $master = MastersFactory::createOne(['status' => Status::Approved]);
         $masterId = $master->getId();
         $client = $this->createAuthenticatedClient($master);
 
@@ -167,7 +168,7 @@ class ScheduleApiTest extends ApiTestCase
     {
         $today = new DateTime('now', new DateTimeZone('UTC'));
         $dayOfWeek = $today->format('l');
-        $master = MastersFactory::createOne();
+        $master = MastersFactory::createOne(['status' => Status::Approved]);
         $masterId = $master->getId();
         $schedule = ScheduleFactory::createOne(['master' => $master]);
         $scheduleId = $schedule->getId();
@@ -202,7 +203,7 @@ class ScheduleApiTest extends ApiTestCase
 
     public function testPatchSchedule(): void
     {
-        $master = MastersFactory::createOne();
+        $master = MastersFactory::createOne(['status' => Status::Approved]);
         $schedule = ScheduleFactory::createOne(['master' => $master]);
         $scheduleId = $schedule->getId();
 
@@ -228,7 +229,7 @@ class ScheduleApiTest extends ApiTestCase
 
     public function testDeleteSchedule(): void
     {
-        $master = MastersFactory::createOne();
+        $master = MastersFactory::createOne(['status' => Status::Approved]);
         $schedule = ScheduleFactory::createOne(['master' => $master]);
         $scheduleId = $schedule->getId();
 
@@ -255,7 +256,8 @@ class ScheduleApiTest extends ApiTestCase
                 ?? MastersFactory::createOne([
                     'email' => $userOrEmail,
                     'password' => 'password',
-                    'roles' => $isAdmin ? ['ROLE_ADMIN'] : ['ROLE_MASTER']
+                    'roles' => $isAdmin ? ['ROLE_ADMIN'] : ['ROLE_MASTER'],
+                    'status' => Status::Approved
                 ]);
             $master = ($proxy instanceof Proxy) ? $proxy->_real() : $proxy;
         }

@@ -39,7 +39,7 @@ class BookingNotificationTest extends WebTestCase
 
         static::getContainer()->set(TelegramService::class, $telegramMock);
 
-        $master = MastersFactory::createOne(['telegramChatId' => '123456789'])->_real();
+        $master = MastersFactory::createOne(['telegramChatId' => '123456789', 'status' => Status::Approved])->_real();
         $data = $this->prepareData($master);
 
         $clientEntity = static::getContainer()->get('doctrine')->getRepository(Clients::class)->find($data['clientId']);
@@ -81,7 +81,8 @@ class BookingNotificationTest extends WebTestCase
 
         $master = MastersFactory::createOne([
             'telegramChatId' => '123456789',
-            'email' => 'auth-master@test.com'
+            'email' => 'auth-master@test.com',
+            'status' => Status::Approved
         ]);
 
         $myClient = ClientsFactory::createOne(['telegramChatId' => '987654321']);
@@ -175,7 +176,7 @@ class BookingNotificationTest extends WebTestCase
         $booking = BookingsFactory::createOne([
             'status' => Status::Approved,
             'idClient' => ClientsFactory::createOne(['telegramChatId' => '987654321']),
-            'idMaster' => MastersFactory::createOne(['telegramChatId' => '123456789']),
+            'idMaster' => MastersFactory::createOne(['telegramChatId' => '123456789', 'status' => Status::Approved]),
         ])->_real();
 
         $handler = static::getContainer()->get(DelayedReminderHandler::class);
@@ -190,7 +191,7 @@ class BookingNotificationTest extends WebTestCase
 
     private function prepareData(?Masters $existingMaster = null): array
     {
-        $master = $existingMaster ? (method_exists($existingMaster, '_real') ? $existingMaster->_real() : $existingMaster) : MastersFactory::createOne()->_real();
+        $master = $existingMaster ? (method_exists($existingMaster, '_real') ? $existingMaster->_real() : $existingMaster) : MastersFactory::createOne(['status' => Status::Approved])->_real();
         $masterId = $master->getId();
 
         $service = ServicesFactory::createMany(3);
