@@ -14,10 +14,11 @@ security:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
             security: false
         main:
+            user_checker: App\Security\UserChecker
             stateless: false
             lazy: false
-            provider: app_master_provider # Використовуємо реальних майстрів
-            jwt: ~ # Дозволяємо авторизацію через JWT (який прийде в куках)
+            provider: app_master_provider
+            jwt: ~
             json_login:
                 check_path: /api/v1/login_check
                 username_path: email
