@@ -9,6 +9,7 @@ use App\Entity\Masters;
 use App\Entity\Pets;
 use App\Service\EntityLoaderHelper;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfonycasts\MicroMapper\AsMapper;
 use Symfonycasts\MicroMapper\MapperInterface;
@@ -37,8 +38,12 @@ class MastersApiToEntityMapper implements MapperInterface
         assert($from instanceof MastersApi);
         assert($to instanceof Masters);
 
-        $to->setName($from->name);
-        $to->setSurname($from->surname);
+        if ($from->honeyPot !== null && $from->honeyPot !== '') {
+            throw new BadRequestHttpException('Bot detected.');
+        }
+
+        $to->setName(mb_convert_case($from->name, MB_CASE_TITLE, "UTF-8"));
+        $to->setSurname(mb_convert_case($from->surname, MB_CASE_TITLE, "UTF-8"));
 
         $to->setIdCity($this->loader->load(Cities::class, $from->cityId, 'Cities'));
         $district = $from->districtId ? $this->loader->load(Districts::class, $from->districtId, 'Districts') : null;

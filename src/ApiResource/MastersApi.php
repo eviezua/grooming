@@ -89,12 +89,23 @@ class MastersApi
     #[Groups(["master:read"])]
     public ?int $id = null;
 
+    #[Groups(["master:write"])]
+    public ?string $honeyPot = null;
+
     #[Groups(["master:read", "master:write"])]
     #[Assert\NotBlank(message: "Name can't be empty")]
+    #[Assert\Regex(
+        pattern: "/^[A-ZА-ЯІЄЇҐ][a-zа-яієїґ' -]+$/u",
+        message: "Invalid name"
+    )]
     public ?string $name = null;
 
     #[Groups(["master:read", "master:write"])]
     #[Assert\NotBlank(message: "Surname can't be empty")]
+    #[Assert\Regex(
+        pattern: "/^[A-ZА-ЯІЄЇҐ][a-zа-яієїґ' -]+$/u",
+        message: "Invalid surname"
+    )]
     public ?string $surname = null;
 
     #[Groups(["master:read"])]
@@ -130,7 +141,7 @@ class MastersApi
     #[Assert\When(
         expression: "this.oldPassword !== null",
         constraints: [
-            new SecurityAssert\UserPassword(message: "Поточний пароль введено неправильно."),
+            new SecurityAssert\UserPassword(message: "Invalid current password."),
         ]
     )]
     public ?string $oldPassword = null;
