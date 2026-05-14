@@ -9,21 +9,19 @@ export function useSubmit() {
 
         try {
             for (const field of required) {
-                const value = payload[field];
-                if (
-                    value === undefined ||
-                    value === null ||
-                    (typeof value === 'string' && value.trim() === '') ||
-                    (Array.isArray(value) && value.length === 0)
-                ) {
+                if (!payload[field] || (typeof payload[field] === 'string' && !payload[field].trim())) {
                     toast.error(`Заповніть поле: ${field}`);
+                    loading.value = false;
                     return null;
                 }
             }
 
             const res = await fetch(url, {
                 method: "POST",
-                headers: { "Content-Type": "application/json" },
+                headers: {
+                    "Content-Type": "application/json",
+                    "Accept": "application/ld+json"
+                },
                 body: JSON.stringify(payload),
                 credentials: 'include'
             });
@@ -31,18 +29,19 @@ export function useSubmit() {
             const contentType = res.headers.get("content-type");
             let data = {};
 
-            if (contentType && contentType.includes("application/json")) {
+            if (contentType && contentType.includes("json")) {
                 data = await res.json();
-            } else {
-                const text = await res.text();
-                if (res.ok) data = { success: true };
             }
 
             if (!res.ok) {
-                if (data.errors && typeof data.errors === 'object') {
-                    Object.values(data.errors).flat().forEach(msg => toast.error(msg));
-                } else {
-                    toast.error(data.error || "Помилка сервера");
+                if (data.violations && Array.isArray(data.violations)) {
+                    data.violations.forEach(v => toast.error(v.message));
+                }
+                else if (data.detail) {
+                    toast.error(data.detail);
+                }
+                else {
+                    toast.error("Помилка сервера");
                 }
                 return null;
             }
