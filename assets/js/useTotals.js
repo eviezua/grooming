@@ -2,13 +2,14 @@ import { computed } from "vue";
 
 export function useTotals(selectedServices, selectedBreed) {
     const totals = computed(() => {
+        const services = selectedServices.value;
         let base = 0;
         let master = 0;
         let minutes = 0;
 
-        for (const s of selectedServices.value) {
+        for (const s of services) {
             base += s.cost || 0;
-            master += s.master_price ?? s.cost ?? 0;
+            master += Number(s.master_price ?? s.cost ?? 0);
 
             if (s.default_time) {
                 const [h, m] = s.default_time.split(':').map(Number);
@@ -28,10 +29,10 @@ export function useTotals(selectedServices, selectedBreed) {
         return { totalCost, totalMasterCost, minutes, formattedTime };
     });
 
-    const totalCost = computed(() => totals.value.totalCost);
-    const totalMasterCost = computed(() => totals.value.totalMasterCost);
-    const totalMinutes = computed(() => totals.value.minutes);
-    const totalTime = computed(() => totals.value.formattedTime);
-
-    return { totals, totalCost, totalMasterCost, totalMinutes, totalTime };
+    return {
+        totalCost: computed(() => totals.value.totalCost),
+        totalMasterCost: computed(() => totals.value.totalMasterCost),
+        totalMinutes: computed(() => totals.value.minutes),
+        totalTime: computed(() => totals.value.formattedTime)
+    };
 }
