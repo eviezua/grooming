@@ -35,12 +35,16 @@ import MasterSchedule from "./js/components/MasterSchedule.vue";
 import { Cropper } from 'vue-advanced-cropper';
 import 'vue-advanced-cropper/dist/style.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
+import OtherFiltersForm from "./js/components/OtherFiltersForm.vue";
+import MercureListener from "./js/components/MercureListener.vue";
 
 const currentLang = document.documentElement.lang || 'ua'
 
 function t(key) {
     return translations[currentLang]?.[key] ?? key
 }
+
+window.$t = t;
 
 const app = createApp({
     data() {
@@ -74,6 +78,8 @@ app.component('GroomerCatalog', GroomerCatalog);
 app.component('JoinForm', JoinForm);
 app.component('BookingCalendarVue', BookingCalendarVue);
 app.component('BookingFormVue', BookingFormVue);
+app.component('OtherFiltersForm', OtherFiltersForm);
+app.component('MercureListener', MercureListener);
 app.component('MasterProfile', MasterProfile);
 app.component('EditPasswordModal', EditPasswordModal);
 app.component('PetsSpecializationModal', PetsSpecializationModal);
@@ -89,3 +95,16 @@ app.component('VueDatePicker', VueDatePicker);
 app.component('VueMultiselect', VueMultiselect);
 app.component('Cropper', Cropper);
 app.mount('#app-vue');
+
+function initAdminMercure() {
+    const el = document.getElementById('mercure-root');
+
+    if (el && el.dataset.topic) {
+        console.log('✅ Found topic, mounting Vue:', el.dataset.topic);
+        const app = createApp(MercureListener, { topic: el.dataset.topic });
+        app.mount(el);
+    }
+}
+
+document.addEventListener('DOMContentLoaded', initAdminMercure);
+document.addEventListener('ea.page-loaded', initAdminMercure);
