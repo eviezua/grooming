@@ -72,6 +72,7 @@ use Symfony\Component\Security\Core\Validator\Constraints as SecurityAssert;
     ],
     normalizationContext: ['groups' => ['master:read'], 'enable_max_depth' => true],
     denormalizationContext: ['groups' => ['master:write']],
+    mercure: ['private' => false],
     paginationItemsPerPage: 6,
     provider: EntityToDtoStateProvider::class,
     processor: EntityClassDtoStateProcessor::class,
