@@ -217,4 +217,9 @@ class Bookings
 
         return $this;
     }
+
+    public function __toString(): string
+    {
+        return $this->date->format('d/m/y') . ' ' . $this->time_start->format('H:i') . ' - ' . $this->time_stop->format('H:i');
+    }
 }
