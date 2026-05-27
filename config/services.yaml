@@ -22,6 +22,10 @@ services:
 
     Lexik\Bundle\JWTAuthenticationBundle\Security\Http\Cookie\JWTCookieProvider: '@lexik_jwt_authentication.cookie_provider.jwt'
 
+    App\EventListener\MercureListener:
+        autowire: true
+        autoconfigure: true
+
     # default configuration for services in *this* file
     _defaults:
         autowire: true      # Automatically injects dependencies in your services.
