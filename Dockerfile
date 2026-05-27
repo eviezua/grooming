@@ -1,7 +1,7 @@
 #syntax=docker/dockerfile:1.4
 
 # Versions
-FROM dunglas/frankenphp:latest-alpine AS frankenphp_upstream
+FROM dunglas/frankenphp:1.4-php8.3-alpine AS frankenphp_upstream
 FROM composer/composer:2-bin AS composer_upstream
 
 
@@ -23,6 +23,8 @@ RUN apk add --no-cache \
 		gettext \
 		git \
 	;
+
+RUN apk add --no-cache ca-certificates
 
 RUN apk update && \
     apk add --no-cache --virtual dev-deps git autoconf gcc g++ make && \
