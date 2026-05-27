@@ -124,7 +124,13 @@ const submitForm = async () => {
       onSuccess: (data) => {
         if (data.token) {
           localStorage.setItem('jwt_token', data.token);
-          window.location.href = '/';
+          const payload = JSON.parse(atob(data.token.split('.')[1]));
+
+          if (payload.roles && payload.roles.includes('ROLE_ADMIN')) {
+            window.location.href = '/admin';
+          } else {
+            window.location.href = '/';
+          }
         }
       }
     });
