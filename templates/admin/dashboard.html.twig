@@ -1,0 +1,50 @@
+{% extends '@EasyAdmin/page/content.html.twig' %}
+
+{% block content_title %}Dashboard{% endblock %}
+
+{% block main %}
+    <div class="row">
+        <div class="col-md-12">
+            <div class="box box-primary">
+                <div class="box-header with-border">
+                    <h3 class="box-title">Recent Reviews</h3>
+                </div>
+                <div class="box-body">
+                    {% if latest_reviews is not empty %}
+                        <table class="table table-hover">
+                            <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Rating</th>
+                                <th>Master</th>
+                                <th>Comment</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% for review in latest_reviews %}
+                                <tr>
+                                    <td>{{ review.id }}</td>
+                                    <td>
+                                        <span class="badge badge-primary">{{ review.rating }} ★</span>
+                                    </td>
+                                    <td>{{ review.master }}</td>
+                                    <td>
+                                        {{ review.comment|length > 50 ? review.comment|slice(0, 50) ~ '...' : review.comment }}
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    {% else %}
+                        <p class="text-muted">No reviews yet.</p>
+                    {% endif %}
+                </div>
+                <div class="box-footer">
+                    <a href="{{ ea_url().setController('App\\Controller\\Admin\\ReviewCrudController').setAction('index') }}" class="btn btn-sm btn-default">
+                        View All Reviews
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

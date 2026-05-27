@@ -1,0 +1,15 @@
+{% extends '@EasyAdmin/crud/index.html.twig' %}
+
+{% block main %}
+    {{ parent() }}
+
+    {% set topic = app.request.query.get('mercure_topic') %}
+
+    {% if topic %}
+        <div id="mercure-root" data-topic="{{ topic }}"></div>
+    {% endif %}
+{% endblock %}
+{% block body_javascript %}
+    {{ parent() }}
+    {{ encore_entry_script_tags('app') }}
+{% endblock %}
