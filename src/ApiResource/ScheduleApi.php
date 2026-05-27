@@ -33,6 +33,7 @@ use Symfony\Component\Validator\Constraints as Assert;
     ],
     normalizationContext: ['groups' => ['schedule:read']],
     denormalizationContext: ['groups' => ['schedule:write']],
+    mercure: ['private' => false],
     provider: EntityToDtoStateProvider::class,
     processor: EntityClassDtoStateProcessor::class,
     stateOptions: new Options(entityClass: Schedule::class)

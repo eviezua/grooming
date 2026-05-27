@@ -4,7 +4,15 @@ security:
         Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface: 'auto'
     # https://symfony.com/doc/current/security.html#loading-the-user-the-user-provider
     providers:
-        users_in_memory: { memory: null }
+        chain_provider:
+            chain:
+                providers: [ 'users_in_memory', 'app_master_provider' ]
+        users_in_memory:
+            memory:
+                users:
+                    admin@groomify.com:
+                        password: '%env(ADMIN_PASSWORD_HASH)%'
+                        roles: [ 'ROLE_ADMIN' ]
         app_master_provider:
             entity:
                 class: App\Entity\Masters
@@ -17,7 +25,7 @@ security:
             user_checker: App\Security\UserChecker
             stateless: false
             lazy: false
-            provider: app_master_provider
+            provider: chain_provider
             jwt: ~
             json_login:
                 check_path: /api/v1/login_check
@@ -40,9 +48,11 @@ security:
     # Easy way to control access for large sections of your site
     # Note: Only the *first* access control that matches will be used
     access_control:
-        # - { path: ^/admin, roles: ROLE_ADMIN }
         - { path: ^/api/v1/login_check, roles: PUBLIC_ACCESS }
         - { path: ^/profile, roles: ROLE_MASTER }
+        - { path: ^/admin, roles: ROLE_ADMIN }
+       # - { path: ^/, roles: ROLE_GUEST }
+
 when@test:
     security:
         password_hashers:

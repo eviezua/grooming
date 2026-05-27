@@ -45,6 +45,7 @@ use Symfony\Component\Validator\Constraints as Assert;
     ],
     normalizationContext: ['groups' => ['booking:read'], 'enable_max_depth' => true],
     denormalizationContext: ['groups' => ['booking:write']],
+    mercure: ['private' => false],
     provider: EntityToDtoStateProvider::class,
     processor: EntityClassDtoStateProcessor::class,
     stateOptions: new Options(entityClass: Bookings::class),

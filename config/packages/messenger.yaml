@@ -55,6 +55,7 @@ framework:
 
             'Symfony\Component\Mailer\Messenger\SendEmailMessage': sync
             'Symfony\Component\Notifier\Message\ChatMessage': sync
+            'Symfony\Component\Mercure\Update': sync
 when@test:
    framework:
        messenger:
@@ -69,3 +70,4 @@ when@test:
                'App\Message\DelayedReminder': sync
                'Symfony\Component\Mailer\Messenger\SendEmailMessage': sync
                'Symfony\Component\Notifier\Message\ChatMessage': sync
+               'Symfony\Component\Mercure\Update': sync

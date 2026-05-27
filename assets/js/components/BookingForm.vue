@@ -111,6 +111,7 @@
 <script>
 import { ref, watch, defineExpose, nextTick, onMounted} from "vue";
 import BookingCalendar from "./BookingCalendar.vue";
+import { useMercure } from '../useMercure';
 import { useApiFetch } from "../useFetchResource";
 import { useWizardComplete } from "../useWizardComplete";
 import { useSubmit } from "../usePostResource";
@@ -169,18 +170,30 @@ export default {
         return;
       }
 
-      await Promise.all(
-          baseServices.map(async service => {
-            const priceData = await fetchData(
-                '/api/v1/masters_services',
-                { page: 1, 'service.id': service.id, 'master.id': props.groomer.id },
-                d => d.member?.[0] || null
-            );
-            service.master_price = priceData?.price ?? service.cost;
-          })
+      serviceOptions.value = baseServices;
+      await updatePricesForServices(serviceOptions.value);
+    };
+    const updatePricesForServices = async (servicesArray) => {
+      if (!servicesArray || servicesArray.length === 0) return;
+
+      const ids = servicesArray.map(s => s.id);
+      const data = await fetchData(
+          '/api/v1/masters_services',
+          { 'service.id[]': ids, 'master.id': props.groomer.id },
+          d => d.member || []
       );
 
-      serviceOptions.value = baseServices;
+      if (data && data.length) {
+        servicesArray.forEach(service => {
+          const priceEntry = data.find(item => Number(item.serviceId) === Number(service.id));
+
+          if (priceEntry) {
+            service.master_price = priceEntry.price;
+          } else {
+            service.master_price = service.cost;
+          }
+        });
+      }
     };
 
     const onSearchService = useDebounce((search) => {
@@ -325,6 +338,44 @@ export default {
         client.value.name = '';
         client.value.surname = '';
         client.value.phone = '';
+      }
+    });
+
+    useMercure({
+      topic: '/api/v1/schedules',
+      onMessage: async (data) => {
+        console.log('⚡ [Vue Modal] Отримано сигнал від Mercure про зміну розкладу:', data);
+
+        if (props.groomer?.id) {
+          await fetchSchedules();
+          if (selectedDate.value) {
+            await fetchBookings(selectedDate.value);
+          }
+        }
+      }
+    });
+
+    useMercure({
+      topic: '/api/v1/bookings',
+      onMessage: async (data) => {
+        console.log('📅 [Mercure] Зміни в бронюваннях:', data);
+        if (selectedDate.value) await fetchBookings(selectedDate.value);
+      }
+    });
+
+    useMercure({
+      topic: '/api/v1/masters_services',
+      onMessage: async (data) => {
+        console.log('💰 [Mercure] Оновлення прайсу:', data);
+
+        await fetchServices();
+
+        if (selectedServices.value.length > 0) {
+          const availableIds = serviceOptions.value.map(s => s.id);
+          selectedServices.value = selectedServices.value.filter(s => availableIds.includes(s.id));
+
+          await updatePricesForServices(selectedServices.value);
+        }
       }
     });
 

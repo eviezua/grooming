@@ -30,6 +30,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
     ],
     normalizationContext: ['groups' => ['ms:read']],
     denormalizationContext: ['groups' => ['ms:write']],
+    mercure: ['private' => false],
     provider: EntityToDtoStateProvider::class,
     processor: EntityClassDtoStateProcessor::class,
     stateOptions: new Options(entityClass: MastersServices::class)

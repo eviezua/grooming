@@ -140,4 +140,9 @@ class Services
             $this->mastersServices->toArray()
         );
     }
+
+    public function __toString(): string
+    {
+        return $this->name . ' ' . $this->default_time->format('H:i:s');
+    }
 }

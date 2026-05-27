@@ -215,4 +215,9 @@ class Pets
             $this->removeMaster($master);
         }
     }
+
+    public function __toString(): string
+    {
+        return $this->breed . ' ' . $this->spice->value;
+    }
 }
