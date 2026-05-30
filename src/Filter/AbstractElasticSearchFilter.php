@@ -49,13 +49,15 @@ abstract class AbstractElasticSearchFilter extends AbstractFilter
                 'multi_match' => [
                     'query' => $value,
                     'fields' => $this->fields,
+                    'fuzziness' => 'AUTO',
+                    'operator' => 'or'
                 ],
             ],
         ];
 
         $result = $this->client->search([
             'index' => $this->indexName,
-            'size' => 1000,
+            'size' => 200,
             'body' => $body,
         ]);
 
@@ -63,9 +65,22 @@ abstract class AbstractElasticSearchFilter extends AbstractFilter
 
         if (count($ids) > 0) {
             $alias = $queryBuilder->getRootAliases()[0];
+
             $queryBuilder
                 ->andWhere("$alias.id IN (:elastic_ids)")
                 ->setParameter('elastic_ids', $ids);
+
+            $orderByCase = 'CASE ';
+            foreach ($ids as $index => $id) {
+                $orderByCase .= "WHEN $alias.id = :id_$index THEN $index ";
+                $queryBuilder->setParameter("id_$index", $id);
+            }
+            $orderByCase .= 'ELSE 9999 END';
+
+            $queryBuilder
+                ->addSelect("($orderByCase) AS HIDDEN elastic_sort")
+                ->orderBy('elastic_sort', 'ASC');
+
         } else {
             $queryBuilder->andWhere('1 = 0');
         }
