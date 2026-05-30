@@ -191,11 +191,6 @@ class InitElasticCommand extends Command
                 'analyzer' => 'ngram_analyzer',
                 'search_analyzer' => 'ngram_search',
             ],
-            'surname' => [
-                'type' => 'text',
-                'analyzer' => 'ngram_analyzer',
-                'search_analyzer' => 'ngram_search',
-            ],
         ], $output);
 
         $services = $this->entityManager->getRepository(Services::class)->findAll();
