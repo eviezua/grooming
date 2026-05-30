@@ -33,6 +33,7 @@ services:
       - ./public:/app/public
       - ./webpack.config.js:/app/webpack.config.js
       - ./package.json:/app/package.json
+      - ./var/log:/app/var/log:rw
       - ${SSL_CERT_PATH}:/app/certs/cert.pem:ro
       - ${SSL_KEY_PATH}:/app/certs/key.pem:ro
     ports:
@@ -71,11 +72,15 @@ services:
       - discovery.type=single-node
       - xpack.security.enabled=false
       - bootstrap.memory_lock=true
-      - ES_JAVA_OPTS=-Xms512m -Xmx512m
+      - ES_JAVA_OPTS=-Xms1g -Xmx1g
     ulimits:
       memlock:
         soft: -1
         hard: -1
+    deploy:
+      resources:
+        limits:
+          memory: 1.5g
     volumes:
       - elasticsearch_data:/usr/share/elasticsearch/data
     ports:
