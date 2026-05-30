@@ -30,8 +30,11 @@ class MastersCrudController extends AbstractCrudController
             TextField::new('surname', 'Surname'),
             EmailField::new('email', 'Email'),
             TelephoneField::new('phone', 'Phone')->setRequired(false),
+            TextField::new('address', 'Address'),
             AssociationField::new('id_pets', 'Pets')->onlyOnForms(),
             AssociationField::new('bookings', 'Bookings')->onlyOnForms(),
+            TextField::new('password', 'Password'),
+            AssociationField::new('id_city')->onlyOnForms(),
             ChoiceField::new('status')
                 ->setChoices([
                     'Awaiting' => Status::Awaiting,
