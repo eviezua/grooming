@@ -1,7 +1,7 @@
 <template>
   <div class="container py-5 mt-5">
     <div class="section-title text-start mb-5">
-      <h1>Мій <span>Розклад роботи</span></h1>
+      <h1>{{ $t('My') }} <span>{{ $t('Working schedule') }}</span></h1>
     </div>
 
     <div v-if="loading && !schedule.length" class="text-center py-5">
@@ -15,8 +15,8 @@
           <h2 class="inter-20 mb-0" :class="{'text-muted': !getScheduleForDay(day.en)}">
             {{ day.ua }}
           </h2>
-          <span v-if="getScheduleForDay(day.en)" class="badge bg-success-light text-success px-3 py-1 inter-12">Робочий</span>
-          <span v-else class="badge bg-light text-muted px-3 py-1 inter-12">Вихідний</span>
+          <span v-if="getScheduleForDay(day.en)" class="badge bg-success-light text-success px-3 py-1 inter-12">{{ $t('Working') }}</span>
+          <span v-else class="badge bg-light text-muted px-3 py-1 inter-12">{{ $t('Day off') }}</span>
         </div>
 
         <div class="border-top pt-4">
@@ -29,8 +29,8 @@
               </div>
 
               <div class="d-flex gap-3 mt-3">
-                <button @click="startEdit(getScheduleForDay(day.en))" class="btn-action text-orange" title="Змінити час">✎</button>
-                <button @click="deleteSchedule(getScheduleForDay(day.en).id)" class="btn-action text-danger" title="Зробити вихідним">✕</button>
+                <button @click="startEdit(getScheduleForDay(day.en))" class="btn-action text-orange" :title="$t('Change time')">✎</button>
+                <button @click="deleteSchedule(getScheduleForDay(day.en).id)" class="btn-action text-danger" :title="$t('Make day off')">✕</button>
               </div>
             </div>
 
@@ -45,7 +45,7 @@
                         class="btn-confirm flex-grow-1"
                         :disabled="updatingId === getScheduleForDay(day.en).id">
                   <span v-if="updatingId === getScheduleForDay(day.en).id" class="spinner-border spinner-border-sm"></span>
-                  <span v-else>Зберегти ✓</span>
+                  <span v-else>{{ $t('Save') }} ✓</span>
                 </button>
                 <button @click="editingId = null" class="btn-action text-secondary">✕</button>
               </div>
@@ -55,7 +55,7 @@
           <template v-else>
             <div v-if="addingDay !== day.en" class="text-center py-3">
               <button @click="startAdd(day.en)" class="orange-text border-0 bg-transparent inter-16 font-weight-bold">
-                + Додати робочі години
+                + {{ $t('Add working hours') }}
               </button>
             </div>
 
@@ -66,7 +66,7 @@
               </div>
               <div class="d-flex gap-2">
                 <button @click="createSchedule(day.en)" class="btn-confirm flex-grow-1" :disabled="updating === 'new'">
-                  Додати ✓
+                  {{ $t('Add') }} ✓
                 </button>
                 <button @click="addingDay = null" class="btn-action text-secondary">✕</button>
               </div>

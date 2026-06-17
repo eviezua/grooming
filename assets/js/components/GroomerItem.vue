@@ -10,7 +10,7 @@
     <h2 class="mb-2 mt-4">{{ groomer.name }} {{ groomer.surname }}</h2>
     <h3 class="gray-text">{{ cityName }}, {{ districtName }}, {{ groomer.address }}</h3>
     <h3 class="my-4" v-for="s in filteredServices" :key="s.id">{{ s.serviceName }} — {{ s.price }} грн</h3>
-    <a class="mb-3" href="#"  @click.prevent="$emit('open-booking', groomer)">Обрати час <img src="/uploads/icons/arrow_black.png"></a>
+    <a class="mb-3" href="#"  @click.prevent="$emit('open-booking', groomer)">{{ $t('Select time') }} <img src="/uploads/icons/arrow_black.png"></a>
   </div>
 </template>
 

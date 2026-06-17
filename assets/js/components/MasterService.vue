@@ -1,7 +1,7 @@
 <template>
   <div class="container py-5 mt-5">
     <div class="section-title text-start mb-5">
-      <h1>Мої <span>Послуги та Ціни</span></h1>
+      <h1>{{ $t('My') }} <span>{{ $t('Services and Prices') }}</span></h1>
     </div>
 
     <div v-if="loading && !myServices.length" class="text-center py-5">
@@ -14,15 +14,15 @@
         <div @click="addNewService" class="hero-master add-service-card bg-light d-flex align-items-center justify-content-center mb-4 shadow-sm">
           <div class="text-center">
             <div class="plus-icon mb-2">+</div>
-            <div class="inter-18 gray-text">Додати послугу</div>
+            <div class="inter-18 gray-text">{{ $t('Add service') }}</div>
           </div>
         </div>
 
         <div v-for="ms in myServices" :key="ms.id" class="hero-master bg-white p-4 mb-4 shadow-sm">
           <div class="mb-4">
-            <h2 class="inter-20 mb-1">{{ serviceData[ms.serviceId]?.name || 'Завантаження...' }}</h2>
+            <h2 class="inter-20 mb-1">{{ serviceData[ms.serviceId]?.name || $t('Loading...') }}</h2>
             <div class="inter-14 gray-text">
-              Середня ціна: <span class="orange-text">{{ serviceData[ms.serviceId]?.avgCost || '...' }} ₴</span>
+              {{ $t('Avg price') }}: <span class="orange-text">{{ serviceData[ms.serviceId]?.avgCost || '...' }} ₴</span>
             </div>
           </div>
 
@@ -55,12 +55,12 @@
       </div>
 
       <div v-if="myServices.length === 0 && !loading" class="text-center p-4">
-        <h3 class="gray-text inter-18">У вас ще немає жодної активної послуги</h3>
+        <h3 class="gray-text inter-18">{{ $t('You have no active services yet') }}</h3>
       </div>
 
       <div class="text-center mt-5" v-if="hasMore">
         <a href="#" @click.prevent="loadMore" class="orange-but d-flex justify-content-center align-items-center text-white text-decoration-none inter-18 mx-auto" style="width: 182px; height: 73px;">
-          Більше
+          {{ $t('More') }}
         </a>
       </div>
     </div>

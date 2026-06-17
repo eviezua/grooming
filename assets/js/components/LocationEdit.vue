@@ -4,7 +4,7 @@
       <BaseDropdown
           v-model="selectedCity"
           :options="cityOptions"
-          label="Місто"
+          :label="$t('City')"
           resource="cities"
       />
     </div>
@@ -13,7 +13,7 @@
           :key="districtOptions.length"
           v-model="selectedDistrict"
           :options="districtOptions"
-          label="Район"
+          :label="$t('District')"
           resource="districts"
           :disabled="!selectedCity"
       />

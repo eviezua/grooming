@@ -1,7 +1,7 @@
 <template>
   <div class="container py-5 mt-5">
     <div class="section-title text-start mb-5">
-      <h1>Мої <span>Клієнти</span></h1>
+      <h1>{{ $t('My') }} <span>{{ $t('Clients') }}</span></h1>
     </div>
 
     <div v-if="loading && !clients.length" class="text-center py-5">
@@ -10,7 +10,7 @@
 
     <div v-else>
       <div v-if="clients.length === 0" class="white-but p-5 text-center">
-        <h3 class="gray-text">У вас поки немає постійних клієнтів</h3>
+        <h3 class="gray-text">{{ $t('You have no regular customers') }}</h3>
       </div>
 
       <div class="hero-masters-wrapper container-wide">
@@ -23,7 +23,7 @@
               </div>
               <div>
                 <h2 class="inter-24 mb-0">{{ client.name }} {{ client.surname }}</h2>
-                <span class="inter-14 orange-text">Постійний клієнт</span>
+                <span class="inter-14 orange-text">{{ $t('Regular client') }}</span>
               </div>
             </div>
           </div>
@@ -41,35 +41,35 @@
             <div class="col-6">
               <div class="stat-box p-2 text-center border rounded">
                 <div class="inter-18 font-weight-bold">{{ client.bookings?.length || 0 }}</div>
-                <div class="inter-12 gray-text">Візитів</div>
+                <div class="inter-12 gray-text">{{ $t('Visits') }}</div>
               </div>
             </div>
             <div class="col-6">
               <div class="stat-box p-2 text-center border rounded">
                 <div class="inter-18 font-weight-bold">{{ client.pets?.length || 0 }}</div>
-                <div class="inter-12 gray-text">Тварин</div>
+                <div class="inter-12 gray-text">{{ $t('Pets') }}</div>
               </div>
             </div>
           </div>
 
           <div class="border-top pt-3">
-            <h4 class="inter-16 mb-2">Тварини клієнта:</h4>
+            <h4 class="inter-16 mb-2">{{ $t('Client`s pets:') }}</h4>
             <div v-if="client.pets?.length" class="d-flex flex-wrap gap-2">
               <div v-for="pId in client.pets" :key="pId">
                 <span class="badge bg-light text-dark border px-3 py-2 inter-14" style="border-radius: 12px; font-weight: 500;">
                   <i class="bi bi-paw me-1 opacity-50"></i>
-                  {{ petBreeds[pId] || 'Завантаження...' }}
+                  {{ petBreeds[pId] || $t('Loading...') }}
                 </span>
               </div>
             </div>
-            <div v-else class="inter-14 italic gray-text">Дані про тварин відсутні</div>
+            <div v-else class="inter-14 italic gray-text">{{ $t('No data about pets') }}</div>
           </div>
         </div>
       </div>
 
       <div class="text-center mt-5" v-if="hasMore">
         <a href="#" @click.prevent="loadMore" class="orange-but d-flex justify-content-center align-items-center text-white text-decoration-none inter-18 mx-auto" style="width: 182px; height: 73px;">
-          Більше
+          {{ $t('More') }}
         </a>
       </div>
     </div>

@@ -1,7 +1,7 @@
 <template>
   <div class="container py-5 mt-5">
     <div class="section-title text-start mb-5">
-      <h1>Мої <span>Бронювання</span></h1>
+      <h1>{{ $t('My') }} <span>{{ $t('Bookings') }}</span></h1>
     </div>
 
     <div v-if="loading && !bookings.length" class="text-center py-5">
@@ -10,14 +10,14 @@
 
     <div v-else>
       <div v-if="bookings.length === 0" class="white-but p-5 text-center mb-4">
-        <h3 class="gray-text">Активних записів не знайдено</h3>
+        <h3 class="gray-text">{{ $t('You have no active records.') }}</h3>
       </div>
 
       <div class="hero-masters-wrapper container-wide">
         <div @click="openCreateModal" class="hero-master add-booking-card bg-light d-flex align-items-center justify-content-center mb-4 shadow-sm">
           <div class="text-center">
             <div class="plus-icon mb-2">+</div>
-            <div class="inter-18 gray-text">Додати новий запис</div>
+            <div class="inter-18 gray-text">{{ $t('Add new record') }}</div>
           </div>
         </div>
 
@@ -27,7 +27,7 @@
                 v-if="booking.status !== 'Inactive'"
                 @click="startEdit(booking)"
                 class="btn-edit-square"
-                title="Редагувати"
+                :title="$t('Edit')"
             >
               <span class="edit-icon">✎</span>
             </button>
@@ -53,7 +53,7 @@
           <div class="mb-4">
             <h3 class="gray-text inter-16 mb-2">
               <img src="/uploads/icons/customers.png" style="width: 18px" class="me-2">
-              {{ clientNames[booking.clientId] || 'Завантаження...' }}
+              {{ clientNames[booking.clientId] || $t('Loading...') }}
             </h3>
             <h3 class="gray-text inter-16">
               <img src="/uploads/icons/button_paw.png" style="width: 18px" class="me-2">
@@ -64,15 +64,19 @@
           <div class="border-top pt-3">
             <h4 class="inter-16 mb-2">Послуги:</h4>
             <div v-for="sId in booking.services" :key="sId" class="inter-14 gray-text">
-              • {{ serviceNames[sId] || 'Завантаження назви...' }}
+              • {{ serviceNames[sId] || $t('Loading...') }}
             </div>
           </div>
+
+          <h3 class="gray-text inter-16">
+            {{ $t('Price:') }} <span class="orange-text">{{ booking.totalPrice ?? 0 }} грн</span>
+          </h3>
         </div>
       </div>
 
       <div class="text-center mt-5" v-if="hasMore">
         <a href="#" @click.prevent="loadMore" class="orange-but d-flex justify-content-center align-items-center text-white text-decoration-none inter-18 mx-auto" style="width: 182px; height: 73px;">
-          Більше
+          {{ $t('More') }}
         </a>
       </div>
     </div>
@@ -90,7 +94,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import { useApiFetch } from "../useFetchResource";
 import { useUpdate } from "../useUpdateResource";
 import VueMultiselect from "vue-multiselect";
@@ -196,6 +200,15 @@ const fetchBookings = async (reset = false) => {
     await loadRelatedNames(items);
   }
 };
+
+const loadMore = () => {
+  if (page.value < lastPage.value) {
+    page.value++;
+    fetchBookings();
+  }
+};
+
+const hasMore = computed(() => page.value < lastPage.value);
 
 const openCreateModal = () => {
   editingBooking.value = null;

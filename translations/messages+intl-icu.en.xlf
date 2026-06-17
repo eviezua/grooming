@@ -205,6 +205,434 @@
         <source>Password</source>
         <target>Password</target>
       </trans-unit>
+      <trans-unit id="f1U4Ihn" resname="Search...">
+        <source>Search...</source>
+        <target>Search...</target>
+      </trans-unit>
+      <trans-unit id="2u52BrM" resname="Reset">
+        <source>Reset</source>
+        <target>Reset</target>
+      </trans-unit>
+      <trans-unit id="lI4D5wV" resname="Booking">
+        <source>Booking</source>
+        <target>Booking</target>
+      </trans-unit>
+      <trans-unit id="ors0eAr" resname="Master">
+        <source>Master</source>
+        <target>Master</target>
+      </trans-unit>
+      <trans-unit id="ru8sXHq" resname="Select services">
+        <source>Select services</source>
+        <target>Select services</target>
+      </trans-unit>
+      <trans-unit id="o1cLJQt" resname="Select pet species">
+        <source>Select pet species</source>
+        <target>Select pet species</target>
+      </trans-unit>
+      <trans-unit id="9b_ehRc" resname="Select pet breed">
+        <source>Select pet breed</source>
+        <target>Select pet breed</target>
+      </trans-unit>
+      <trans-unit id="naepTwi" resname="Total price">
+        <source>Total price</source>
+        <target>Total price</target>
+      </trans-unit>
+      <trans-unit id="nkaANIi" resname="Price by master">
+        <source>Price by master</source>
+        <target>Price by master</target>
+      </trans-unit>
+      <trans-unit id="aBP4q3W" resname="Master`s schedule">
+        <source>Master`s schedule</source>
+        <target>Master`s schedule</target>
+      </trans-unit>
+      <trans-unit id="L7uY98Z" resname="First time?">
+        <source>First time?</source>
+        <target>First time?</target>
+      </trans-unit>
+      <trans-unit id="LGsuJTw" resname="Your name">
+        <source>Your name</source>
+        <target>Your name</target>
+      </trans-unit>
+      <trans-unit id="9O5noCR" resname="Your surname">
+        <source>Your surname</source>
+        <target>Your surname</target>
+      </trans-unit>
+      <trans-unit id="r_6iYfg" resname="Booking details">
+        <source>Booking details</source>
+        <target>Booking details</target>
+      </trans-unit>
+      <trans-unit id="9DnpVkP" resname="New booking">
+        <source>New booking</source>
+        <target>New booking</target>
+      </trans-unit>
+      <trans-unit id="blceF1r" resname="Selected client">
+        <source>Selected client</source>
+        <target>Selected client</target>
+      </trans-unit>
+      <trans-unit id="R9KlFe8" resname="Loading...">
+        <source>Loading...</source>
+        <target>Loading...</target>
+      </trans-unit>
+      <trans-unit id="rNBkhDy" resname="No client selected">
+        <source>No client selected</source>
+        <target>No client selected</target>
+      </trans-unit>
+      <trans-unit id="31hZ56T" resname="Clients pet">
+        <source>Clients pet</source>
+        <target>Clients pet</target>
+      </trans-unit>
+      <trans-unit id="B97NHwO" resname="Select pet below">
+        <source>Select pet below</source>
+        <target>Select pet below</target>
+      </trans-unit>
+      <trans-unit id="j7lS804" resname="No pet selected">
+        <source>No pet selected</source>
+        <target>No pet selected</target>
+      </trans-unit>
+      <trans-unit id="zap.AbV" resname="Change client">
+        <source>Change client</source>
+        <target>Change client</target>
+      </trans-unit>
+      <trans-unit id="y20fc0B" resname="Select client">
+        <source>Select client</source>
+        <target>Select client</target>
+      </trans-unit>
+      <trans-unit id="JACPPuM" resname="Searching client...">
+        <source>Searching client...</source>
+        <target>Searching client...</target>
+      </trans-unit>
+      <trans-unit id="PTFbIMl" resname="Change pet">
+        <source>Change pet</source>
+        <target>Change pet</target>
+      </trans-unit>
+      <trans-unit id="5vNbfDw" resname="Select pet">
+        <source>Select pet</source>
+        <target>Select pet</target>
+      </trans-unit>
+      <trans-unit id="0ayKgJN" resname="Breed">
+        <source>Breed</source>
+        <target>Breed</target>
+      </trans-unit>
+      <trans-unit id="YE3ORF4" resname="Services">
+        <source>Services</source>
+        <target>Services</target>
+      </trans-unit>
+      <trans-unit id="G7iHDMB" resname="Service name">
+        <source>Service name</source>
+        <target>Service name</target>
+      </trans-unit>
+      <trans-unit id="mcQKtAW" resname="Date">
+        <source>Date</source>
+        <target>Date</target>
+      </trans-unit>
+      <trans-unit id="5LufHs6" resname="Start">
+        <source>Start</source>
+        <target>Start</target>
+      </trans-unit>
+      <trans-unit id="yufVe8B" resname="Stop">
+        <source>Stop</source>
+        <target>Stop</target>
+      </trans-unit>
+      <trans-unit id="OOWYJg2" resname="Delete booking">
+        <source>Delete booking</source>
+        <target>Delete booking</target>
+      </trans-unit>
+      <trans-unit id="GXZu1sy" resname="Cancel">
+        <source>Cancel</source>
+        <target>Cancel</target>
+      </trans-unit>
+      <trans-unit id="FQn1YfJ" resname="Save">
+        <source>Save</source>
+        <target>Save</target>
+      </trans-unit>
+      <trans-unit id="R1lJisK" resname="Create">
+        <source>Create</source>
+        <target>Create</target>
+      </trans-unit>
+      <trans-unit id="HYXBHhR" resname="Account security">
+        <source>Account security</source>
+        <target>Account security</target>
+      </trans-unit>
+      <trans-unit id="cu0r12f" resname="Current password">
+        <source>Current password</source>
+        <target>Current password</target>
+      </trans-unit>
+      <trans-unit id="Lv_2PXF" resname="Enter old password">
+        <source>Enter old password</source>
+        <target>Enter old password</target>
+      </trans-unit>
+      <trans-unit id="PdnfREH" resname="New password">
+        <source>New password</source>
+        <target>New password</target>
+      </trans-unit>
+      <trans-unit id="eVebM62" resname="Minimum 6 characters">
+        <source>Minimum 6 characters</source>
+        <target>Minimum 6 characters</target>
+      </trans-unit>
+      <trans-unit id="10MHBUC" resname="Confirmation">
+        <source>Confirmation</source>
+        <target>Confirmation</target>
+      </trans-unit>
+      <trans-unit id="DInsk4R" resname="Repeat new password">
+        <source>Repeat new password</source>
+        <target>Repeat new password</target>
+      </trans-unit>
+      <trans-unit id="Ck4Lcbf" resname="Updating...">
+        <source>Updating...</source>
+        <target>Updating...</target>
+      </trans-unit>
+      <trans-unit id="6Gz3uIz" resname="Save password">
+        <source>Save password</source>
+        <target>Save password</target>
+      </trans-unit>
+      <trans-unit id="1ncZDgq" resname="Service">
+        <source>Service</source>
+        <target>Service</target>
+      </trans-unit>
+      <trans-unit id="ScJmuqq" resname="Search">
+        <source>Search</source>
+        <target>Search</target>
+      </trans-unit>
+      <trans-unit id="6xkRv.E" resname="Other filters">
+        <source>Other filters</source>
+        <target>Other filters</target>
+      </trans-unit>
+      <trans-unit id="5SkzhVF" resname="Select time">
+        <source>Select time</source>
+        <target>Select time</target>
+      </trans-unit>
+      <trans-unit id="Tl_Brac" resname="Bookings">
+        <source>Bookings</source>
+        <target>Bookings</target>
+      </trans-unit>
+      <trans-unit id="jtZ5G98" resname="My">
+        <source>My</source>
+        <target>My</target>
+      </trans-unit>
+      <trans-unit id="I.lS5Wx" resname="You have no active records.">
+        <source>You have no active records.</source>
+        <target>You have no active records.</target>
+      </trans-unit>
+      <trans-unit id="mrNaZ1d" resname="Add new record">
+        <source>Add new record</source>
+        <target>Add new record</target>
+      </trans-unit>
+      <trans-unit id="RkxP.QG" resname="Edit">
+        <source>Edit</source>
+        <target>Edit</target>
+      </trans-unit>
+      <trans-unit id="v8id2CK" resname="Price:">
+        <source>Price:</source>
+        <target>Price:</target>
+      </trans-unit>
+      <trans-unit id="ZaclZUL" resname="Clients">
+        <source>Clients</source>
+        <target>Clients</target>
+      </trans-unit>
+      <trans-unit id="Np9G3OV" resname="You have no regular customers">
+        <source>You have no regular customers</source>
+        <target>You have no regular customers</target>
+      </trans-unit>
+      <trans-unit id="MEziVwd" resname="Regular client">
+        <source>Regular client</source>
+        <target>Regular client</target>
+      </trans-unit>
+      <trans-unit id="9RTDEL2" resname="Visits">
+        <source>Visits</source>
+        <target>Visits</target>
+      </trans-unit>
+      <trans-unit id="fcHNfq." resname="Pets">
+        <source>Pets</source>
+        <target>Pets</target>
+      </trans-unit>
+      <trans-unit id="VR9TVJL" resname="Client`s pets:">
+        <source>Client`s pets:</source>
+        <target>Client`s pets:</target>
+      </trans-unit>
+      <trans-unit id="Ea2qz8q" resname="No data about pets">
+        <source>No data about pets</source>
+        <target>No data about pets</target>
+      </trans-unit>
+      <trans-unit id="cyOS7tR" resname="Change avatar">
+        <source>Change avatar</source>
+        <target>Change avatar</target>
+      </trans-unit>
+      <trans-unit id="KurS3on" resname="And I am cool groomer!">
+        <source>And I am cool groomer!</source>
+        <target>And I am cool groomer!</target>
+      </trans-unit>
+      <trans-unit id="1YM3coC" resname="Master`s rating">
+        <source>Master`s rating</source>
+        <target>Master`s rating</target>
+      </trans-unit>
+      <trans-unit id="Aob3eVD" resname="By client reviews">
+        <source>By client reviews</source>
+        <target>By client reviews</target>
+      </trans-unit>
+      <trans-unit id="P5yZH2O" resname="Change password">
+        <source>Change password</source>
+        <target>Change password</target>
+      </trans-unit>
+      <trans-unit id="aoJPWtI" resname="Location and contacts">
+        <source>Location and contacts</source>
+        <target>Location and contacts</target>
+      </trans-unit>
+      <trans-unit id="O0G6nHy" resname="No data">
+        <source>No data</source>
+        <target>No data</target>
+      </trans-unit>
+      <trans-unit id="FbYZdLJ" resname="Location">
+        <source>Location</source>
+        <target>Location</target>
+      </trans-unit>
+      <trans-unit id="FBH5ZUv" resname="No city selected">
+        <source>No city selected</source>
+        <target>No city selected</target>
+      </trans-unit>
+      <trans-unit id="Xcd.9S7" resname="dist.">
+        <source>dist.</source>
+        <target>dist.</target>
+      </trans-unit>
+      <trans-unit id="v2PqpDG" resname="My specialization">
+        <source>My specialization</source>
+        <target>My specialization</target>
+      </trans-unit>
+      <trans-unit id="wL91vXi" resname="Change">
+        <source>Change</source>
+        <target>Change</target>
+      </trans-unit>
+      <trans-unit id="SdlOILx" resname="No selected pets yet">
+        <source>No selected pets yet</source>
+        <target>No selected pets yet</target>
+      </trans-unit>
+      <trans-unit id="nADcY0o" resname="Working schedule">
+        <source>Working schedule</source>
+        <target>Working schedule</target>
+      </trans-unit>
+      <trans-unit id="qS8ESan" resname="Working">
+        <source>Working</source>
+        <target>Working</target>
+      </trans-unit>
+      <trans-unit id="u.3dHCu" resname="Day off">
+        <source>Day off</source>
+        <target>Day off</target>
+      </trans-unit>
+      <trans-unit id="ceIQ5_L" resname="Change time">
+        <source>Change time</source>
+        <target>Change time</target>
+      </trans-unit>
+      <trans-unit id="EVA2ExZ" resname="Make day off">
+        <source>Make day off</source>
+        <target>Make day off</target>
+      </trans-unit>
+      <trans-unit id="cWGznvm" resname="Add working hours">
+        <source>Add working hours</source>
+        <target>Add working hours</target>
+      </trans-unit>
+      <trans-unit id="n9coxmy" resname="Add">
+        <source>Add</source>
+        <target>Add</target>
+      </trans-unit>
+      <trans-unit id="NUI2MQh" resname="Services and Prices">
+        <source>Services and Prices</source>
+        <target>Services and Prices</target>
+      </trans-unit>
+      <trans-unit id="fZNm.a4" resname="Add service">
+        <source>Add service</source>
+        <target>Add service</target>
+      </trans-unit>
+      <trans-unit id="kc3aWo3" resname="Avg price">
+        <source>Avg price</source>
+        <target>Avg price</target>
+      </trans-unit>
+      <trans-unit id="Dtar821" resname="You have no active services yet">
+        <source>You have no active services yet</source>
+        <target>You have no active services yet</target>
+      </trans-unit>
+      <trans-unit id="mM9JQN2" resname="Select service from catalogue">
+        <source>Select service from catalogue</source>
+        <target>Select service from catalogue</target>
+      </trans-unit>
+      <trans-unit id="7iViEcq" resname="Start enter name...">
+        <source>Start enter name...</source>
+        <target>Start enter name...</target>
+      </trans-unit>
+      <trans-unit id="tPc2ttX" resname="Your base price">
+        <source>Your base price</source>
+        <target>Your base price</target>
+      </trans-unit>
+      <trans-unit id="zsF6VS8" resname="Enter price">
+        <source>Enter price</source>
+        <target>Enter price</target>
+      </trans-unit>
+      <trans-unit id="AzWXNat" resname="Your budget">
+        <source>Your budget</source>
+        <target>Your budget</target>
+      </trans-unit>
+      <trans-unit id="eXXj7Xg" resname="Rating from">
+        <source>Rating from</source>
+        <target>Rating from</target>
+      </trans-unit>
+      <trans-unit id="m9iISMj" resname="Rating to">
+        <source>Rating to</source>
+        <target>Rating to</target>
+      </trans-unit>
+      <trans-unit id="U1Guu5V" resname="Select date or date diapason for booking">
+        <source>Select date or date diapason for booking</source>
+        <target>Select date or date diapason for booking</target>
+      </trans-unit>
+      <trans-unit id="htEvkio" resname="Select time for booking">
+        <source>Select time for booking</source>
+        <target>Select time for booking</target>
+      </trans-unit>
+      <trans-unit id="yRKQJb0" resname="Sort by">
+        <source>Sort by</source>
+        <target>Sort by</target>
+      </trans-unit>
+      <trans-unit id="nylTBGT" resname="Rating">
+        <source>Rating</source>
+        <target>Rating</target>
+      </trans-unit>
+      <trans-unit id="k8kchR5" resname="Price">
+        <source>Price</source>
+        <target>Price</target>
+      </trans-unit>
+      <trans-unit id="nIqVeav" resname="Direction">
+        <source>Direction</source>
+        <target>Direction</target>
+      </trans-unit>
+      <trans-unit id="MjsIfgr" resname="ASC">
+        <source>ASC</source>
+        <target>ASC</target>
+      </trans-unit>
+      <trans-unit id="mE2k.mk" resname="DESC">
+        <source>DESC</source>
+        <target>DESC</target>
+      </trans-unit>
+      <trans-unit id="MeOS0cA" resname="Apply">
+        <source>Apply</source>
+        <target>Apply</target>
+      </trans-unit>
+      <trans-unit id="dQdFIAO" resname="Master`s specialization">
+        <source>Master`s specialization</source>
+        <target>Master`s specialization</target>
+      </trans-unit>
+      <trans-unit id="_MEEJJ6" resname="Nothing selected">
+        <source>Nothing selected</source>
+        <target>Nothing selected</target>
+      </trans-unit>
+      <trans-unit id="zsOKPPk" resname="Spice">
+        <source>Spice</source>
+        <target>Spice</target>
+      </trans-unit>
+      <trans-unit id="BXSoteu" resname="Crop photo">
+        <source>Crop photo</source>
+        <target>Crop photo</target>
+      </trans-unit>
+      <trans-unit id="yIoLkHQ" resname="Success">
+        <source>Success</source>
+        <target>Success</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>

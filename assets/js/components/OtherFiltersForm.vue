@@ -4,7 +4,7 @@
       <div class="modal-content rounded-4">
 
         <div class="modal-header">
-          <h5 class="modal-title">Інші фільтри</h5>
+          <h5 class="modal-title">{{ $t('Other filters') }}</h5>
           <button type="button" class="btn-close" @click="close"></button>
         </div>
 
@@ -17,7 +17,7 @@
                 :multiple="true"
                 :searchable="true"
                 :internal-search="false"
-                placeholder="Оберіть послуги"
+                :placeholder="$t('Select services')"
                 label="name"
                 track-by="id"
                 @search-change="onSearchService"
@@ -28,7 +28,7 @@
             <VueMultiselect
                 v-model="selectedSpecies"
                 :options="speciesOptions"
-                placeholder="Оберіть вид тварини"
+                :placeholder="$t('Select pet species')"
                 label="name"
                 track-by="id"
             />
@@ -40,7 +40,7 @@
                 :options="breedOptions"
                 :searchable="true"
                 :internal-search="false"
-                placeholder="Оберіть породу"
+                :placeholder="$t('Select pet breed')"
                 label="name"
                 track-by="id"
                 @search-change="onSearchBreed"
@@ -48,7 +48,7 @@
           </div>
 
           <div class="mb-3" v-if="selectedServices.length">
-            <label class="form-label">Ваш бюджет (грн)</label>
+            <label class="form-label">{{ $t('Your budget') }} (грн)</label>
             <input
                 type="number"
                 min="0"
@@ -60,21 +60,21 @@
           </div>
 
           <div class="mb-3" v-if="selectedServices.length">
-            <p><strong>Середня вартість:</strong> {{ totalCost }} грн</p>
+            <p><strong>{{ $t('Avg price') }}:</strong> {{ totalCost }} грн</p>
           </div>
 
           <div class="mb-3">
-            <label class="form-label">Рейтинг від</label>
+            <label class="form-label">{{ $t('Rating from') }}</label>
             <StarRating v-model="minRating" :max="5" />
           </div>
 
           <div class="mb-3">
-            <label class="form-label">Рейтинг до</label>
+            <label class="form-label">{{ $t('Rating to') }}</label>
             <StarRating v-model="maxRating" :max="5" />
           </div>
 
           <div class="mb-3">
-            <label>Оберіть бажану дату або діапазон дат для запису</label>
+            <label>{{ $t('Select date or date diapason for booking') }}</label>
             <DatePicker
                 v-model="selectedDate"
                 :inline="true"
@@ -89,7 +89,7 @@
           </div>
 
           <div class="mb-3">
-            <label>Оберіть бажаний час для запису</label>
+            <label>{{ $t('Select time for booking') }}</label>
             <DatePicker
                 :inline="true"
                 :hours-increment="1"
@@ -103,20 +103,20 @@
             />
           </div>
           <div class="mb-3">
-            <label class="form-label">Сортувати за</label>
+            <label class="form-label">{{ $t('Sort by') }}</label>
             <select class="form-select" v-model="sortField">
               <option value="">--</option>
-              <option value="avgRating">Рейтинг</option>
-              <option value="totalPrice">Ціна</option>
+              <option value="avgRating">{{ $t('Rating') }}</option>
+              <option value="totalPrice">{{ $t('Price') }}</option>
             </select>
           </div>
 
           <div class="mb-3">
-            <label class="form-label">Напрямок</label>
+            <label class="form-label">{{ $t('Direction') }}</label>
             <select class="form-select" v-model="sortDirection">
               <option value="null">--</option>
-              <option value="asc">За зростанням</option>
-              <option value="desc">За спаданням</option>
+              <option value="asc">{{ $t('ASC') }}</option>
+              <option value="desc">{{ $t('DESC') }}</option>
             </select>
           </div>
 
@@ -125,7 +125,7 @@
                 class="btn btn-primary w-100"
                 @click="applyFilters"
             >
-              Застосувати
+              {{ $t('Apply') }}
             </button>
           </div>
         </div>

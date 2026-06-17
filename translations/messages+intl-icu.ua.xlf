@@ -206,6 +206,434 @@
         <source>Password</source>
         <target>Пароль</target>
       </trans-unit>
+      <trans-unit id="f1U4Ihn" resname="Search...">
+        <source>Search...</source>
+        <target>Знайти...</target>
+      </trans-unit>
+      <trans-unit id="2u52BrM" resname="Reset">
+        <source>Reset</source>
+        <target>Скинути</target>
+      </trans-unit>
+      <trans-unit id="lI4D5wV" resname="Booking">
+        <source>Booking</source>
+        <target>Бронювання</target>
+      </trans-unit>
+      <trans-unit id="ors0eAr" resname="Master">
+        <source>Master</source>
+        <target>Майстер</target>
+      </trans-unit>
+      <trans-unit id="ru8sXHq" resname="Select services">
+        <source>Select services</source>
+        <target>Оберіть послуги</target>
+      </trans-unit>
+      <trans-unit id="o1cLJQt" resname="Select pet species">
+        <source>Select pet species</source>
+        <target>Оберіть вид тварини</target>
+      </trans-unit>
+      <trans-unit id="9b_ehRc" resname="Select pet breed">
+        <source>Select pet breed</source>
+        <target>Оберіть породу тварини</target>
+      </trans-unit>
+      <trans-unit id="naepTwi" resname="Total price">
+        <source>Total price</source>
+        <target>Загальна вартість</target>
+      </trans-unit>
+      <trans-unit id="nkaANIi" resname="Price by master">
+        <source>Price by master</source>
+        <target>Вартість з урахуванням майстра</target>
+      </trans-unit>
+      <trans-unit id="aBP4q3W" resname="Master`s schedule">
+        <source>Master`s schedule</source>
+        <target>Графік майстра</target>
+      </trans-unit>
+      <trans-unit id="L7uY98Z" resname="First time?">
+        <source>First time?</source>
+        <target>Вперше у нас?</target>
+      </trans-unit>
+      <trans-unit id="LGsuJTw" resname="Your name">
+        <source>Your name</source>
+        <target>Ваше ім'я</target>
+      </trans-unit>
+      <trans-unit id="9O5noCR" resname="Your surname">
+        <source>Your surname</source>
+        <target>Ваше прізвище</target>
+      </trans-unit>
+      <trans-unit id="r_6iYfg" resname="Booking details">
+        <source>Booking details</source>
+        <target>Деталі запису</target>
+      </trans-unit>
+      <trans-unit id="9DnpVkP" resname="New booking">
+        <source>New booking</source>
+        <target>Новий запис</target>
+      </trans-unit>
+      <trans-unit id="blceF1r" resname="Selected client">
+        <source>Selected client</source>
+        <target>Обраний клієнт</target>
+      </trans-unit>
+      <trans-unit id="R9KlFe8" resname="Loading...">
+        <source>Loading...</source>
+        <target>Завантаження...</target>
+      </trans-unit>
+      <trans-unit id="rNBkhDy" resname="No client selected">
+        <source>No client selected</source>
+        <target>Клієнта не обрано</target>
+      </trans-unit>
+      <trans-unit id="31hZ56T" resname="Clients pet">
+        <source>Clients pet</source>
+        <target>Тварина клієнта</target>
+      </trans-unit>
+      <trans-unit id="B97NHwO" resname="Select pet below">
+        <source>Select pet below</source>
+        <target>Оберіть тварину нижче</target>
+      </trans-unit>
+      <trans-unit id="j7lS804" resname="No pet selected">
+        <source>No pet selected</source>
+        <target>Тварину не обрано</target>
+      </trans-unit>
+      <trans-unit id="zap.AbV" resname="Change client">
+        <source>Change client</source>
+        <target>Змінити клієнта</target>
+      </trans-unit>
+      <trans-unit id="y20fc0B" resname="Select client">
+        <source>Select client</source>
+        <target>Оберіть клієнта</target>
+      </trans-unit>
+      <trans-unit id="JACPPuM" resname="Searching client...">
+        <source>Searching client...</source>
+        <target>Пошук клієнта...</target>
+      </trans-unit>
+      <trans-unit id="PTFbIMl" resname="Change pet">
+        <source>Change pet</source>
+        <target>Змінити тварину</target>
+      </trans-unit>
+      <trans-unit id="5vNbfDw" resname="Select pet">
+        <source>Select pet</source>
+        <target>Оберіть тварину</target>
+      </trans-unit>
+      <trans-unit id="0ayKgJN" resname="Breed">
+        <source>Breed</source>
+        <target>Порода</target>
+      </trans-unit>
+      <trans-unit id="YE3ORF4" resname="Services">
+        <source>Services</source>
+        <target>Послуги</target>
+      </trans-unit>
+      <trans-unit id="G7iHDMB" resname="Service name">
+        <source>Service name</source>
+        <target>Назва послуги</target>
+      </trans-unit>
+      <trans-unit id="mcQKtAW" resname="Date">
+        <source>Date</source>
+        <target>Дата</target>
+      </trans-unit>
+      <trans-unit id="5LufHs6" resname="Start">
+        <source>Start</source>
+        <target>Початок</target>
+      </trans-unit>
+      <trans-unit id="yufVe8B" resname="Stop">
+        <source>Stop</source>
+        <target>Кінець</target>
+      </trans-unit>
+      <trans-unit id="OOWYJg2" resname="Delete booking">
+        <source>Delete booking</source>
+        <target>Видалити запис</target>
+      </trans-unit>
+      <trans-unit id="GXZu1sy" resname="Cancel">
+        <source>Cancel</source>
+        <target>Скасувати</target>
+      </trans-unit>
+      <trans-unit id="FQn1YfJ" resname="Save">
+        <source>Save</source>
+        <target>Зберегти</target>
+      </trans-unit>
+      <trans-unit id="R1lJisK" resname="Create">
+        <source>Create</source>
+        <target>Створити</target>
+      </trans-unit>
+      <trans-unit id="HYXBHhR" resname="Account security">
+        <source>Account security</source>
+        <target>Безпека акаунту</target>
+      </trans-unit>
+      <trans-unit id="cu0r12f" resname="Current password">
+        <source>Current password</source>
+        <target>Поточний пароль</target>
+      </trans-unit>
+      <trans-unit id="Lv_2PXF" resname="Enter old password">
+        <source>Enter old password</source>
+        <target>Введіть старий пароль</target>
+      </trans-unit>
+      <trans-unit id="PdnfREH" resname="New password">
+        <source>New password</source>
+        <target>Новий пароль</target>
+      </trans-unit>
+      <trans-unit id="eVebM62" resname="Minimum 6 characters">
+        <source>Minimum 6 characters</source>
+        <target>Мінімум 6 символів</target>
+      </trans-unit>
+      <trans-unit id="10MHBUC" resname="Confirmation">
+        <source>Confirmation</source>
+        <target>Підтвердження</target>
+      </trans-unit>
+      <trans-unit id="DInsk4R" resname="Repeat new password">
+        <source>Repeat new password</source>
+        <target>Повторіть новий пароль</target>
+      </trans-unit>
+      <trans-unit id="Ck4Lcbf" resname="Updating...">
+        <source>Updating...</source>
+        <target>Оновлюємо...</target>
+      </trans-unit>
+      <trans-unit id="6Gz3uIz" resname="Save password">
+        <source>Save password</source>
+        <target>Зберегти пароль</target>
+      </trans-unit>
+      <trans-unit id="1ncZDgq" resname="Service">
+        <source>Service</source>
+        <target>Service</target>
+      </trans-unit>
+      <trans-unit id="ScJmuqq" resname="Search">
+        <source>Search</source>
+        <target>Знайти</target>
+      </trans-unit>
+      <trans-unit id="6xkRv.E" resname="Other filters">
+        <source>Other filters</source>
+        <target>Інші фільтри</target>
+      </trans-unit>
+      <trans-unit id="5SkzhVF" resname="Select time">
+        <source>Select time</source>
+        <target>Обрати час</target>
+      </trans-unit>
+      <trans-unit id="Tl_Brac" resname="Bookings">
+        <source>Bookings</source>
+        <target>Бронювання</target>
+      </trans-unit>
+      <trans-unit id="jtZ5G98" resname="My">
+        <source>My</source>
+        <target>Мої</target>
+      </trans-unit>
+      <trans-unit id="I.lS5Wx" resname="You have no active records.">
+        <source>You have no active records.</source>
+        <target>Активних записів не знайдено.</target>
+      </trans-unit>
+      <trans-unit id="mrNaZ1d" resname="Add new record">
+        <source>Add new record</source>
+        <target>Додати новий запис</target>
+      </trans-unit>
+      <trans-unit id="RkxP.QG" resname="Edit">
+        <source>Edit</source>
+        <target>Редагувати</target>
+      </trans-unit>
+      <trans-unit id="v8id2CK" resname="Price:">
+        <source>Price:</source>
+        <target>Вартість:</target>
+      </trans-unit>
+      <trans-unit id="ZaclZUL" resname="Clients">
+        <source>Clients</source>
+        <target>Клієнти</target>
+      </trans-unit>
+      <trans-unit id="Np9G3OV" resname="You have no regular customers">
+        <source>You have no regular customers</source>
+        <target>У вас поки немає постійних клієнтів</target>
+      </trans-unit>
+      <trans-unit id="MEziVwd" resname="Regular client">
+        <source>Regular client</source>
+        <target>Постійний клієнт</target>
+      </trans-unit>
+      <trans-unit id="9RTDEL2" resname="Visits">
+        <source>Visits</source>
+        <target>Візитів</target>
+      </trans-unit>
+      <trans-unit id="fcHNfq." resname="Pets">
+        <source>Pets</source>
+        <target>Тварин</target>
+      </trans-unit>
+      <trans-unit id="VR9TVJL" resname="Client`s pets:">
+        <source>Client`s pets:</source>
+        <target>Тварини клієнта:</target>
+      </trans-unit>
+      <trans-unit id="Ea2qz8q" resname="No data about pets">
+        <source>No data about pets</source>
+        <target>Дані про тварин відсутні</target>
+      </trans-unit>
+      <trans-unit id="cyOS7tR" resname="Change avatar">
+        <source>Change avatar</source>
+        <target>Змінити фото</target>
+      </trans-unit>
+      <trans-unit id="KurS3on" resname="And I am cool groomer!">
+        <source>And I am cool groomer!</source>
+        <target>І я крутий грумер!</target>
+      </trans-unit>
+      <trans-unit id="1YM3coC" resname="Master`s rating">
+        <source>Master`s rating</source>
+        <target>Рейтинг майстра</target>
+      </trans-unit>
+      <trans-unit id="Aob3eVD" resname="By client reviews">
+        <source>By client reviews</source>
+        <target>На основі відгуків клієнтів</target>
+      </trans-unit>
+      <trans-unit id="P5yZH2O" resname="Change password">
+        <source>Change password</source>
+        <target>Змінити пароль</target>
+      </trans-unit>
+      <trans-unit id="aoJPWtI" resname="Location and contacts">
+        <source>Location and contacts</source>
+        <target>Локація та контакти</target>
+      </trans-unit>
+      <trans-unit id="O0G6nHy" resname="No data">
+        <source>No data</source>
+        <target>Не вказано</target>
+      </trans-unit>
+      <trans-unit id="FbYZdLJ" resname="Location">
+        <source>Location</source>
+        <target>Локація</target>
+      </trans-unit>
+      <trans-unit id="FBH5ZUv" resname="No city selected">
+        <source>No city selected</source>
+        <target>Місто не вказано</target>
+      </trans-unit>
+      <trans-unit id="Xcd.9S7" resname="dist.">
+        <source>dist.</source>
+        <target>р-н</target>
+      </trans-unit>
+      <trans-unit id="v2PqpDG" resname="My specialization">
+        <source>My specialization</source>
+        <target>Моя спеціалізація</target>
+      </trans-unit>
+      <trans-unit id="wL91vXi" resname="Change">
+        <source>Change</source>
+        <target>Змінити</target>
+      </trans-unit>
+      <trans-unit id="SdlOILx" resname="No selected pets yet">
+        <source>No selected pets yet</source>
+        <target>Ви ще не обрали тварин</target>
+      </trans-unit>
+      <trans-unit id="nADcY0o" resname="Working schedule">
+        <source>Working schedule</source>
+        <target>робочі години</target>
+      </trans-unit>
+      <trans-unit id="qS8ESan" resname="Working">
+        <source>Working</source>
+        <target>Робочий</target>
+      </trans-unit>
+      <trans-unit id="u.3dHCu" resname="Day off">
+        <source>Day off</source>
+        <target>Вихідний</target>
+      </trans-unit>
+      <trans-unit id="ceIQ5_L" resname="Change time">
+        <source>Change time</source>
+        <target>Змінити час</target>
+      </trans-unit>
+      <trans-unit id="EVA2ExZ" resname="Make day off">
+        <source>Make day off</source>
+        <target>Зробити вихідним</target>
+      </trans-unit>
+      <trans-unit id="cWGznvm" resname="Add working hours">
+        <source>Add working hours</source>
+        <target>Додати робочі години</target>
+      </trans-unit>
+      <trans-unit id="n9coxmy" resname="Add">
+        <source>Add</source>
+        <target>Додати</target>
+      </trans-unit>
+      <trans-unit id="NUI2MQh" resname="Services and Prices">
+        <source>Services and Prices</source>
+        <target>Послуги та Ціни</target>
+      </trans-unit>
+      <trans-unit id="fZNm.a4" resname="Add service">
+        <source>Add service</source>
+        <target>Додати послугу</target>
+      </trans-unit>
+      <trans-unit id="kc3aWo3" resname="Avg price">
+        <source>Avg price</source>
+        <target>Середня ціна</target>
+      </trans-unit>
+      <trans-unit id="Dtar821" resname="You have no active services yet">
+        <source>You have no active services yet</source>
+        <target>У вас ще немає жодної активної послуги</target>
+      </trans-unit>
+      <trans-unit id="mM9JQN2" resname="Select service from catalogue">
+        <source>Select service from catalogue</source>
+        <target>Оберіть послугу з каталогу</target>
+      </trans-unit>
+      <trans-unit id="7iViEcq" resname="Start enter name...">
+        <source>Start enter name...</source>
+        <target>Почніть вводити назву...</target>
+      </trans-unit>
+      <trans-unit id="tPc2ttX" resname="Your base price">
+        <source>Your base price</source>
+        <target>Ваша базова ціна</target>
+      </trans-unit>
+      <trans-unit id="zsF6VS8" resname="Enter price">
+        <source>Enter price</source>
+        <target>Введіть суму</target>
+      </trans-unit>
+      <trans-unit id="AzWXNat" resname="Your budget">
+        <source>Your budget</source>
+        <target>Ваш бюджет</target>
+      </trans-unit>
+      <trans-unit id="eXXj7Xg" resname="Rating from">
+        <source>Rating from</source>
+        <target>Рейтинг від</target>
+      </trans-unit>
+      <trans-unit id="m9iISMj" resname="Rating to">
+        <source>Rating to</source>
+        <target>Рейтинг до</target>
+      </trans-unit>
+      <trans-unit id="U1Guu5V" resname="Select date or date diapason for booking">
+        <source>Select date or date diapason for booking</source>
+        <target>Оберіть бажану дату або діапазон дат для запису</target>
+      </trans-unit>
+      <trans-unit id="htEvkio" resname="Select time for booking">
+        <source>Select time for booking</source>
+        <target>Оберіть бажаний час для запису</target>
+      </trans-unit>
+      <trans-unit id="yRKQJb0" resname="Sort by">
+        <source>Sort by</source>
+        <target>Сортувати за</target>
+      </trans-unit>
+      <trans-unit id="nylTBGT" resname="Rating">
+        <source>Rating</source>
+        <target>Рейтинг</target>
+      </trans-unit>
+      <trans-unit id="k8kchR5" resname="Price">
+        <source>Price</source>
+        <target>Ціна</target>
+      </trans-unit>
+      <trans-unit id="nIqVeav" resname="Direction">
+        <source>Direction</source>
+        <target>Напрямок</target>
+      </trans-unit>
+      <trans-unit id="MjsIfgr" resname="ASC">
+        <source>ASC</source>
+        <target>За зростанням</target>
+      </trans-unit>
+      <trans-unit id="mE2k.mk" resname="DESC">
+        <source>DESC</source>
+        <target>За спаданням</target>
+      </trans-unit>
+      <trans-unit id="MeOS0cA" resname="Apply">
+        <source>Apply</source>
+        <target>Застосувати</target>
+      </trans-unit>
+      <trans-unit id="dQdFIAO" resname="Master`s specialization">
+        <source>Master`s specialization</source>
+        <target>Спеціалізація майстра</target>
+      </trans-unit>
+      <trans-unit id="_MEEJJ6" resname="Nothing selected">
+        <source>Nothing selected</source>
+        <target>Нічого не обрано</target>
+      </trans-unit>
+      <trans-unit id="zsOKPPk" resname="Spice">
+        <source>Spice</source>
+        <target>Вид</target>
+      </trans-unit>
+      <trans-unit id="BXSoteu" resname="Crop photo">
+        <source>Crop photo</source>
+        <target>Обріжте фото</target>
+      </trans-unit>
+      <trans-unit id="yIoLkHQ" resname="Success">
+        <source>Success</source>
+        <target>Готово</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>
