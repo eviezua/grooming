@@ -5,6 +5,7 @@ namespace App\Tests;
 use ApiPlatform\Symfony\Bundle\Test\ApiTestCase;
 use App\Entity\Pets;
 use App\Enum\Species;
+use App\Enum\Status;
 use App\Factory\PetsFactory;
 use Elastic\Elasticsearch\Client;
 use Zenstruck\Foundry\Test\Factories;
@@ -20,7 +21,7 @@ class PetsApiTest extends ApiTestCase
 
     public function testGetCollection(): void
     {
-        PetsFactory::createMany(100);
+        PetsFactory::createMany(100, ['status' => Status::Approved]);
 
         static::createClient()->request('GET', 'api/v1/pets');
 
@@ -120,10 +121,11 @@ class PetsApiTest extends ApiTestCase
 
         $allowedSpices = array_filter(Species::cases(), fn(Species $s) => $s !== Species::Cat);
 
-        PetsFactory::createOne(['spice' => Species::Cat]);
+        PetsFactory::createOne(['spice' => Species::Cat, 'status' => Status::Approved]);
         PetsFactory::createMany(10, function() use ($allowedSpices) {
             return [
                 'spice' => $allowedSpices[array_rand($allowedSpices)],
+                'status' => Status::Approved
             ];
         });
 
@@ -142,7 +144,7 @@ class PetsApiTest extends ApiTestCase
 
     public function testGetPetsByMultipleIds(): void
     {
-        $pets = PetsFactory::createMany(5);
+        $pets = PetsFactory::createMany(5, ['status' => Status::Approved]);
 
         $id1 = $pets[0]->getId();
         $id2 = $pets[2]->getId();
@@ -166,7 +168,7 @@ class PetsApiTest extends ApiTestCase
 
     public function testGetPet(): void
     {
-        $pet = PetsFactory::createOne();
+        $pet = PetsFactory::createOne(['status' => Status::Approved]);
         $petId = $pet->getId();
 
         static::createClient()->request('GET', 'api/v1/pets/' . $petId);
@@ -239,7 +241,7 @@ class PetsApiTest extends ApiTestCase
 
     private function indexPet(string $name): void
     {
-        PetsFactory::createOne(['breed' => $name]);
+        PetsFactory::createOne(['breed' => $name, 'status' => Status::Approved]);
         $pet = static::getContainer()->get('doctrine')->getRepository(Pets::class)->findOneBy(['breed' => $name]);
 
         $elasticsearchClient = static::getContainer()->get(Client::class);

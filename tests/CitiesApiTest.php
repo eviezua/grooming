@@ -4,6 +4,7 @@ namespace App\Tests;
 
 use ApiPlatform\Symfony\Bundle\Test\ApiTestCase;
 use App\Entity\Cities;
+use App\Enum\Status;
 use App\Factory\CitiesFactory;
 use Elastic\Elasticsearch\Client;
 use Zenstruck\Foundry\Test\Factories;
@@ -19,7 +20,7 @@ class CitiesApiTest extends ApiTestCase
 
     public function testGetCollection(): void
     {
-        CitiesFactory::createMany(100);
+        CitiesFactory::createMany(100, ['status' => Status::Approved]);
 
         static::createClient()->request('GET', 'api/v1/cities');
 
@@ -36,7 +37,7 @@ class CitiesApiTest extends ApiTestCase
 
     public function testGetCitiesByMultipleIds(): void
     {
-        $cities = CitiesFactory::createMany(5);
+        $cities = CitiesFactory::createMany(5, ['status' => Status::Approved]);
         $targetIds = [$cities[0]->getId(), $cities[2]->getId()];
 
         $client = static::createClient();
@@ -132,7 +133,7 @@ class CitiesApiTest extends ApiTestCase
 
     public function testGetCity(): void
     {
-        $city = CitiesFactory::createOne();
+        $city = CitiesFactory::createOne(['status' => Status::Approved]);
         $cityId = $city->getId();
 
         static::createClient()->request('GET', 'api/v1/cities/' . $cityId);
@@ -197,7 +198,7 @@ class CitiesApiTest extends ApiTestCase
 
     private function indexCity(string $name): void
     {
-        CitiesFactory::createOne(['city' => $name]);
+        CitiesFactory::createOne(['city' => $name, 'status' => Status::Approved]);
         $city = static::getContainer()->get('doctrine')->getRepository(Cities::class)->findOneBy(['city' => $name]);
 
         $elasticsearchClient = static::getContainer()->get(Client::class);

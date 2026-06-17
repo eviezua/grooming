@@ -3,11 +3,15 @@
 namespace App\Tests;
 
 use ApiPlatform\Symfony\Bundle\Test\ApiTestCase;
+use App\Entity\Masters;
 use App\Entity\Services;
+use App\Enum\Status;
 use App\Factory\MastersFactory;
 use App\Factory\MastersServicesFactory;
 use App\Factory\ServicesFactory;
 use Elastic\Elasticsearch\Client;
+use Symfony\Component\BrowserKit\Cookie;
+use Zenstruck\Foundry\Persistence\Proxy;
 use Zenstruck\Foundry\Test\Factories;
 use Zenstruck\Foundry\Test\ResetDatabase;
 
@@ -21,7 +25,7 @@ class ServicesApiTest extends ApiTestCase
 
     public function testGetCollection(): void
     {
-        ServicesFactory::createMany(100);
+        ServicesFactory::createMany(100, ['status' => Status::Approved]);
 
         static::createClient()->request('GET', 'api/v1/services');
 
@@ -119,11 +123,11 @@ class ServicesApiTest extends ApiTestCase
 
     public function testFilterByCostRange(): void
     {
-        ServicesFactory::createOne(['cost' => 50]);
-        ServicesFactory::createOne(['cost' => 100]);
-        ServicesFactory::createOne(['cost' => 150]);
-        ServicesFactory::createOne(['cost' => 200]);
-        ServicesFactory::createOne(['cost' => 250]);
+        ServicesFactory::createOne(['cost' => 50, 'status' => Status::Approved]);
+        ServicesFactory::createOne(['cost' => 100, 'status' => Status::Approved]);
+        ServicesFactory::createOne(['cost' => 150, 'status' => Status::Approved]);
+        ServicesFactory::createOne(['cost' => 200, 'status' => Status::Approved]);
+        ServicesFactory::createOne(['cost' => 250, 'status' => Status::Approved]);
 
         $client = static::createClient();
 
@@ -141,8 +145,8 @@ class ServicesApiTest extends ApiTestCase
 
     public function testFilterByOnlyMinCost(): void
     {
-        ServicesFactory::createOne(['cost' => 30]);
-        ServicesFactory::createOne(['cost' => 60]);
+        ServicesFactory::createOne(['cost' => 30, 'status' => Status::Approved]);
+        ServicesFactory::createOne(['cost' => 60, 'status' => Status::Approved]);
 
         $client = static::createClient();
         $client->request('GET', '/api/v1/services?cost[gt]=50');
@@ -155,8 +159,8 @@ class ServicesApiTest extends ApiTestCase
 
     public function testFilterByOnlyMaxCost(): void
     {
-        ServicesFactory::createOne(['cost' => 20]);
-        ServicesFactory::createOne(['cost' => 80]);
+        ServicesFactory::createOne(['cost' => 20, 'status' => Status::Approved]);
+        ServicesFactory::createOne(['cost' => 80, 'status' => Status::Approved]);
 
         $client = static::createClient();
         $client->request('GET', '/api/v1/services?cost[lt]=50');
@@ -169,9 +173,9 @@ class ServicesApiTest extends ApiTestCase
 
     public function testGetCollectionWithMasterIdFilter(): void
     {
-        $service = ServicesFactory::createOne();
+        $service = ServicesFactory::createOne(['status' => Status::Approved]);
 
-        ServicesFactory::CreateMany(10);
+        ServicesFactory::CreateMany(10, ['status' => Status::Approved]);
 
         $master = MastersFactory::new(['services_count' => 0])->createOne();
         MastersServicesFactory::createOne([
@@ -195,9 +199,9 @@ class ServicesApiTest extends ApiTestCase
 
     public function testGetServicesByMultipleIds(): void
     {
-        $s1 = ServicesFactory::createOne(['name' => 'Grooming']);
-        $s2 = ServicesFactory::createOne(['name' => 'Washing']);
-        $s3 = ServicesFactory::createOne(['name' => 'Nails']);
+        $s1 = ServicesFactory::createOne(['name' => 'Grooming', 'status' => Status::Approved]);
+        $s2 = ServicesFactory::createOne(['name' => 'Washing', 'status' => Status::Approved]);
+        $s3 = ServicesFactory::createOne(['name' => 'Nails', 'status' => Status::Approved]);
 
         $client = static::createClient();
 
@@ -217,7 +221,7 @@ class ServicesApiTest extends ApiTestCase
 
     public function testGetService(): void
     {
-        $service = ServicesFactory::createOne();
+        $service = ServicesFactory::createOne(['status' => Status::Approved]);
         $serviceId = $service->getId();
 
         static::createClient()->request('GET', "/api/v1/services/$serviceId");
@@ -257,10 +261,12 @@ class ServicesApiTest extends ApiTestCase
 
     public function testPatchService(): void
     {
-        $service = ServicesFactory::createOne();
+        $service = ServicesFactory::createOne(['status' => Status::Approved]);
         $serviceId = $service->getId();
 
-        static::createClient()->request('PATCH', '/api/v1/services/' . $serviceId, [
+        $adminClient = $this->createAuthenticatedClient('admin@test.com', true);
+
+        $adminClient->request('PATCH', '/api/v1/services/' . $serviceId, [
             'json' => [
                 "name" => "Patch",
             ],
@@ -274,6 +280,25 @@ class ServicesApiTest extends ApiTestCase
         $this->assertJsonContains([
             "name" => "Patch",
         ]);
+    }
+
+    public function testPatchServiceAsMasterReturnsForbidden(): void
+    {
+        $service = ServicesFactory::createOne(['status' => Status::Approved]);
+        $serviceId = $service->getId();
+
+        $masterClient = $this->createAuthenticatedClient('regular_master@test.com', false);
+
+        $masterClient->request('PATCH', '/api/v1/services/' . $serviceId, [
+            'json' => [
+                "name" => "Hack Attempt",
+            ],
+            'headers' => [
+                'Content-Type' => 'application/merge-patch+json',
+            ]
+        ]);
+
+        $this->assertResponseStatusCodeSame(403);
     }
 
     public function testPostInvalidService(): void
@@ -301,10 +326,9 @@ class ServicesApiTest extends ApiTestCase
 
     private function indexService(string $name): void
     {
-        ServicesFactory::createOne(['name' => $name]);
+        ServicesFactory::createOne(['name' => $name, 'status' => Status::Approved]);
 
-        $service = static::getContainer()->get('doctrine')->getRepository(Services::class)->findOneBy(['name' => $name]
-        );
+        $service = static::getContainer()->get('doctrine')->getRepository(Services::class)->findOneBy(['name' => $name]);
 
         $elasticsearchClient = static::getContainer()->get(Client::class);
         $elasticsearchClient->index([
@@ -313,5 +337,32 @@ class ServicesApiTest extends ApiTestCase
             'body' => ['name' => $service->getName()],
         ]);
         $elasticsearchClient->indices()->refresh(['index' => 'services']);
+    }
+
+    private function createAuthenticatedClient($userOrEmail = 'master@test.com', bool $isAdmin = false)
+    {
+        $client = static::createClient();
+
+        if ($userOrEmail instanceof Masters) {
+            $master = $userOrEmail;
+        } else {
+            $proxy = MastersFactory::repository()->findOneBy(['email' => $userOrEmail])
+                ?? MastersFactory::createOne([
+                    'email' => $userOrEmail,
+                    'password' => 'password',
+                    'roles' => $isAdmin ? ['ROLE_ADMIN'] : ['ROLE_MASTER'],
+                    'status' => Status::Approved
+                ]);
+            $master = ($proxy instanceof Proxy) ? $proxy->_real() : $proxy;
+        }
+
+        $jwtManager = static::getContainer()->get('lexik_jwt_authentication.jwt_manager');
+        $token = $jwtManager->create($master);
+
+        $cookieJar = $client->getCookieJar();
+        $cookie = new Cookie('jwt', $token);
+        $cookieJar->set($cookie);
+
+        return $client;
     }
 }

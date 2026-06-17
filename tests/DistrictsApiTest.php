@@ -4,6 +4,7 @@ namespace App\Tests;
 
 use ApiPlatform\Symfony\Bundle\Test\ApiTestCase;
 use App\Entity\Districts;
+use App\Enum\Status;
 use App\Factory\CitiesFactory;
 use App\Factory\DistrictsFactory;
 use Elastic\Elasticsearch\Client;
@@ -20,7 +21,7 @@ class DistrictsApiTest extends ApiTestCase
 
     public function testGetCollection(): void
     {
-        DistrictsFactory::createMany(100);
+        DistrictsFactory::createMany(100, ['status' => Status::Approved]);
 
         static::createClient()->request('GET', 'api/v1/districts');
 
@@ -37,7 +38,7 @@ class DistrictsApiTest extends ApiTestCase
 
     public function testGetDistrictsByMultipleIds(): void
     {
-        $districts = DistrictsFactory::createMany(5);
+        $districts = DistrictsFactory::createMany(5, ['status' => Status::Approved]);
         $targetIds = [$districts[1]->getId(), $districts[3]->getId()];
 
         $client = static::createClient();
@@ -125,11 +126,11 @@ class DistrictsApiTest extends ApiTestCase
 
     public function testGetByCityId(): void
     {
-        $city = CitiesFactory::createOne();
+        $city = CitiesFactory::createOne(['status' => Status::Approved]);
         $cityId = $city->getId();
 
-        DistrictsFactory::createMany(10, ['city' => $city]);
-        DistrictsFactory::createMany(10);
+        DistrictsFactory::createMany(10, ['city' => $city, 'status' => Status::Approved]);
+        DistrictsFactory::createMany(10, ['status' => Status::Approved]);
 
         $client = static::createClient();
         $client->request('GET', 'api/v1/districts?city.id[]=' . $cityId);
@@ -147,7 +148,7 @@ class DistrictsApiTest extends ApiTestCase
 
     public function testGetDistrict(): void
     {
-        $district = DistrictsFactory::createOne();
+        $district = DistrictsFactory::createOne(['status' => Status::Approved]);
         $districtId = $district->getId();
 
         static::createClient()->request('GET', 'api/v1/districts/' . $districtId);
@@ -164,7 +165,7 @@ class DistrictsApiTest extends ApiTestCase
 
     public function testPostDistrict(): void
     {
-        $city = CitiesFactory::createOne();
+        $city = CitiesFactory::createOne(['status' => Status::Approved]);
         $cityId = $city->getId();
 
         static::createClient()->request(
@@ -192,7 +193,7 @@ class DistrictsApiTest extends ApiTestCase
 
     public function testPostDublicateDistrict(): void
     {
-        $city = CitiesFactory::createOne();
+        $city = CitiesFactory::createOne(['status' => Status::Approved]);
         $cityId = $city->getId();
 
         DistrictsFactory::createOne(['name' => 'Shevchenkovskiy', 'city' => $city]);
@@ -220,7 +221,7 @@ class DistrictsApiTest extends ApiTestCase
 
     private function indexDistrict(string $name): void
     {
-        DistrictsFactory::createOne(['name' => $name]);
+        DistrictsFactory::createOne(['name' => $name, 'status' => Status::Approved]);
         $district = static::getContainer()->get('doctrine')->getRepository(Districts::class)->findOneBy(['name' => $name]);
 
         $elasticsearchClient = static::getContainer()->get(Client::class);
