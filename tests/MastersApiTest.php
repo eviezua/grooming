@@ -121,7 +121,7 @@ class MastersApiTest extends ApiTestCase
 
     public function testGetCollection(): void
     {
-        MastersFactory::createMany(100);
+        MastersFactory::createMany(100, ['status' => Status::Approved]);
 
         static::createClient()->request('GET', 'api/v1/masters');
 
@@ -138,11 +138,11 @@ class MastersApiTest extends ApiTestCase
 
     public function testGetCollectionWithCityIdFilter(): void
     {
-        $city = CitiesFactory::createOne();
+        $city = CitiesFactory::createOne(['status' => Status::Approved]);
         $cityId = $city->getId();
 
-        MastersFactory::CreateMany(10, ['id_city' => $city]);
-        MastersFactory::createMany(10);
+        MastersFactory::CreateMany(10, ['id_city' => $city, 'status' => Status::Approved]);
+        MastersFactory::createMany(10, ['status' => Status::Approved]);
 
         static::createClient()->request('GET', 'api/v1/masters?id_city.id[]=' . $cityId);
 
@@ -159,11 +159,11 @@ class MastersApiTest extends ApiTestCase
 
     public function testGetCollectionWithDistrictIdFilter(): void
     {
-        $district = DistrictsFactory::createOne();
+        $district = DistrictsFactory::createOne(['status' => Status::Approved]);
         $districtId = $district->getId();
 
-        MastersFactory::CreateMany(10, ['district' => $district]);
-        MastersFactory::createMany(10);
+        MastersFactory::CreateMany(10, ['district' => $district, 'status' => Status::Approved]);
+        MastersFactory::createMany(10, ['status' => Status::Approved]);
 
         static::createClient()->request('GET', 'api/v1/masters?district.id[]=' . $districtId);
 
@@ -180,10 +180,10 @@ class MastersApiTest extends ApiTestCase
 
     public function testGetCollectionWithServiceIdFilter(): void
     {
-        $service = ServicesFactory::createOne();
+        $service = ServicesFactory::createOne(['status' => Status::Approved]);
         $serviceId = $service->getId();
 
-        $masters = MastersFactory::new(['services_count' => 0])->createMany(10);
+        $masters = MastersFactory::new(['services_count' => 0])->createMany(10, ['status' => Status::Approved]);
 
         foreach ($masters as $master) {
             MastersServicesFactory::createOne([
@@ -192,7 +192,7 @@ class MastersApiTest extends ApiTestCase
             ]);
         }
 
-        MastersFactory::createMany(10);
+        MastersFactory::createMany(10, ['status' => Status::Approved]);
 
         static::createClient()->request('GET', 'api/v1/masters?id_services[]=' . $serviceId);
 
@@ -209,11 +209,11 @@ class MastersApiTest extends ApiTestCase
 
     public function testGetCollectionWithPetsIdFilter(): void
     {
-        $pet = PetsFactory::createOne();
+        $pet = PetsFactory::createOne(['status' => Status::Approved]);
         $petId = $pet->getId();
 
-        MastersFactory::CreateMany(10, ['id_pets' => [$pet]]);
-        MastersFactory::createMany(10);
+        MastersFactory::CreateMany(10, ['id_pets' => [$pet], 'status' => Status::Approved]);
+        MastersFactory::createMany(10, ['status' => Status::Approved]);
 
         static::createClient()->request('GET', 'api/v1/masters?id_pets.id[]=' . $petId);
 
@@ -291,8 +291,8 @@ class MastersApiTest extends ApiTestCase
         $dayOfWeek = Weekdays::from($today->format('l'));
         $dateStr = $today->format('Y-m-d');
 
-        $master1 = MastersFactory::createOne();
-        $master2 = MastersFactory::createOne();
+        $master1 = MastersFactory::createOne(['status' => Status::Approved]);
+        $master2 = MastersFactory::createOne(['status' => Status::Approved]);
 
         ScheduleFactory::createOne([
             'master' => $master1,
@@ -366,8 +366,8 @@ class MastersApiTest extends ApiTestCase
 
         $client = static::createClient();
 
-        $master1 = MastersFactory::createOne();
-        $master2 = MastersFactory::createOne();
+        $master1 = MastersFactory::createOne(['status' => Status::Approved]);
+        $master2 = MastersFactory::createOne(['status' => Status::Approved]);
 
         foreach ([$today, $tomorrow, $plus5] as $date) {
             $dayOfWeek = Weekdays::from($date->format('l'));
@@ -487,11 +487,11 @@ class MastersApiTest extends ApiTestCase
 
     public function testMastersRatingFilter(): void
     {
-        MastersFactory::createOne(['avgRating' => 1.00]);
-        MastersFactory::createOne(['avgRating' => 2.00]);
-        MastersFactory::createOne(['avgRating' => 3.00]);
-        MastersFactory::createOne(['avgRating' => 4.00]);
-        MastersFactory::createOne(['avgRating' => 5.00]);
+        MastersFactory::createOne(['avgRating' => 1.00, 'status' => Status::Approved]);
+        MastersFactory::createOne(['avgRating' => 2.00, 'status' => Status::Approved]);
+        MastersFactory::createOne(['avgRating' => 3.00, 'status' => Status::Approved]);
+        MastersFactory::createOne(['avgRating' => 4.00, 'status' => Status::Approved]);
+        MastersFactory::createOne(['avgRating' => 5.00, 'status' => Status::Approved]);
 
         $client = static::createClient();
 
@@ -508,11 +508,11 @@ class MastersApiTest extends ApiTestCase
 
     public function testMasterPriceFilter(): void
     {
-        $masterCheap = MastersFactory::createOne(['name' => 'Cheap', 'surname' => 'Master']);
-        $masterExpensive = MastersFactory::createOne(['name' => 'Expensive', 'surname' => 'Master']);
+        $masterCheap = MastersFactory::createOne(['name' => 'Cheap', 'surname' => 'Master', 'status' => Status::Approved]);
+        $masterExpensive = MastersFactory::createOne(['name' => 'Expensive', 'surname' => 'Master', 'status' => Status::Approved]);
 
-        $service1 = ServicesFactory::createOne(['id' => 1]);
-        $service2 = ServicesFactory::createOne(['id' => 2]);
+        $service1 = ServicesFactory::createOne(['id' => 1, 'status' => Status::Approved]);
+        $service2 = ServicesFactory::createOne(['id' => 2, 'status' => Status::Approved]);
 
         MastersServicesFactory::createOne(['master' => $masterExpensive, 'service' => $service1, 'price' => 125]);
         MastersServicesFactory::createOne(['master' => $masterExpensive, 'service' => $service2, 'price' => 200]);
@@ -551,9 +551,9 @@ class MastersApiTest extends ApiTestCase
 
     public function testMastersOrderFilterByRating(): void
     {
-        MastersFactory::createOne(['name' => 'LowRating', 'avgRating' => 1.2]);
-        MastersFactory::createOne(['name' => 'MidRating', 'avgRating' => 3.5]);
-        MastersFactory::createOne(['name' => 'HighRating', 'avgRating' => 4.9]);
+        MastersFactory::createOne(['name' => 'LowRating', 'avgRating' => 1.2, 'status' => Status::Approved]);
+        MastersFactory::createOne(['name' => 'MidRating', 'avgRating' => 3.5, 'status' => Status::Approved]);
+        MastersFactory::createOne(['name' => 'HighRating', 'avgRating' => 4.9, 'status' => Status::Approved]);
 
         $client = static::createClient();
 
@@ -600,7 +600,7 @@ class MastersApiTest extends ApiTestCase
 
     public function testGetMaster(): void
     {
-        $master = MastersFactory::createOne();
+        $master = MastersFactory::createOne(['status' => Status::Approved]);
         $masterId = $master->getId();
 
         static::createClient()->request('GET', "/api/v1/masters/$masterId");
@@ -615,11 +615,11 @@ class MastersApiTest extends ApiTestCase
 
     public function testPostMaster(): void
     {
-        $city = CitiesFactory::createOne();
+        $city = CitiesFactory::createOne(['status' => Status::Approved]);
         $cityId = $city->getId();
-        $district = DistrictsFactory::createOne(['city' => $city]);
+        $district = DistrictsFactory::createOne(['city' => $city, 'status' => Status::Approved]);
         $districtId = $district->getId();
-        $pet = PetsFactory::createOne();
+        $pet = PetsFactory::createOne(['status' => Status::Approved]);
         $petId = $pet->getId();
 
         static::createClient()->request('POST', '/api/v1/masters', [
@@ -967,7 +967,7 @@ class MastersApiTest extends ApiTestCase
 
     private function indexMaster(string $name, string $surname): void
     {
-        MastersFactory::createOne(['name' => $name, 'surname' => $surname]);
+        MastersFactory::createOne(['name' => $name, 'surname' => $surname, 'status' => Status::Approved]);
         $client = static::getContainer()->get('doctrine')->getRepository(Masters::class)->findOneBy(
             ['name' => $name, 'surname' => $surname]
         );

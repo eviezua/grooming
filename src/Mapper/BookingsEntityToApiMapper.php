@@ -33,6 +33,8 @@ class BookingsEntityToApiMapper implements MapperInterface
 
         $to->status = $from->getStatus()->value;
 
+        $to->totalPrice = $from->getTotalPrice();
+
         return $to;
     }
 
@@ -52,6 +54,8 @@ class BookingsEntityToApiMapper implements MapperInterface
         $to->timeStop = $this->timeFormatter->formatTime($from->getTimeStop());
 
         $to->status = $from->getStatus()->value;
+
+        $to->totalPrice = $from->getTotalPrice();
 
         return $to;
     }

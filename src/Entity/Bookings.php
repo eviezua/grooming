@@ -58,6 +58,9 @@ class Bookings
     #[ORM\OneToOne(mappedBy: 'booking', cascade: ['persist', 'remove'])]
     private ?Review $review = null;
 
+    #[ORM\Column(type: Types::FLOAT, nullable: false, options: ['default' => 0.00])]
+    private ?float $totalPrice = 0.00;
+
     public function __construct()
     {
         $this->id_services = new ArrayCollection();
@@ -214,6 +217,18 @@ class Bookings
         }
 
         $this->review = $review;
+
+        return $this;
+    }
+
+    public function getTotalPrice(): ?float
+    {
+        return $this->totalPrice;
+    }
+
+    public function setTotalPrice(?float $totalPrice): static
+    {
+        $this->totalPrice = $totalPrice;
 
         return $this;
     }

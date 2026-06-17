@@ -22,6 +22,7 @@ class DistrictsEntityToApiMapper implements MapperInterface
         $to->id = $from->getId();
         $to->name = $from->getName();
         $to->cityId = $from->getCity()->getId();
+        $to->status = $from->getStatus()->value;
 
         return $to;
     }
@@ -33,6 +34,7 @@ class DistrictsEntityToApiMapper implements MapperInterface
 
         $to->name = $from->getName();
         $to->cityId = $from->getCity()->getId();
+        $to->status = $from->getStatus()->value;
 
         return $to;
     }

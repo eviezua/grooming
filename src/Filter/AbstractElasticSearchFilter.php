@@ -44,13 +44,32 @@ abstract class AbstractElasticSearchFilter extends AbstractFilter
             return;
         }
 
+        $trimmedValue = trim($value);
+
         $body = [
             'query' => [
-                'multi_match' => [
-                    'query' => $value,
-                    'fields' => $this->fields,
-                    'fuzziness' => 'AUTO',
-                    'operator' => 'or'
+                'bool' => [
+                    'should' => [
+                        [
+                            'multi_match' => [
+                                'query' => $trimmedValue,
+                                'fields' => $this->fields,
+                                'type' => 'cross_fields',
+                                'operator' => 'and',
+                                'boost' => 20.0
+                            ],
+                        ],
+                        [
+                            'multi_match' => [
+                                'query' => $trimmedValue,
+                                'fields' => $this->fields,
+                                'operator' => 'or',
+                                'fuzziness' => 'AUTO',
+                                'boost' => 1.0
+                            ],
+                        ],
+                    ],
+                    'minimum_should_match' => 1,
                 ],
             ],
         ];
@@ -60,6 +79,17 @@ abstract class AbstractElasticSearchFilter extends AbstractFilter
             'size' => 200,
             'body' => $body,
         ]);
+
+        $debugHits = array_map(fn($hit) => [
+            'id' => $hit['_id'],
+            'score' => $hit['_score'],
+            'name' => $hit['_source']['name'] ?? 'unknown',
+            'surname' => $hit['_source']['surname'] ?? 'unknown',
+        ], $result['hits']['hits']);
+
+        if ($this->logger) {
+            $this->logger->info('ELASTICSEARCH RAW HITS:', $debugHits);
+        }
 
         $ids = array_map(fn($hit) => $hit['_id'], $result['hits']['hits']);
 
@@ -77,9 +107,7 @@ abstract class AbstractElasticSearchFilter extends AbstractFilter
             }
             $orderByCase .= 'ELSE 9999 END';
 
-            $queryBuilder
-                ->addSelect("($orderByCase) AS HIDDEN elastic_sort")
-                ->orderBy('elastic_sort', 'ASC');
+            $queryBuilder->orderBy($orderByCase, 'ASC');
 
         } else {
             $queryBuilder->andWhere('1 = 0');

@@ -34,7 +34,7 @@ class Services
     /**
      * @var Collection<int, MastersServices>
      */
-    #[ORM\OneToMany(targetEntity: MastersServices::class, mappedBy: 'service')]
+    #[ORM\OneToMany(targetEntity: MastersServices::class, mappedBy: 'service', cascade: ['remove'], orphanRemoval: true)]
     private Collection $mastersServices;
 
     public function __construct()

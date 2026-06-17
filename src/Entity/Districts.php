@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Enum\Status;
 use App\Repository\DistrictsRepository;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -19,6 +20,14 @@ class Districts
     #[ORM\ManyToOne(inversedBy: 'districts')]
     #[ORM\JoinColumn(nullable: false)]
     private ?Cities $city = null;
+
+    #[ORM\Column(length: 255, enumType: Status::class)]
+    private ?Status $status = null;
+
+    public function __construct()
+    {
+        $this->status = Status::Awaiting;
+    }
 
     public function getId(): ?int
     {
@@ -57,6 +66,18 @@ class Districts
     public function setCity(?Cities $city): static
     {
         $this->city = $city;
+
+        return $this;
+    }
+
+    public function getStatus(): ?Status
+    {
+        return $this->status;
+    }
+
+    public function setStatus(Status $status): static
+    {
+        $this->status = $status;
 
         return $this;
     }

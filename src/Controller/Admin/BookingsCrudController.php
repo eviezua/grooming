@@ -11,6 +11,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\AssociationField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\ChoiceField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\DateField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\IdField;
+use EasyCorp\Bundle\EasyAdminBundle\Field\MoneyField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TimeField;
 use EasyCorp\Bundle\EasyAdminBundle\Filter\ChoiceFilter;
 use EasyCorp\Bundle\EasyAdminBundle\Filter\EntityFilter;
@@ -45,6 +46,9 @@ class BookingsCrudController extends AbstractCrudController
                 Status::Rejected->value => 'danger',
                 Status::Inactive->value => 'secondary',
             ]);
+
+        yield MoneyField::new('totalPrice')->setCurrency('UAH')->setStoredAsCents(false)->setRequired(true);
+
     }
 
     public function configureCrud(Crud $crud): Crud

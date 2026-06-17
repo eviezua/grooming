@@ -105,4 +105,7 @@ class BookingsApi
 
     #[Groups(["booking:read", "booking:write"])]
     public ?string $status = null;
+
+    #[Groups(["booking:read"])]
+    public ?float $totalPrice = 0.00;
 }
