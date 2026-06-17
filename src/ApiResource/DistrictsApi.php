@@ -43,4 +43,7 @@ class DistrictsApi
 
     #[Groups(["district:read", "district:write"])]
     public ?int $cityId;
+
+    #[Groups(["district:read"])]
+    public ?string $status = null;
 }
