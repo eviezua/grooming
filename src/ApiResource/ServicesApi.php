@@ -26,7 +26,7 @@ use Symfony\Component\Validator\Constraints as Assert;
         new Get(),
         new GetCollection(),
         new Post(),
-        new Patch()
+        new Patch(security: "is_granted('WRITE_APPROVED_RESOURCE', object)")
     ],
     normalizationContext: ['groups' => ['services:read']],
     denormalizationContext: ['groups' => ['services:write']],
