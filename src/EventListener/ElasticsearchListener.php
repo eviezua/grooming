@@ -68,14 +68,19 @@ class ElasticsearchListener
 
         $em = $args->getObjectManager();
         $uow = $em->getUnitOfWork();
-
         $changeSet = $uow->getEntityChangeSet($entity);
         $config = self::ENTITY_MAP[$class];
 
+        if (empty($changeSet)) {
+            return;
+        }
+
         $shouldUpdateElastic = false;
 
-        foreach ($config['fields'] as $elasticField => $method) {
-            if (array_key_exists($elasticField, $changeSet)) {
+        foreach ($changeSet as $propertyName => $values) {
+            $expectedGetter = 'get' . ucfirst($propertyName);
+
+            if (in_array($expectedGetter, $config['fields'], true)) {
                 $shouldUpdateElastic = true;
                 break;
             }
