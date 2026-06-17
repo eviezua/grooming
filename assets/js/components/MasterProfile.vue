@@ -8,7 +8,7 @@
       <div class="container d-flex align-items-center">
         <div class="circle-block me-5 shadow-lg position-relative avatar-edit" @click="$refs.fileInput.click()">
           <img :src="master.photo ? `/uploads/photos/${master.photo}` : '/uploads/icons/profile.png'" alt="MasterPhoto">
-          <div class="avatar-overlay"><span>Змінити фото</span></div>
+          <div class="avatar-overlay"><span>{{ $t('Change avatar') }}</span></div>
           <input type="file" ref="fileInput" class="d-none" accept="image/*" @change="onFileChange">
         </div>
 
@@ -18,12 +18,12 @@
             <button @click="startEdit('fullName', {name: master.name, surname: master.surname})" class="btn-edit-white">✎</button>
           </div>
           <div v-else class="d-flex align-items-center gap-2 mb-2 scale-in">
-            <input v-model="editValue.name" class="form-control hero-input" placeholder="Ім'я">
-            <input v-model="editValue.surname" class="form-control hero-input" placeholder="Прізвище">
+            <input v-model="editValue.name" class="form-control hero-input" :placeholder="$t('Name')">
+            <input v-model="editValue.surname" class="form-control hero-input" :placeholder="$t('Surname')">
             <button @click="saveField('fullName')" class="btn-confirm-white" :disabled="updating">✓</button>
             <button @click="cancelEdit" class="btn-cancel-white">✕</button>
           </div>
-          <h2 class="section-title mt-0"><span class="text-white">І я крутий грумер!</span></h2>
+          <h2 class="section-title mt-0"><span class="text-white">{{ $t('And I am cool groomer!') }}</span></h2>
         </div>
       </div>
     </header>
@@ -32,20 +32,20 @@
       <div class="row g-5">
         <div class="col-lg-4 d-flex flex-column gap-5">
           <div class="white-but p-4">
-            <h3 class="inter-22 mb-3">Рейтинг майстра</h3>
+            <h3 class="inter-22 mb-3">{{ $t('Master`s rating') }}</h3>
             <div class="d-flex justify-content-start">
               <StarRating :model-value="master.avgRating" :readonly="true" />
             </div>
-            <div class="inter-18 gray-text mt-2">На основі відгуків клієнтів</div>
+            <div class="inter-18 gray-text mt-2">{{ $t('By client reviews') }}</div>
           </div>
           <button @click="isPasswordModalOpen = true" class="orange-but w-100 text-white hover-glow">
-            Змінити пароль
+            {{ $t('Change password') }}
           </button>
         </div>
 
         <div class="col-lg-8 d-flex flex-column gap-5">
           <div class="white-but p-4">
-            <h3 class="inter-22 mb-4">Локація та контакти</h3>
+            <h3 class="inter-22 mb-4">{{ $t('Location and contacts') }}</h3>
             <div class="row">
               <div class="col-md-6 mb-3">
                 <div class="inter-18 gray-text d-flex align-items-center gap-2">
@@ -60,10 +60,10 @@
                 </div>
 
                 <div class="inter-18 gray-text d-flex align-items-center gap-2 mt-3">
-                  Телефон
+                  {{ $t('Phone') }}
                   <button v-if="editingField !== 'phone'" @click="startEdit('phone', master.phone)" class="btn-edit-small">✎</button>
                 </div>
-                <div v-if="editingField !== 'phone'" class="inter-20">{{ master.phone || 'Не вказано' }}</div>
+                <div v-if="editingField !== 'phone'" class="inter-20">{{ master.phone || $t('No data') }}</div>
                 <div v-else class="d-flex align-items-center gap-2 mt-1">
                   <input v-model="editValue" class="form-control edit-input" autofocus>
                   <button @click="saveField('phone')" class="btn-confirm-small" :disabled="updating">✓</button>
@@ -73,11 +73,11 @@
 
               <div class="col-md-12 mb-3">
                 <div class="inter-18 gray-text d-flex align-items-center gap-2 mb-2">
-                  Локація
+                  {{ $t('Location') }}
                   <button v-if="editingField !== 'location'" @click="startEdit('location')" class="btn-edit-small">✎</button>
                 </div>
                 <div v-if="editingField !== 'location'" class="inter-20">
-                  {{ cityName || 'Місто не вказано' }}{{ districtName ? `, р-н ${districtName}` : '' }}
+                  {{ cityName || $t('No city selected') }}{{ districtName ? `, ${$t('dist.')} ${districtName}` : '' }}
                 </div>
                   <LocationEdit
                       v-else
@@ -95,10 +95,10 @@
 
           <div class="white-but p-4">
             <div class="d-flex justify-content-between align-items-center mb-4">
-              <h3 class="inter-22">Моя спеціалізація</h3>
-              <button @click="openPetsModal" class="btn-edit-small">Змінити ✎</button>
+              <h3 class="inter-22">{{ $t('My specialization') }}</h3>
+              <button @click="openPetsModal" class="btn-edit-small">{{ $t('Change') }} ✎</button>
             </div>
-            <div v-if="Object.keys(groupedPets).length === 0" class="text-center py-3 gray-text">Ви ще не обрали тварин</div>
+            <div v-if="Object.keys(groupedPets).length === 0" class="text-center py-3 gray-text">{{ $t('No selected pets yet') }}</div>
             <div v-else class="d-flex flex-column gap-4">
               <div v-for="(breeds, spice) in groupedPets" :key="spice">
                 <div class="inter-16 orange-text fw-bold text-uppercase mb-3">{{ spiceLabels[spice] || spice }}</div>

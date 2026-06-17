@@ -4,7 +4,7 @@
         type="search"
         v-model="searchText"
         class="search-input"
-        placeholder="Знайти..."
+        :placeholder="$t('Search...')"
     />
     <img
         src="/uploads/icons/search.png"

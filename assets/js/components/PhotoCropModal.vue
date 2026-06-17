@@ -4,7 +4,7 @@
       <div class="modal-content p-4">
 
         <div class="modal-header border-0 justify-content-center">
-          <h4 class="inter-22 mb-0">Обріжте фото</h4>
+          <h4 class="inter-22 mb-0">{{ $t('Crop photo') }}</h4>
         </div>
 
         <div class="modal-body overflow-hidden">
@@ -19,9 +19,9 @@
         </div>
 
         <div class="modal-footer border-0 d-flex justify-content-end gap-3 pt-3">
-          <button class="btn btn-light rounded-4 px-4" @click="$emit('close')">Скасувати</button>
+          <button class="btn btn-light rounded-4 px-4" @click="$emit('close')">{{ $t('Cancel') }}</button>
           <button class="orange-but py-2 px-4 text-white" @click="handleUpload" :disabled="updating">
-            {{ updating ? 'Завантаження...' : 'Готово' }}
+            {{ updating ? $t('Loading...') : $t('Success') }}
           </button>
         </div>
 

@@ -3,79 +3,79 @@
     <div class="modal-dialog animated-scale">
       <div class="modal-content p-4 bg-white shadow-lg border-0">
         <div class="modal-header border-0 justify-content-between pb-0">
-          <h4 class="inter-22 mb-0">{{ editingBooking ? 'Деталі запису' : 'Новий запис' }}</h4>
+          <h4 class="inter-22 mb-0">{{ editingBooking ? $t('Booking details') : $t('New booking') }}</h4>
           <button class="btn-close" @click="close"></button>
         </div>
 
         <div class="modal-body py-4">
           <div class="selected-area p-3 mb-4 rounded-4">
             <div class="mb-3">
-              <div class="inter-14 fw-bold orange-text mb-2 text-uppercase">Обраний клієнт</div>
+              <div class="inter-14 fw-bold orange-text mb-2 text-uppercase">{{ $t('Selected client') }}</div>
               <div v-if="editForm.clientId" class="pet-tag-edit">
-                {{ clientNames[editForm.clientId] || 'Завантаження...' }}
+                {{ clientNames[editForm.clientId] || $t('Loading...') }}
               </div>
-              <div v-else class="gray-text inter-14">Клієнта не обрано</div>
+              <div v-else class="gray-text inter-14">{{ $t('No client selected') }}</div>
             </div>
             <div class="mb-2">
-              <div class="inter-14 fw-bold orange-text mb-2 text-uppercase">Тварина клієнта</div>
+              <div class="inter-14 fw-bold orange-text mb-2 text-uppercase">{{ $t('Clients pet') }}</div>
               <div v-if="editForm.petId" class="pet-tag-edit">
-                {{ petBreeds[editForm.petId] || 'Оберіть тварину нижче' }}
+                {{ petBreeds[editForm.petId] || $t('Select pet below') }}
               </div>
-              <div v-else class="gray-text inter-14">Тварину не обрано</div>
+              <div v-else class="gray-text inter-14">{{ $t('No pet selected') }}</div>
             </div>
           </div>
 
           <div class="row g-3 mb-4">
             <div class="col-md-6">
-              <label class="gray-text inter-14 mb-2">{{ editingBooking ? 'Змінити клієнта' : 'Оберіть клієнта' }}</label>
+              <label class="gray-text inter-14 mb-2">{{ editingBooking ? $t('Change client') : $t('Select client') }}</label>
               <VueMultiselect
                   v-model="editForm.clientId"
                   :options="allClients.map(c => c.id)"
                   :custom-label="id => {
                   const c = allClients.find(x => x.id === id);
-                  return c ? `${c.name} ${c.surname}` : 'Оберіть клієнта';
+                  return c ? `${c.name} ${c.surname}` :  $t('Select client');
                 }"
-                  placeholder="Пошук клієнта..."
+                  :placeholder="$t('Searching client...')"
                   :show-labels="false"
               />
             </div>
             <div class="col-md-6">
-              <label class="gray-text inter-14 mb-2">{{ editingBooking ? 'Змінити тварину' : 'Оберіть тварину' }}</label>
+              <label class="gray-text inter-14 mb-2">{{ editingBooking ? $t('Change pet') : $t('Select pet') }}</label>
               <VueMultiselect
                   v-model="editForm.petId"
                   :options="currentClientPets.map(p => p.id)"
-                  :custom-label="id => currentClientPets.find(x => x.id === id)?.breed || 'Порода'"
+                  :custom-label="id => currentClientPets.find(x => x.id === id)?.breed ||  $t('Breed')"
                   :disabled="!editForm.clientId"
-                  placeholder="Оберіть тварину..."
+                  :placeholder="$t('Select pet')"
                   :show-labels="false"
               />
             </div>
           </div>
 
           <div class="mb-4">
-            <label class="gray-text inter-14 mb-2">Послуги</label>
+            <label class="gray-text inter-14 mb-2">{{ $t('Services') }}</label>
             <VueMultiselect
                 v-model="editForm.services"
                 :options="allServices.map(s => s.id)"
-                :custom-label="id => allServices.find(x => x.id === id)?.name || 'Назва послуги'"
+                :custom-label="id => allServices.find(x => x.id === id)?.name || $t('Service name')"
                 :multiple="true"
                 :close-on-select="false"
-                placeholder="Оберіть послуги"
+                :placeholder="$t('Select services')"
                 :show-labels="false"
             />
           </div>
 
           <div class="row g-3">
             <div class="col-md-6">
-              <label class="gray-text inter-14 mb-2">Дата</label>
+              <label class="gray-text inter-14 mb-2">{{ $t('Date') }}</label>
               <input type="date" v-model="editForm.date" class="form-control rounded-4 shadow-none border-light">
             </div>
             <div class="col-md-3 col-6">
-              <label class="gray-text inter-14 mb-2">Початок</label>
+              <label class="gray-text inter-14 mb-2">{{ $t('Start') }}</label>
               <input type="time" v-model="editForm.timeStart" class="form-control rounded-4 shadow-none border-light">
             </div>
             <div class="col-md-3 col-6">
-              <label class="gray-text inter-14 mb-2">Кінець</label>
+              <label class="gray-text inter-14 mb-2">{{ $t('Stop') }}</label>
               <input type="time" v-model="editForm.timeStop" class="form-control rounded-4 shadow-none border-light">
             </div>
           </div>
@@ -83,13 +83,13 @@
 
         <div class="modal-footer border-0 d-flex justify-content-between align-items-center pt-2">
           <div>
-            <button v-if="editingBooking" class="btn-delete-text" @click="handleDelete">Видалити запис</button>
+            <button v-if="editingBooking" class="btn-delete-text" @click="handleDelete">{{ $t('Delete booking') }}</button>
           </div>
           <div class="d-flex gap-2">
-            <button class="btn btn-light rounded-4 px-4" @click="close">Скасувати</button>
+            <button class="btn btn-light rounded-4 px-4" @click="close">{{ $t('Cancel') }}</button>
             <button class="orange-but py-2 px-4 text-white border-0" @click="handleSave" :disabled="updating || creating">
               <span v-if="updating || creating" class="spinner-border spinner-border-sm me-1"></span>
-              {{ editingBooking ? 'Зберегти' : 'Створити' }}
+              {{ editingBooking ? $t('Save') : $t('Create') }}
             </button>
           </div>
         </div>

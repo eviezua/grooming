@@ -10,7 +10,7 @@
         <li class="search">
           <input
               type="search"
-              placeholder="Знайти..."
+              :placeholder="$t('Search...')"
               v-model="searchQuery"
           />
           <img
@@ -23,7 +23,7 @@
               class="dropdown-item inter-18 truncate text-danger"
               @click="reset"
           >
-            ✕ {{ 'Скинути' }}
+            ✕ {{ $t('Reset') }}
           </a>
         </li>
         <li

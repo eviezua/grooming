@@ -3,25 +3,25 @@
     <BaseDropdown
         :options="cities"
         v-model="selectedCity"
-        label="Місто"
+        :label="$t('City')"
         resource="cities"
     />
     <BaseDropdown
         :options="districts"
         v-model="selectedDistrict"
-        label="Район"
+        :label="$t('District')"
         resource="cities"
     />
     <BaseDropdown
         :options="breeds"
         v-model="selectedBreed"
-        label="Порода"
+        :label="$t('Breed')"
         resource="pets"
     />
     <BaseDropdown
         :options="services"
         v-model="selectedService"
-        label="Послуга"
+        :label="$t('Service')"
         resource="services"
     />
     <SearchInput v-model="search" />
@@ -30,11 +30,11 @@
         class="search-button orange-but justify-content-center align-items-center text-white text-decoration-none inter-18"
         @click.prevent="onSearchClick"
     >
-      Знайти
+      {{ $t('Search') }}
     </a>
    <div class="btn-secondary white-but inter-18 text-black d-flex justify-content-between align-items-center" style=" padding: 20px 30px; grid-row: auto; grid-column: 1 / -1; "
         @click="openOtherFilters">
-      <span>Інші фільтри</span>
+      <span>{{ $t('Other filters') }}</span>
       <img src="/uploads/icons/filter.png" class="icon">
     </div>
   </div>

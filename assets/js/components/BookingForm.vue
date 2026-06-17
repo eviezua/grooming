@@ -3,12 +3,12 @@
     <div class="modal-dialog">
       <div class="modal-content rounded-4">
         <div class="modal-header">
-          <h5 class="modal-title">Бронювання</h5>
+          <h5 class="modal-title">{{ $t('Booking') }}</h5>
           <button type="button" class="btn-close" @click="close"></button>
         </div>
         <div class="modal-body">
           <div class="mb-3" v-if="groomer">
-            <strong>Майстер: </strong>{{ groomer.name }} {{ groomer.surname }}
+            <strong>{{ $t('Master') }}: </strong>{{ groomer.name }} {{ groomer.surname }}
           </div>
           <form-wizard id="bookingForm" @on-complete="onComplete" color="#FF9229" :use-validation="false">
             <tab-content title="Step 1">
@@ -20,7 +20,7 @@
                     :taggable="true"
                     :internal-search="false"
                     :searchable="true"
-                    placeholder="Оберіть послуги"
+                    :placeholder="$t('Select services')"
                     label="name"
                     track-by="id"
                     @search-change="onSearchService"
@@ -31,7 +31,7 @@
                     v-model="selectedSpecies"
                     :options="speciesOptions"
                     :multiple="false"
-                    placeholder="Оберіть вид тварини"
+                    :placeholder="$t('Select pet species')"
                     label="name"
                     track-by="id"
                 />
@@ -44,21 +44,21 @@
                     :multiple="false"
                     :internal-search="false"
                     :searchable="true"
-                    placeholder="Оберіть породу тварини"
+                    :placeholder="$t('Select pet breed')"
                     label="name"
                     track-by="id"
                     @search-change="onSearchBreed"
                 />
               </div>
               <div class="mb-3" v-if="selectedServices.length">
-                <p><strong>Загальна вартість:</strong> {{ totalCost }} грн</p>
-                <p><strong>Вартість з урахуванням майстра:</strong> {{ totalMasterCost }} грн</p>
+                <p><strong>{{ $t('Total price') }}:</strong> {{ totalCost }} грн</p>
+                <p><strong> {{ $t('Price by master') }}:</strong> {{ totalMasterCost }} грн</p>
               </div>
             </tab-content>
 
             <tab-content title="Step 2">
               <div class="mb-3" v-if="schedules.length">
-                <strong>Графік майстра:</strong>
+                <strong>{{ $t('Master`s schedule') }}:</strong>
                 <ul>
                   <li v-for="s in schedules" :key="s.id">
                     {{ s.dayOfweek }}: {{ s.start_time }} - {{ s.stop_time }}
@@ -79,7 +79,7 @@
               <div class="form-check mb-3">
                 <input class="form-check-input" type="checkbox" v-model="showFullForm" id="toggleFullForm">
                 <label class="form-check-label" for="toggleFullForm">
-                  Вперше у нас?
+                  {{ $t('First time?') }}
                 </label>
               </div>
               <div class="mb-3">
@@ -88,15 +88,15 @@
               </div>
               <div v-if="showFullForm">
                 <div class="mb-3">
-                  <label class="form-label">Ім’я</label>
-                  <input v-model="client.name" type="text" class="form-control" placeholder="Ваше ім’я" required>
+                  <label class="form-label">{{ $t('Your name') }}</label>
+                  <input v-model="client.name" type="text" class="form-control" :placeholder="$t('Your name')" required>
                 </div>
                 <div class="mb-3">
-                  <label class="form-label">Прізвище</label>
-                  <input v-model="client.surname" type="text" class="form-control" placeholder="Ваше прізвище" required>
+                  <label class="form-label">{{ $t('Your surname') }}</label>
+                  <input v-model="client.surname" type="text" class="form-control" :placeholder="$t('Your surname')" required>
                 </div>
                 <div class="mb-3">
-                  <label class="form-label">Телефон</label>
+                  <label class="form-label">{{ $t('Phone') }}</label>
                   <input v-model="client.phone" type="tel" class="form-control" placeholder="+380..." required>
                 </div>
               </div>
@@ -228,7 +228,7 @@ export default {
 
     const fetchBookings = async (date) => {
       if (!props.groomer?.id || !date) return;
-      const formattedDate = date.toISOString().split('T')[0];
+      const formattedDate = date.toLocaleDateString('sv-SE');
       const data = await fetchData('/api/v1/bookings', { page: 1, 'date[after]': formattedDate, 'id_master.id': props.groomer.id });
       bookings.value = data.member || [];
     };
@@ -267,8 +267,7 @@ export default {
       const baseData = {
         masterId: props.groomer.id,
         services: selectedServices.value.map(s => s.id),
-        date: selectedDate.value?.toISOString().split("T")[0],
-        timeStart: formatTime(selectedTime.value),
+        date: selectedDate.value ? (typeof selectedDate.value === 'string' ? selectedDate.value : selectedDate.value.toLocaleDateString('sv-SE')) : null,        timeStart: formatTime(selectedTime.value),
         timeStop: formatTime(getTimeStop(selectedTime.value)),
         petId: selectedBreed.value?.id
       };

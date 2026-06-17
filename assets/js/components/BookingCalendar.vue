@@ -67,7 +67,15 @@ function isDisabledDate(date) {
 
 function onSelectDate(date) {
   selectedDate.value = date
-  emit('update:selectedDate', date)
+
+  if (!date) {
+    emit('update:selectedDate', null)
+    return
+  }
+
+  const dateString = date.toLocaleDateString('sv-SE')
+
+  emit('update:selectedDate', dateString)
 }
 
 function generateSlots(startTime, stopTime, bookingsList = []) {
@@ -97,11 +105,14 @@ function generateSlots(startTime, stopTime, bookingsList = []) {
     const slotStr = `${current.getHours().toString().padStart(2,'0')}:${current.getMinutes().toString().padStart(2,'0')}`
 
     const isBooked = bookingsList?.some(b => {
-      const bookingDate = new Date(b.date)
-      const sameDay =
-          bookingDate.getFullYear() === selectedDate.value.getFullYear() &&
-          bookingDate.getMonth() === selectedDate.value.getMonth() &&
-          bookingDate.getDate() === selectedDate.value.getDate()
+      const bookedDateStr = b.date ? b.date.slice(0, 10) : ''
+
+      const year = selectedDate.value.getFullYear()
+      const month = String(selectedDate.value.getMonth() + 1).padStart(2, '0')
+      const day = String(selectedDate.value.getDate()).padStart(2, '0')
+      const selectedDateStr = `${year}-${month}-${day}`
+
+      const sameDay = bookedDateStr === selectedDateStr
 
       if (!sameDay) {
         return false

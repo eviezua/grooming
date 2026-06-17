@@ -3,21 +3,21 @@
     <div class="modal-dialog animated-scale">
       <div class="modal-content p-4 bg-white shadow-lg border-0">
         <div class="modal-header border-0 justify-content-between pb-0">
-          <h4 class="inter-22 mb-0">Додати нову послугу</h4>
+          <h4 class="inter-22 mb-0">{{ $t('Add service') }}</h4>
           <button class="btn-close" @click="close"></button>
         </div>
 
         <div class="modal-body py-4">
           <div class="mb-4">
-            <label class="gray-text inter-14 mb-2">Оберіть послугу з каталогу</label>
+            <label class="gray-text inter-14 mb-2">{{ $t('Select service from catalogue') }}</label>
             <VueMultiselect
                 v-model="selectedServiceId"
                 :options="availableServices.map(s => s.id)"
                 :custom-label="id => {
                   const s = catalogOptions.find(x => x.id === id);
-                  return s ? `${s.name} (сер. ціна: ${s.cost} ₴)` : 'Оберіть послугу';
+                  return s ? `${s.name} (сер. ціна: ${s.cost} ₴)` : $t('Select services');
                 }"
-                placeholder="Почніть вводити назву..."
+                :placeholder="$t('Start enter name...')"
                 :searchable="true"
                 :internal-search="false"
                 @search-change="onSearchService"
@@ -26,30 +26,30 @@
           </div>
 
           <div v-if="selectedService" class="selected-area p-3 mb-4 rounded-4 bg-light">
-            <div class="inter-14 gray-text mb-1">Середня вартість на ринку:</div>
+            <div class="inter-14 gray-text mb-1">{{ $t('Avg price') }}:</div>
             <div class="inter-20 orange-text">{{ selectedService.cost }} ₴</div>
           </div>
 
           <div class="mb-2">
-            <label class="gray-text inter-14 mb-2">Ваша базова ціна (₴)</label>
+            <label class="gray-text inter-14 mb-2">{{ $t('Your base price') }} (₴)</label>
             <input
                 type="number"
                 v-model.number="price"
                 class="form-control rounded-4 shadow-none border-light"
-                placeholder="Введіть суму"
+                :placeholder="$t('Enter price')"
             >
           </div>
         </div>
 
         <div class="modal-footer border-0 d-flex justify-content-end gap-2 pt-2">
-          <button class="btn btn-light rounded-4 px-4" @click="close">Скасувати</button>
+          <button class="btn btn-light rounded-4 px-4" @click="close">{{ $t('Cancel') }}</button>
           <button
               class="orange-but py-2 px-4 text-white border-0"
               @click="handlePost"
               :disabled="loading || !selectedServiceId"
           >
             <span v-if="loading" class="spinner-border spinner-border-sm me-1"></span>
-            Додати послугу
+            {{ $t('Add service') }}
           </button>
         </div>
       </div>

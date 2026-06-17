@@ -4,13 +4,13 @@
       <div class="modal-content p-4">
 
         <div class="modal-header border-0 pb-0">
-          <h4 class="inter-22 mb-0">Спеціалізація майстра</h4>
+          <h4 class="inter-22 mb-0">{{ $t('Master`s specialization') }}</h4>
           <button @click="$emit('close')" class="btn-close-custom">✕</button>
         </div>
 
         <div class="modal-body py-4">
           <div class="selected-area p-3 mb-4 rounded-4">
-            <div v-if="selectedPetsForEdit.length === 0" class="gray-text text-center">Нічого не обрано</div>
+            <div v-if="selectedPetsForEdit.length === 0" class="gray-text text-center">{{ $t('Nothing selected') }}</div>
             <div v-for="(pets, spice) in groupedSelectedPets" :key="spice" class="mb-3">
               <div class="inter-14 fw-bold orange-text mb-2 text-uppercase">{{ spiceLabels[spice] || spice }}</div>
               <div class="d-flex flex-wrap gap-2">
@@ -29,7 +29,7 @@
                   :options="speciesOptions"
                   label="name"
                   track-by="id"
-                  placeholder="Вид"
+                  :placeholder="$t('Spice')"
                   :show-labels="false"
               />
             </div>
@@ -44,7 +44,7 @@
                   @search-change="onSearchBreed"
                   @select="addNewPet"
                   :disabled="!selectedSpecies"
-                  placeholder="Почніть вводити назву..."
+                  :placeholder="$t('Start enter name...')"
                   :show-labels="false"
               />
             </div>
@@ -53,7 +53,7 @@
 
         <div class="modal-footer border-0 d-flex justify-content-end pt-0">
           <button class="orange-but py-2 px-5 text-white" @click="handleSave" :disabled="updating">
-            {{ updating ? 'Зберігаємо...' : 'Зберегти зміни' }}
+            {{ updating ? $t('Loading...') : $t('Save') }}
           </button>
         </div>
 

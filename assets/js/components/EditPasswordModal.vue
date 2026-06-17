@@ -4,19 +4,19 @@
       <div class="modal-content p-4">
 
         <div class="modal-header border-0 justify-content-center pb-0">
-          <h4 class="inter-22 mb-0">Безпека акаунту</h4>
+          <h4 class="inter-22 mb-0">{{ $t('Account security') }}</h4>
         </div>
 
         <div class="modal-body py-4">
           <div class="d-flex flex-column gap-3">
             <div>
-              <label class="gray-text small mb-1">Поточний пароль</label>
+              <label class="gray-text small mb-1">{{ $t('Current password') }}</label>
               <div class="position-relative">
                 <input
                     v-model="passForm.oldPassword"
                     :type="showPass.old ? 'text' : 'password'"
                     class="form-control edit-input pe-5"
-                    placeholder="Введіть старий пароль"
+                    :placeholder="$t('Enter old password')"
                 >
                 <button type="button" class="btn-eye" @click="showPass.old = !showPass.old">
                   {{ showPass.old ? '👁️' : '👁️‍🗨️' }}
@@ -27,13 +27,13 @@
             <hr class="my-2" style="border-top: 1px dashed #ddd;">
 
             <div>
-              <label class="gray-text small mb-1">Новий пароль</label>
+              <label class="gray-text small mb-1">{{ $t('New password') }}</label>
               <div class="position-relative">
                 <input
                     v-model="passForm.newPassword"
                     :type="showPass.new ? 'text' : 'password'"
                     class="form-control edit-input pe-5"
-                    placeholder="Мінімум 6 символів"
+                    :placeholder="$t('Minimum 6 characters')"
                 >
                 <button type="button" class="btn-eye" @click="showPass.new = !showPass.new">
                   {{ showPass.new ? '👁️' : '👁️‍🗨️' }}
@@ -42,13 +42,13 @@
             </div>
 
             <div>
-              <label class="gray-text small mb-1">Підтвердження</label>
+              <label class="gray-text small mb-1">{{ $t('Confirmation') }}</label>
               <div class="position-relative">
                 <input
                     v-model="passForm.confirmPassword"
                     :type="showPass.confirm ? 'text' : 'password'"
                     class="form-control edit-input pe-5"
-                    placeholder="Повторіть новий пароль"
+                    :placeholder="$t('Repeat new password')"
                 >
                 <button type="button" class="btn-eye" @click="showPass.confirm = !showPass.confirm">
                   {{ showPass.confirm ? '👁️' : '👁️‍🗨️' }}
@@ -63,11 +63,11 @@
         </div>
 
         <div class="modal-footer border-0 d-flex justify-content-end gap-3 pt-0">
-          <button class="btn btn-light rounded-4 px-4" @click="$emit('close')">Скасувати</button>
+          <button class="btn btn-light rounded-4 px-4" @click="$emit('close')">{{ $t('Cancel') }}</button>
           <button class="orange-but py-2 px-4 text-white"
                   @click="handleSave"
                   :disabled="updating || !isPassFormValid">
-            {{ updating ? 'Оновлюємо...' : 'Зберегти пароль' }}
+            {{ updating ? $t('Updating...') : $t('Save password') }}
           </button>
         </div>
 
