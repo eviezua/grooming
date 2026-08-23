@@ -57,7 +57,8 @@ const selectedTime = ref(null)
 const stepMinutes = computed(() => props.slotStep && props.slotStep > 0 ? props.slotStep : 30);
 
 function getDayOfWeek(date) {
-  return date.toLocaleDateString('en-US', { weekday: 'long' })
+  const d = (date instanceof Date) ? date : new Date(date);
+  return d.toLocaleDateString('en-US', { weekday: 'long' })
 }
 
 function isDisabledDate(date) {

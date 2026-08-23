@@ -228,7 +228,9 @@ export default {
 
     const fetchBookings = async (date) => {
       if (!props.groomer?.id || !date) return;
-      const formattedDate = date.toLocaleDateString('sv-SE');
+      const d = (date instanceof Date) ? date : new Date(date);
+      const formattedDate = d.toLocaleDateString('sv-SE');
+
       const data = await fetchData('/api/v1/bookings', { page: 1, 'date[after]': formattedDate, 'id_master.id': props.groomer.id });
       bookings.value = data.member || [];
     };
