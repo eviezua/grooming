@@ -79,7 +79,7 @@ export default {
   justify-content: space-between;
   position: absolute;
   inset: 0;
-  z-index: 2500;
+  z-index: 200;
   box-shadow: 0 0 10px rgba(0,0,0,0.15);
   width: 100%;
 }
