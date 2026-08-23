@@ -100,15 +100,16 @@ abstract class AbstractElasticSearchFilter extends AbstractFilter
                 ->andWhere("$alias.id IN (:elastic_ids)")
                 ->setParameter('elastic_ids', $ids);
 
-            $orderByCase = 'CASE ';
+            $cases = [];
             foreach ($ids as $index => $id) {
-                $orderByCase .= "WHEN $alias.id = :id_$index THEN $index ";
-                $queryBuilder->setParameter("id_$index", $id);
+                $paramName = "id_" . $index;
+                $cases[] = "WHEN $alias.id = :$paramName THEN $index";
+                $queryBuilder->setParameter($paramName, $id);
             }
-            $orderByCase .= 'ELSE 9999 END';
+            $caseSql = "CASE " . implode(' ', $cases) . " ELSE 9999 END";
 
-            $queryBuilder->orderBy($orderByCase, 'ASC');
-
+            $queryBuilder->addSelect($caseSql . " AS HIDDEN sort_order");
+            $queryBuilder->orderBy('sort_order', 'ASC');
         } else {
             $queryBuilder->andWhere('1 = 0');
         }
