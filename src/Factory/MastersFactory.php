@@ -5,6 +5,7 @@ namespace App\Factory;
 use App\Entity\Masters;
 use App\Enum\Status;
 use Zenstruck\Foundry\Persistence\PersistentProxyObjectFactory;
+use function Zenstruck\Foundry\lazy;
 
 /**
  * @extends PersistentProxyObjectFactory<Masters>
@@ -32,7 +33,7 @@ final class MastersFactory extends PersistentProxyObjectFactory
     {
         return [
             'email' => self::faker()->email(),
-            'id_city' => CitiesFactory::createOne(),
+            'id_city' => lazy(fn() => CitiesFactory::createOne()),
             'address' => self::faker()->address(),
             'name' => self::faker()->firstName(),
             'password' => self::faker()->password(),
