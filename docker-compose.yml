@@ -25,6 +25,7 @@ services:
     depends_on:
       - database
       - redis
+      - elasticsearch
     volumes:
       - caddy_data:/data
       - caddy_config:/config
