@@ -32,8 +32,8 @@ final class MastersServicesFactory extends PersistentProxyObjectFactory
     protected function defaults(): array|callable
     {
         return [
-            'master' => MastersFactory::new(),
-            'service' => ServicesFactory::new(),
+            'master' => MastersFactory::randomOrCreate(),
+            'service' => ServicesFactory::randomOrCreate(),
             'price' => self::faker()->numberBetween(100, 1000),
         ];
     }

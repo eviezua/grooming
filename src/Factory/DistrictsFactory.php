@@ -32,7 +32,7 @@ final class DistrictsFactory extends PersistentProxyObjectFactory
     protected function defaults(): array|callable
     {
         return [
-            'city' => CitiesFactory::new(),
+            'city' => CitiesFactory::randomOrCreate(),
             'name' => self::faker()->text(255),
         ];
     }

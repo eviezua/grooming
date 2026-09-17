@@ -42,7 +42,7 @@ final class ScheduleFactory extends PersistentProxyObjectFactory
         $stopTime = new \DateTime($stopTime->format('Y-m-d H:i:s'));
         return [
             'dayOfweek' => self::faker()->randomElement(Weekdays::cases()),
-            'master' => MastersFactory::new(),
+            'master' => MastersFactory::randomOrCreate(),
             'start_time' => $startTime,
             'stop_time' => $stopTime
         ];

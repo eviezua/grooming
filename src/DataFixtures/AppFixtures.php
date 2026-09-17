@@ -19,65 +19,28 @@ class AppFixtures extends Fixture
 {
     public function load(ObjectManager $manager): void
     {
-       PetsFactory::createMany(20);
-       CitiesFactory::createMany(200);
-       $cities = CitiesFactory::repository()->findAll();
-
+        PetsFactory::createMany(20);
+        $cities = CitiesFactory::createMany(50);
         foreach ($cities as $city) {
             DistrictsFactory::createMany(5, ['city' => $city]);
         }
-        ServicesFactory::createMany(200);
-        MastersFactory::createMany(200);
+        ServicesFactory::createMany(100);
 
-        $masters = $manager->getRepository(Masters::class)->findAll();
+        $masters = MastersFactory::createMany(100);
+        $weekdaysEnum = Weekdays::cases();
 
         foreach ($masters as $master) {
-           $city = $master->getIdCity();
-            $rating = $master->getAvgRating();
-            if ($city) {
-                $districts = $city->getDistricts()->toArray();
-                if (!empty($districts)) {
-                    $randomDistrict = $districts[array_rand($districts)];
-                    $master->setDistrict($randomDistrict);
-                }
-            }
-            if($rating == 0){
-                $master->setAvgRating(rand(1,5));
-            }
-            if (!$master->getPhoto()) {
-                $photoNumber = random_int(1, 6);
-                $master->setPhoto("{$photoNumber}.png");
-            }
-
-            $weekdaysEnum = Weekdays::cases();
-            $existingDays = [];
-
-            foreach ($master->getSchedules() as $schedule) {
-                $existingDays[] = $schedule->getDayOfweek();
-            }
-
-            $availableDays = array_filter($weekdaysEnum, fn($d) => !in_array($d, $existingDays, true));
-            $availableDays = array_values($availableDays);
-
-            if (count($availableDays) < 2) continue;
-
-            $offDaysKeys = array_rand($availableDays, 2);
-            $offDays = array_map(fn($k) => $availableDays[$k], (array)$offDaysKeys);
-            $workingDays = array_filter($availableDays, fn($d) => !in_array($d, $offDays, true));
-
-            foreach ($workingDays as $day) {
+            $workingDaysKeys = (array) array_rand($weekdaysEnum, 5);
+            foreach ($workingDaysKeys as $key) {
                 ScheduleFactory::createOne([
                     'master' => $master,
-                    'dayOfweek' => $day
+                    'dayOfweek' => $weekdaysEnum[$key],
                 ]);
             }
-
-            $manager->persist($master);
         }
 
-        ScheduleFactory::createMany(200);
-        ClientsFactory::createMany(500);
-        BookingsFactory::createMany(500);
+        ClientsFactory::createMany(200);
+        BookingsFactory::createMany(300);
 
         $manager->flush();
     }

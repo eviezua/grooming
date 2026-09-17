@@ -6,6 +6,8 @@ use App\Entity\Bookings;
 use App\Enum\Status;
 use Zenstruck\Foundry\Persistence\PersistentProxyObjectFactory;
 
+use function Zenstruck\Foundry\lazy;
+
 /**
  * @extends PersistentProxyObjectFactory<Bookings>
  */
@@ -37,12 +39,15 @@ final class BookingsFactory extends PersistentProxyObjectFactory
 
         return [
             'date' => self::faker()->dateTime(),
-            'id_client' => ClientsFactory::createOne(),
-            'id_master' => MastersFactory::createOne(),
-            'pet' => PetsFactory::createOne(),
+            'id_client' => ClientsFactory::randomOrCreate(),
+            'id_master' => MastersFactory::randomOrCreate(),
+            'pet' => PetsFactory::randomOrCreate(),
             'time_start' => $startTime,
             'time_stop' => $stopTime,
-            'id_services' => ServicesFactory::CreateMany(rand(1, 3)),
+            'id_services' => lazy(fn() => ServicesFactory::repository()->count() >= 3
+                ? ServicesFactory::randomSet(rand(1, 3))
+                : ServicesFactory::createMany(rand(1, 3))
+            ),
             'status' => self::faker()->randomElement(Status::cases())
         ];
     }
