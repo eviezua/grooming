@@ -128,9 +128,10 @@ class DistrictsApiTest extends ApiTestCase
     {
         $city = CitiesFactory::createOne(['status' => Status::Approved]);
         $cityId = $city->getId();
+        $otherCity = CitiesFactory::createOne(['status' => Status::Approved]);
 
         DistrictsFactory::createMany(10, ['city' => $city, 'status' => Status::Approved]);
-        DistrictsFactory::createMany(10, ['status' => Status::Approved]);
+        DistrictsFactory::createMany(10, ['city' => $otherCity, 'status' => Status::Approved]);
 
         $client = static::createClient();
         $client->request('GET', 'api/v1/districts?city.id[]=' . $cityId);

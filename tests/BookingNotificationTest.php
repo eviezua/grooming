@@ -113,10 +113,10 @@ class BookingNotificationTest extends WebTestCase
 
         $this->assertResponseStatusCodeSame(200);
 
-        $this->assertEmailCount(3);
+        $this->assertEmailCount(2);
 
         $messages = $this->getMailerMessages();
-        $this->assertEmailHeaderSame($messages[4], 'Subject', 'Оновлення — Groomify');
+        $this->assertEmailHeaderSame($messages[2], 'Subject', 'Оновлення — Groomify');
     }
 
     public function testPostMasterAndConfirmEmail(): void

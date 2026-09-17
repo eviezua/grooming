@@ -140,9 +140,10 @@ class MastersApiTest extends ApiTestCase
     {
         $city = CitiesFactory::createOne(['status' => Status::Approved]);
         $cityId = $city->getId();
+        $otherCity = CitiesFactory::createOne(['status' => Status::Approved]);
 
         MastersFactory::CreateMany(10, ['id_city' => $city, 'status' => Status::Approved]);
-        MastersFactory::createMany(10, ['status' => Status::Approved]);
+        MastersFactory::createMany(10, ['id_city' => $otherCity, 'status' => Status::Approved]);
 
         static::createClient()->request('GET', 'api/v1/masters?id_city.id[]=' . $cityId);
 
@@ -161,9 +162,10 @@ class MastersApiTest extends ApiTestCase
     {
         $district = DistrictsFactory::createOne(['status' => Status::Approved]);
         $districtId = $district->getId();
+        $otherDistrict = DistrictsFactory::createOne(['status' => Status::Approved]);
 
         MastersFactory::CreateMany(10, ['district' => $district, 'status' => Status::Approved]);
-        MastersFactory::createMany(10, ['status' => Status::Approved]);
+        MastersFactory::createMany(10, ['district' => $otherDistrict, 'status' => Status::Approved]);
 
         static::createClient()->request('GET', 'api/v1/masters?district.id[]=' . $districtId);
 
@@ -211,9 +213,10 @@ class MastersApiTest extends ApiTestCase
     {
         $pet = PetsFactory::createOne(['status' => Status::Approved]);
         $petId = $pet->getId();
+        $otherPet = PetsFactory::createOne(['status' => Status::Approved]);
 
         MastersFactory::CreateMany(10, ['id_pets' => [$pet], 'status' => Status::Approved]);
-        MastersFactory::createMany(10, ['status' => Status::Approved]);
+        MastersFactory::createMany(10, ['id_pets' => [$otherPet], 'status' => Status::Approved]);
 
         static::createClient()->request('GET', 'api/v1/masters?id_pets.id[]=' . $petId);
 

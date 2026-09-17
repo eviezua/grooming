@@ -41,8 +41,9 @@ class MastersServicesApiTest extends ApiTestCase
     public function testGetCollectionWhenMasterAuthorized(): void
     {
         $master = MastersFactory::createOne(['status' => Status::Approved]);
+        $otherMaster = MastersFactory::createOne(['status' => Status::Approved]);
 
-        MastersServicesFactory::createMany(90);
+        MastersServicesFactory::createMany(90, ['master' => $otherMaster]);
         MastersServicesFactory::createMany(10, ['master' => $master]);
 
         $client = $this->createAuthenticatedClient($master);
@@ -79,9 +80,10 @@ class MastersServicesApiTest extends ApiTestCase
     {
         $master = MastersFactory::createOne(['status' => Status::Approved]);
         $masterId = $master->getId();
+        $otherMaster = MastersFactory::createOne(['status' => Status::Approved]);
 
         MastersServicesFactory::createMany(10, ['master' => $master]);
-        MastersServicesFactory::createMany(10);
+        MastersServicesFactory::createMany(10, ['master' => $otherMaster]);
 
         static::createClient()->request('GET', "/api/v1/masters_services?master.id[]=" . $masterId);
 
@@ -100,9 +102,10 @@ class MastersServicesApiTest extends ApiTestCase
     {
         $service = ServicesFactory::createOne();
         $serviceId = $service->getId();
+        $otherService = ServicesFactory::createOne();
 
         MastersServicesFactory::createMany(10, ['service' => $service]);
-        MastersServicesFactory::createMany(10);
+        MastersServicesFactory::createMany(10, ['service' => $otherService]);
 
         static::createClient()->request('GET', "/api/v1/masters_services?service.id[]=" . $serviceId);
 

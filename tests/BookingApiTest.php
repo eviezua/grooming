@@ -49,9 +49,10 @@ class BookingApiTest extends ApiTestCase
         $email = 'master@test.com';
         $client = $this->createAuthenticatedClient($email);
         $master = MastersFactory::find(['email' => $email]);
+        $otherMaster = MastersFactory::createOne();
 
         BookingsFactory::createMany(50, ['id_master' => $master]);
-        BookingsFactory::createMany(50);
+        BookingsFactory::createMany(50, ['id_master' => $otherMaster]);
 
         $client->request('GET', '/api/v1/bookings');
 
@@ -130,9 +131,10 @@ class BookingApiTest extends ApiTestCase
     {
         $client = ClientsFactory::createOne();
         $clientId = $client->getId();
+        $otherClient = ClientsFactory::createOne();
 
         BookingsFactory::CreateMany(10, ['id_client' => $client]);
-        BookingsFactory::createMany(10);
+        BookingsFactory::createMany(10, ['id_client' => $otherClient]);
 
         static::createClient()->request('GET', 'api/v1/bookings?id_client.id[]=' . $clientId);
 
@@ -152,8 +154,10 @@ class BookingApiTest extends ApiTestCase
         $master = MastersFactory::createOne(['status' => Status::Approved]);
         $masterId = $master->getId();
 
+        $otherMaster = MastersFactory::createOne();
+
         BookingsFactory::CreateMany(10, ['id_master' => $master]);
-        BookingsFactory::createMany(10);
+        BookingsFactory::createMany(10, ['id_master' => $otherMaster]);
 
         static::createClient()->request('GET', 'api/v1/bookings?id_master.id[]=' . $masterId);
 

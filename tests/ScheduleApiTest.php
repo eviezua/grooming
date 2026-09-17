@@ -44,9 +44,10 @@ class ScheduleApiTest extends ApiTestCase
     {
         $master = MastersFactory::createOne(['status' => Status::Approved]);
         $masterId = $master->getId();
+        $otherMaster = MastersFactory::createOne(['status' => Status::Approved]);
 
         ScheduleFactory::CreateMany(10, ['master' => $master]);
-        ScheduleFactory::CreateMany(10);
+        ScheduleFactory::CreateMany(10, ['master' => $otherMaster]);
 
         static::createClient()->request('GET', 'api/v1/schedules?master.id[]=' . $masterId);
 
