@@ -879,7 +879,7 @@ class MastersApiTest extends ApiTestCase
 
     public function testUploadMasterPhoto(): void
     {
-        $master = MastersFactory::createOne(['status' => Status::Approved]);
+        $master = MastersFactory::createOne(['status' => Status::Approved, 'photo' => 'photo.jpg']);
         $client = $this->createAuthenticatedClient($master);
 
         $tempFilePath = tempnam(sys_get_temp_dir(), 'test_photo') . '.png';
@@ -911,7 +911,8 @@ class MastersApiTest extends ApiTestCase
 
         $data = $client->getResponse()->toArray();
         $this->assertNotNull($data['photo']);
-
+        @unlink($tempFilePath);
+        @unlink(static::getContainer()->getParameter('kernel.project_dir') . '/public/uploads/photos/' . $data['photo']);
     }
 
     public function testUploadPhotoAnotherMasterForbidden(): void
