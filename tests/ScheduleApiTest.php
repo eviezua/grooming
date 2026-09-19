@@ -46,8 +46,16 @@ class ScheduleApiTest extends ApiTestCase
         $masterId = $master->getId();
         $otherMaster = MastersFactory::createOne(['status' => Status::Approved]);
 
-        ScheduleFactory::CreateMany(10, ['master' => $master]);
-        ScheduleFactory::CreateMany(10, ['master' => $otherMaster]);
+        $days = Weekdays::cases();
+
+        ScheduleFactory::CreateMany(5, fn (int $i) => [
+            'master' => $master,
+            'dayOfweek' => $days[$i - 1]
+        ]);
+        ScheduleFactory::CreateMany(5, fn (int $i) => [
+            'master' => $otherMaster,
+            'dayOfweek' => $days[$i - 1]
+        ]);
 
         static::createClient()->request('GET', 'api/v1/schedules?master.id[]=' . $masterId);
 
@@ -58,7 +66,7 @@ class ScheduleApiTest extends ApiTestCase
             '@context' => '/api/v1/contexts/Schedule',
             '@id' => '/api/v1/schedules',
             '@type' => 'Collection',
-            'totalItems' => 10
+            'totalItems' => 5
         ]);
     }
 

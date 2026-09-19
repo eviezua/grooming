@@ -7,8 +7,15 @@ use App\Repository\ScheduleRepository;
 use DateTimeInterface;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 #[ORM\Entity(repositoryClass: ScheduleRepository::class)]
+#[UniqueEntity(
+    fields: ['master', 'dayOfweek'],
+    message: 'Master already has schedule for this day.'
+)]
+#[ORM\Table(name: 'schedule')]
+#[ORM\UniqueConstraint(name: 'uniq_master_day', columns: ['master_id', 'day_ofweek'])]
 class Schedule
 {
     #[ORM\Id]
