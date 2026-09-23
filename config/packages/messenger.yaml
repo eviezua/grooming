@@ -1,7 +1,7 @@
 framework:
     messenger:
         # Uncomment this (and the failed transport below) to send failed messages to this transport for later handling.
-        # failure_transport: failed
+        failure_transport: failed
         default_bus: messenger.bus.default
         buses:
             messenger.bus.default:
@@ -44,7 +44,7 @@ framework:
             scheduler_main:
                 dsn: 'scheduler://default'
 
-            # failed: 'doctrine://default?queue_name=failed'
+            failed: 'doctrine://default?queue_name=failed'
             sync: 'sync://'
 
         routing:
