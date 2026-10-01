@@ -63,6 +63,8 @@ when@test:
                 default_queue: 'sync://'
                 auth_queue: 'sync://'
                 scheduled_queue: 'sync://'
+                scheduler_main:
+                    dsn: 'sync://'
            routing:
                'App\Message\BookingNotification': sync
                'App\Message\AdminMessage': sync
